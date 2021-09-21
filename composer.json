@@ -1,0 +1,22 @@
+{
+    "name": "stechstudio/bai2",
+    "description": "PHP library to read and parse BAI2 files",
+    "type": "library",
+    "version": "0.1.0-dev",
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    },
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "STS\\Bai2\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Zeb DeOs",
+            "email": "zebulin@stechstudio.com"
+        }
+    ],
+    "require": {}
+}
