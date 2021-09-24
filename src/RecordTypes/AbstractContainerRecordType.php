@@ -8,9 +8,18 @@ abstract class AbstractContainerRecordType extends AbstractRecordType
 
     public ?AbstractRecordType $currentChild = null;
 
-    protected function extantCurrentChild(): AbstractRecordType
+    protected function activeChild(): bool
     {
         if ($this->currentChild) {
+            return $this->currentChild->getFinalized();
+        }
+
+        return false;
+    }
+
+    protected function extantCurrentChild(): AbstractRecordType
+    {
+        if ($this->activeChild()) {
             return $this->currentChild;
         }
 

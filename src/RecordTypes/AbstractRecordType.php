@@ -4,9 +4,11 @@ namespace STS\Bai2\RecordTypes;
 abstract class AbstractRecordType
 {
 
+    protected bool $finalized = false;
+
     public $records = [];
 
-    public function __construct(?string $line)
+    public function __construct(?string $line = null)
     {
         if ($line) {
             $this->parseLine($line);
@@ -18,6 +20,16 @@ abstract class AbstractRecordType
     protected function getRecordTypeCode(string $line): string
     {
         return substr($line, 0, 2);
+    }
+
+    protected function setFinalized(bool $finalized): void
+    {
+        $this->finalized = $finalized;
+    }
+
+    public function getFinalized(): bool
+    {
+        return $this->finalized;
     }
 
     public function toArray(): array
