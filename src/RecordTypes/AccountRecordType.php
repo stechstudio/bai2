@@ -37,7 +37,7 @@ class AccountRecordType extends AbstractContainerRecordType
                 // TODO(zmd): pretty sure this is unreachable (at least for a
                 //   properly formed BAI2 file); this unreachable code will be
                 //   eliminated shortly, however.
-                $this->assertCurrentChild()->parseLine($line);
+                $this->extantCurrentChild()->parseLine($line);
                 break;
         }
     }

@@ -29,7 +29,7 @@ class FileRecordType extends AbstractContainerRecordType
 
             // Group Trailer
             case '98':
-                $this->assertCurrentChild()->finalize($line);
+                $this->extantCurrentChild()->finalize($line);
                 $this->currentChild = null;
                 break;
 
@@ -40,7 +40,7 @@ class FileRecordType extends AbstractContainerRecordType
 
             // Record type must be Group's problem
             default:
-                $this->assertCurrentChild()->parseLine($line);
+                $this->extantCurrentChild()->parseLine($line);
                 break;
         }
     }

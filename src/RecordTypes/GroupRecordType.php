@@ -29,7 +29,7 @@ class GroupRecordType extends AbstractContainerRecordType
 
             // Account Trailer
             case '49':
-                $this->assertCurrentChild()->finalize($line);
+                $this->extantCurrentChild()->finalize($line);
                 $this->currentChild = null;
                 break;
 
@@ -40,7 +40,7 @@ class GroupRecordType extends AbstractContainerRecordType
 
             // Record type must be Account's problem
             default:
-                $this->assertCurrentChild()->parseLine($line);
+                $this->extantCurrentChild()->parseLine($line);
                 break;
         }
     }
