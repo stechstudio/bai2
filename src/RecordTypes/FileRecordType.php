@@ -7,7 +7,7 @@ use STS\Bai2\RecordTypes\GroupRecordType;
 class FileRecordType extends AbstractRecordType
 {
 
-    public ?GroupRecordType $currentGroup = null;
+    public ?GroupRecordType $currentChild = null;
 
     public function parseLine(string $line): void
     {
@@ -25,14 +25,14 @@ class FileRecordType extends AbstractRecordType
 
             // Group Header
             case '02':
-                $this->currentGroup = new GroupRecordType($line);
-                $this->records[] = $this->currentGroup;
+                $this->currentChild = new GroupRecordType($line);
+                $this->records[] = $this->currentChild;
                 break;
 
             // Group Trailer
             case '98':
-                $this->assertCurrentGroup()->finalize($line);
-                $this->currentGroup = null;
+                $this->assertCurrentChild()->finalize($line);
+                $this->currentChild = null;
                 break;
 
             // Continuation
@@ -42,7 +42,7 @@ class FileRecordType extends AbstractRecordType
 
             // Record type must be Group's problem
             default:
-                $this->assertCurrentGroup()->parseLine($line);
+                $this->assertCurrentChild()->parseLine($line);
                 break;
         }
     }
@@ -55,18 +55,18 @@ class FileRecordType extends AbstractRecordType
 
     public function continue(string $line): void
     {
-        if ($this->currentGroup) {
-            $this->currentGroup->continue($line);
+        if ($this->currentChild) {
+            $this->currentChild->continue($line);
         } else {
             // TODO(zmd): parse? hahaha, yah right!
             $this->records[] = $line;
         }
     }
 
-    protected function assertCurrentGroup(): GroupRecordType
+    protected function assertCurrentChild(): GroupRecordType
     {
-        if ($this->currentGroup) {
-            return $this->currentGroup;
+        if ($this->currentChild) {
+            return $this->currentChild;
         }
 
         // TODO(zmd): more appropriate message, please.
