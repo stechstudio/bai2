@@ -15,10 +15,10 @@ class Bai2
 
     public function parseLine(string $line): void
     {
-        if ($root) {
-            $root->parseLine($line);
+        if ($this->root) {
+            $this->root->parseLine($line);
         } else {
-            $root = new File($line);
+            $this->root = new File($line);
         }
     }
 

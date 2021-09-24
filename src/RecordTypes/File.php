@@ -1,18 +1,16 @@
 <?php
 namespace STS\Bai2\RecordTypes;
 
-use Group;
+use STS\Bai2\RecordTypes\Group;
 
 class File
 {
 
-    public $rawUnparsed = [];
-
     public $records = [];
 
-    public Group? $currentGroup = null;
+    public ?Group $currentGroup = null;
 
-    public function __construct(string? $line)
+    public function __construct(?string $line)
     {
         if ($line) {
             $this->parseLine($line);
@@ -41,29 +39,25 @@ class File
 
             // Group Trailer
             case '98':
-                $this->currentGroup->finalize($line);
+                $this->assertCurrentGroup()->finalize($line);
                 $this->currentGroup = null;
                 break;
 
             // Continuation
             case '88':
-                if ($this->currentGroup) {
-                    $this->currentGroup->parseLine($line);
-                } else {
-                    $this->continue($line);
-                }
+                $this->continue($line);
                 break;
 
             // Record type must be Group's problem
             default:
-                if ($this->currentGroup) {
-                    $this->currentGroup->parseLine($line);
-                } else {
-                    // TODO(zmd): more appropriate message, please.
-                    throw new Exception('lolwut?');
-                }
+                $this->assertCurrentGroup()->parseLine($line);
                 break;
         }
+    }
+
+    protected function getRecordTypeCode(string $line): string
+    {
+        return substr($line, 0, 2);
     }
 
     public function finalize(string $line): void
@@ -74,18 +68,28 @@ class File
 
     public function continue(string $line): void
     {
-        // TODO(zmd): parse? hahaha, yah right!
-        $this->records[] = $line;
+        if ($this->currentGroup) {
+            $this->currentGroup->continue($line);
+        } else {
+            // TODO(zmd): parse? hahaha, yah right!
+            $this->records[] = $line;
+        }
     }
 
-    protected function getRecordTypeCode(string $line): string
+    protected function assertCurrentGroup(): Group
     {
-        return substr($line, 0, 2);
+        if ($this->currentGroup) {
+            return $this->currentGroup;
+        }
+
+        // TODO(zmd): more appropriate message, please.
+        throw new \Exception('lolwut?');
     }
 
     public function toArray(): array
     {
-        // TODO(zmd): implement me!
+        // TODO(zmd): implement me for real!
+        return $this->records;
     }
 
 }
