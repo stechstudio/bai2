@@ -1,21 +1,13 @@
 <?php
 namespace STS\Bai2\RecordTypes;
 
+use STS\Bai2\RecordTypes\AbstractRecordType;
 use STS\Bai2\RecordTypes\GroupRecordType;
 
-class FileRecordType
+class FileRecordType extends AbstractRecordType
 {
 
-    public $records = [];
-
     public ?GroupRecordType $currentGroup = null;
-
-    public function __construct(?string $line)
-    {
-        if ($line) {
-            $this->parseLine($line);
-        }
-    }
 
     public function parseLine(string $line): void
     {
@@ -55,11 +47,6 @@ class FileRecordType
         }
     }
 
-    protected function getRecordTypeCode(string $line): string
-    {
-        return substr($line, 0, 2);
-    }
-
     public function finalize(string $line): void
     {
         // TODO(zmd): parse? hahaha, yah right!
@@ -84,14 +71,6 @@ class FileRecordType
 
         // TODO(zmd): more appropriate message, please.
         throw new \Exception('lolwut?');
-    }
-
-    public function toArray(): array
-    {
-        return array_map(
-            fn($ele) => gettype($ele) == 'string' ? $ele : $ele->toArray(),
-            $this->records
-        );
     }
 
 }
