@@ -7,7 +7,7 @@ use STS\Bai2\RecordTypes\TransactionRecordType;
 class AccountRecordType extends AbstractRecordType
 {
 
-    public ?TransactionRecordType $currentTransaction = null;
+    public ?TransactionRecordType $currentChild = null;
 
     public function parseLine(string $line): void
     {
@@ -52,18 +52,18 @@ class AccountRecordType extends AbstractRecordType
 
     public function continue(string $line): void
     {
-        if ($this->currentTransaction) {
-            $this->currentTransaction->continue($line);
+        if ($this->currentChild) {
+            $this->currentChild->continue($line);
         } else {
             // TODO(zmd): parse? hahaha, yah right!
             $this->records[] = $line;
         }
     }
 
-    protected function assertCurrentTransaction(): TransactionRecordType
+    protected function assertCurrentChild(): TransactionRecordType
     {
-        if ($this->currentTransaction) {
-            return $this->currentTransaction;
+        if ($this->currentChild) {
+            return $this->currentChild;
         }
 
         // TODO(zmd): more appropriate message, please.
