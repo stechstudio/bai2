@@ -7,7 +7,7 @@ use STS\Bai2\RecordTypes\AccountRecordType;
 class GroupRecordType extends AbstractRecordType
 {
 
-    public ?AccountRecordType $currentAccount = null;
+    public ?AccountRecordType $currentChild = null;
 
     public function parseLine(string $line): void
     {
@@ -25,14 +25,14 @@ class GroupRecordType extends AbstractRecordType
 
             // Account Header
             case '03':
-                $this->currentAccount = new AccountRecordType($line);
-                $this->records[] = $this->currentAccount;
+                $this->currentChild = new AccountRecordType($line);
+                $this->records[] = $this->currentChild;
                 break;
 
             // Account Trailer
             case '49':
-                $this->assertCurrentAccount()->finalize($line);
-                $this->currentAccount = null;
+                $this->assertCurrentChild()->finalize($line);
+                $this->currentChild = null;
                 break;
 
             // Continuation
@@ -42,7 +42,7 @@ class GroupRecordType extends AbstractRecordType
 
             // Record type must be Account's problem
             default:
-                $this->assertCurrentAccount()->parseLine($line);
+                $this->assertCurrentChild()->parseLine($line);
                 break;
         }
     }
@@ -55,18 +55,18 @@ class GroupRecordType extends AbstractRecordType
 
     public function continue(string $line): void
     {
-        if ($this->currentAccount) {
-            $this->currentAccount->continue($line);
+        if ($this->currentChild) {
+            $this->currentChild->continue($line);
         } else {
             // TODO(zmd): parse? hahaha, yah right!
             $this->records[] = $line;
         }
     }
 
-    protected function assertCurrentAccount(): AccountRecordType
+    protected function assertCurrentChild(): AccountRecordType
     {
-        if ($this->currentAccount) {
-            return $this->currentAccount;
+        if ($this->currentChild) {
+            return $this->currentChild;
         }
 
         // TODO(zmd): more appropriate message, please.
