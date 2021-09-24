@@ -1,13 +1,11 @@
 <?php
 namespace STS\Bai2\RecordTypes;
 
-use STS\Bai2\RecordTypes\AbstractRecordType;
+use STS\Bai2\RecordTypes\AbstractContainerRecordType;
 use STS\Bai2\RecordTypes\AccountRecordType;
 
-class GroupRecordType extends AbstractRecordType
+class GroupRecordType extends AbstractContainerRecordType
 {
-
-    public ?AccountRecordType $currentChild = null;
 
     public function parseLine(string $line): void
     {
@@ -61,16 +59,6 @@ class GroupRecordType extends AbstractRecordType
             // TODO(zmd): parse? hahaha, yah right!
             $this->records[] = $line;
         }
-    }
-
-    protected function assertCurrentChild(): AccountRecordType
-    {
-        if ($this->currentChild) {
-            return $this->currentChild;
-        }
-
-        // TODO(zmd): more appropriate message, please.
-        throw new \Exception('lolwut?');
     }
 
 }
