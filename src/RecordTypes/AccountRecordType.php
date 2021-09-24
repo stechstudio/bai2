@@ -25,8 +25,8 @@ class AccountRecordType extends AbstractRecordType
 
             // Transaction
             case '16':
-                $this->currentTransaction = new TransactionRecordType($line);
-                $this->records[] = $this->currentTransaction;
+                $this->currentChild = new TransactionRecordType($line);
+                $this->records[] = $this->currentChild;
                 break;
 
             // Continuation
@@ -39,7 +39,7 @@ class AccountRecordType extends AbstractRecordType
                 // TODO(zmd): pretty sure this is unreachable (at least for a
                 //   properly formed BAI2 file); this unreachable code will be
                 //   eliminated shortly, however.
-                $this->assertCurrentTransaction()->parseLine($line);
+                $this->assertCurrentChild()->parseLine($line);
                 break;
         }
     }
