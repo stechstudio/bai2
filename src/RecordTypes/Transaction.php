@@ -56,8 +56,10 @@ class Transaction
 
     public function toArray(): array
     {
-        // TODO(zmd): implement me for real!
-        return $this->records;
+        return array_map(
+            fn($ele) => gettype($ele) == 'string' ? $ele : $ele->toArray(),
+            $this->records
+        );
     }
 
 }
