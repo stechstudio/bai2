@@ -2,10 +2,10 @@
 namespace STS\Bai2;
 
 use STS\Bai2\RecordTypes\{
-    Account,
-    File,
-    Group,
-    Transaction
+    AccountRecordType,
+    FileRecordType,
+    GroupRecordType,
+    TransactionRecordType
 };
 
 class Bai2
@@ -18,7 +18,7 @@ class Bai2
         if ($this->root) {
             $this->root->parseLine($line);
         } else {
-            $this->root = new File($line);
+            $this->root = new FileRecordType($line);
         }
     }
 

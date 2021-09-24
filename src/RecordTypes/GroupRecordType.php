@@ -1,14 +1,14 @@
 <?php
 namespace STS\Bai2\RecordTypes;
 
-use STS\Bai2\RecordTypes\Group;
+use STS\Bai2\RecordTypes\AccountRecordType;
 
-class File
+class GroupRecordType
 {
 
     public $records = [];
 
-    public ?Group $currentGroup = null;
+    public ?AccountRecordType $currentAccount = null;
 
     public function __construct(?string $line)
     {
@@ -20,27 +20,27 @@ class File
     public function parseLine(string $line): void
     {
         switch ($this->getRecordTypeCode($line)) {
-            // File Header
-            case '01':
+            // Group Header
+            case '02':
                 // TODO(zmd): parse? hahaha, yah right!
                 $this->records[] = $line;
                 break;
 
-            // File Trailer
-            case '99':
+            // Group Trailer
+            case '98':
                 $this->finalize($line);
                 break;
 
-            // Group Header
-            case '02':
-                $this->currentGroup = new Group($line);
-                $this->records[] = $this->currentGroup;
+            // Account Header
+            case '03':
+                $this->currentAccount = new AccountRecordType($line);
+                $this->records[] = $this->currentAccount;
                 break;
 
-            // Group Trailer
-            case '98':
-                $this->assertCurrentGroup()->finalize($line);
-                $this->currentGroup = null;
+            // Account Trailer
+            case '49':
+                $this->assertCurrentAccount()->finalize($line);
+                $this->currentAccount = null;
                 break;
 
             // Continuation
@@ -48,9 +48,9 @@ class File
                 $this->continue($line);
                 break;
 
-            // Record type must be Group's problem
+            // Record type must be Account's problem
             default:
-                $this->assertCurrentGroup()->parseLine($line);
+                $this->assertCurrentAccount()->parseLine($line);
                 break;
         }
     }
@@ -68,18 +68,18 @@ class File
 
     public function continue(string $line): void
     {
-        if ($this->currentGroup) {
-            $this->currentGroup->continue($line);
+        if ($this->currentAccount) {
+            $this->currentAccount->continue($line);
         } else {
             // TODO(zmd): parse? hahaha, yah right!
             $this->records[] = $line;
         }
     }
 
-    protected function assertCurrentGroup(): Group
+    protected function assertCurrentAccount(): AccountRecordType
     {
-        if ($this->currentGroup) {
-            return $this->currentGroup;
+        if ($this->currentAccount) {
+            return $this->currentAccount;
         }
 
         // TODO(zmd): more appropriate message, please.
