@@ -9,34 +9,25 @@ class TransactionRecordType extends AbstractRecordType
     public function parseLine(string $line): void
     {
         switch ($this->getRecordTypeCode($line)) {
-            // Transaction
             case '16':
-                // TODO(zmd): parse? hahaha, yah right!
-                $this->records[] = $line;
+                $this->parseDetail($line);
                 break;
-
-            // Continuation
             case '88':
-                $this->continue($line);
+                $this->parseContinuation($line);
                 break;
-
-            // Record type must be a problem
             default:
-                // TODO(zmd): pretty sure we should never reach this, as it
-                //   means we've encountered an invalid record type!
-                // TODO(zmd): more appropriate message, please.
-                throw new \Exception('lolwut?');
+                throw new \Exception('Unknown record type.');
                 break;
         }
     }
 
-    public function finalize(string $line): void
+    protected function parseDetail(string $line): void
     {
         // TODO(zmd): parse? hahaha, yah right!
         $this->records[] = $line;
     }
 
-    public function continue(string $line): void
+    protected function parseContinuation(string $line): void
     {
         // TODO(zmd): parse? hahaha, yah right!
         $this->records[] = $line;
