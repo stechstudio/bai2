@@ -11,7 +11,7 @@ abstract class AbstractContainerRecordType extends AbstractRecordType
     protected function activeChild(): bool
     {
         if ($this->currentChild) {
-            return $this->currentChild->getFinalized();
+            return !$this->currentChild->getFinalized();
         }
 
         return false;
