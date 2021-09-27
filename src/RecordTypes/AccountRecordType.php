@@ -24,6 +24,7 @@ class AccountRecordType extends AbstractContainerRecordType
                 $this->parseTrailer($line);
                 break;
             default:
+                $this->currentChild = null;
                 $this->delegateToChild($line);
                 break;
         }
