@@ -29,14 +29,10 @@ class GroupRecordType extends AbstractContainerRecordType
         }
     }
 
-    protected function delegateToChild(string $line): void
+    protected function newChild(): void
     {
-        if (!$this->activeChild()) {
-            $this->currentChild = new AccountRecordType;
-            $this->records[] = $this->currentChild;
-        }
-
-        $this->currentChild->parseLine($line);
+        $this->currentChild = new AccountRecordType;
+        $this->records[] = $this->currentChild;
     }
 
     protected function parseHeader(string $line): void

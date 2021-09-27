@@ -27,4 +27,15 @@ abstract class AbstractContainerRecordType extends AbstractRecordType
         throw new \Exception('lolwut?');
     }
 
+    protected function delegateToChild(string $line): void
+    {
+        if (!$this->activeChild()) {
+            $this->newChild();
+        }
+
+        $this->currentChild->parseLine($line);
+    }
+
+    protected abstract function newChild(): void;
+
 }
