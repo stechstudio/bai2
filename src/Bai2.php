@@ -1,30 +1,23 @@
 <?php
 namespace STS\Bai2;
 
-use STS\Bai2\RecordTypes\{
-    AccountRecordType,
-    FileRecordType,
-    GroupRecordType,
-    TransactionRecordType
-};
+use STS\Bai2\RecordTypes\FileRecordType;
 
 class Bai2
 {
 
-    public $root = null;
-
-    public function parseLine(string $line): void
+    public static function parse(mixed $file): FileRecordType
     {
-        if ($this->root) {
-            $this->root->parseLine($line);
-        } else {
-            $this->root = new FileRecordType($line);
+        if (gettype($file) == 'string') {
+            $file = fopen($file, 'r');
         }
-    }
 
-    public function toArray(): array
-    {
-        return $this->root->toArray();
+        $fileRecord = new FileRecordType;
+        while ($line = trim(fgets($file))) {
+            $fileRecord->parseLine($line);
+        }
+
+        return $fileRecord;
     }
 
 }
