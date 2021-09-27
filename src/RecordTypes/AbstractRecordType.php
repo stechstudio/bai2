@@ -17,6 +17,8 @@ abstract class AbstractRecordType
 
     public abstract function parseLine(string $line): void;
 
+    protected abstract function parseContinuation(string $line): void;
+
     protected function getRecordTypeCode(string $line): string
     {
         return substr($line, 0, 2);

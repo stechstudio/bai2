@@ -26,6 +26,15 @@ abstract class AbstractContainerRecordType extends AbstractRecordType
         throw new \Exception('$currentChild was unexpectedly null or finalized');
     }
 
+    protected function parseOrDelegateContinuation(string $line): void
+    {
+        if ($this->activeChild()) {
+            $this->delegateToChild($line);
+        } else {
+            $this->parseContinuation($line);
+        }
+    }
+
     protected function delegateToChild(string $line): void
     {
         if (!$this->activeChild()) {

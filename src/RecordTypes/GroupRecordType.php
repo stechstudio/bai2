@@ -25,15 +25,6 @@ class GroupRecordType extends AbstractContainerRecordType
         }
     }
 
-    protected function parseOrDelegateContinuation(string $line): void
-    {
-        if ($this->activeChild()) {
-            $this->delegateToChild($line);
-        } else {
-            $this->parseContinuation($line);
-        }
-    }
-
     protected function newChild(): void
     {
         $this->currentChild = new AccountRecordType;
