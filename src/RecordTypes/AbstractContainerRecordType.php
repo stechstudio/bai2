@@ -23,8 +23,7 @@ abstract class AbstractContainerRecordType extends AbstractRecordType
             return $this->currentChild;
         }
 
-        // TODO(zmd): more appropriate message, please.
-        throw new \Exception('lolwut?');
+        throw new \Exception('$currentChild was unexpectedly null or finalized');
     }
 
     protected function delegateToChild(string $line): void
