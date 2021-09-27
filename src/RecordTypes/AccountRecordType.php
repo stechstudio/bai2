@@ -11,7 +11,7 @@ class AccountRecordType extends AbstractEnvelopeRecordType
     {
         switch ($this->getRecordTypeCode($line)) {
             case '03':
-                $this->parseHeader($line);
+                $this->parseIdentifier($line);
                 break;
             case '88':
                 $this->parseOrDelegateContinuation($line);
@@ -36,7 +36,7 @@ class AccountRecordType extends AbstractEnvelopeRecordType
         $this->records[] = $this->currentChild;
     }
 
-    protected function parseHeader(string $line): void
+    protected function parseIdentifier(string $line): void
     {
         // TODO(zmd): parse? hahaha, yah right!
         $this->records[] = $line;
