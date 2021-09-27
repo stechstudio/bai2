@@ -10,52 +10,51 @@ class AccountRecordType extends AbstractContainerRecordType
     public function parseLine(string $line): void
     {
         switch ($this->getRecordTypeCode($line)) {
-            // Account Header
             case '03':
-                // TODO(zmd): parse? hahaha, yah right!
-                $this->records[] = $line;
+                $this->parseHeader($line);
                 break;
-
-            // Account Trailer
-            case '49':
-                $this->finalize($line);
-                break;
-
-            // Transaction
-            case '16':
-                $this->currentChild = new TransactionRecordType($line);
-                $this->records[] = $this->currentChild;
-                break;
-
-            // Continuation
             case '88':
-                $this->continue($line);
+                if ($this->activeChild()) {
+                  $this->delegateToChild($line);
+                } else {
+                  $this->parseContinuation($line);
+                }
                 break;
-
-            // Record type must be Transaction's problem
+            case '49':
+                $this->parseTrailer($line);
+                break;
             default:
-                // TODO(zmd): pretty sure this is unreachable (at least for a
-                //   properly formed BAI2 file); this unreachable code will be
-                //   eliminated shortly, however.
-                $this->extantCurrentChild()->parseLine($line);
+                $this->delegateToChild($line);
                 break;
         }
     }
 
-    public function finalize(string $line): void
+    protected function delegateToChild(string $line): void
+    {
+        if (!$this->activeChild()) {
+            $this->currentChild = new TransactionRecordType;
+            $this->records[] = $this->currentChild;
+        }
+
+        $this->currentChild->parseLine($line);
+    }
+
+    protected function parseHeader(string $line): void
     {
         // TODO(zmd): parse? hahaha, yah right!
         $this->records[] = $line;
     }
 
-    public function continue(string $line): void
+    protected function parseContinuation(string $line): void
     {
-        if ($this->currentChild) {
-            $this->currentChild->continue($line);
-        } else {
-            // TODO(zmd): parse? hahaha, yah right!
-            $this->records[] = $line;
-        }
+        // TODO(zmd): parse? hahaha, yah right!
+        $this->records[] = $line;
+    }
+
+    protected function parseTrailer(string $line): void
+    {
+        // TODO(zmd): parse? hahaha, yah right!
+        $this->records[] = $line;
     }
 
 }
