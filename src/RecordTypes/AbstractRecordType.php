@@ -6,7 +6,7 @@ abstract class AbstractRecordType
 
     protected bool $finalized = false;
 
-    public $records = [];
+    protected $records = [];
 
     public function __construct(?string $line = null)
     {
@@ -15,7 +15,7 @@ abstract class AbstractRecordType
         }
     }
 
-    abstract function parseLine(string $line): void;
+    public abstract function parseLine(string $line): void;
 
     protected function getRecordTypeCode(string $line): string
     {
