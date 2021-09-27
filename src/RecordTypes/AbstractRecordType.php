@@ -8,13 +8,6 @@ abstract class AbstractRecordType
 
     protected $records = [];
 
-    public function __construct(?string $line = null)
-    {
-        if ($line) {
-            $this->parseLine($line);
-        }
-    }
-
     abstract public function parseLine(string $line): void;
 
     abstract protected function parseContinuation(string $line): void;
