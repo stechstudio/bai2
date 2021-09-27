@@ -44,6 +44,6 @@ abstract class AbstractContainerRecordType extends AbstractRecordType
         $this->currentChild->parseLine($line);
     }
 
-    protected abstract function newChild(): void;
+    abstract protected function newChild(): void;
 
 }

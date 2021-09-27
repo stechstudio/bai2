@@ -15,9 +15,9 @@ abstract class AbstractRecordType
         }
     }
 
-    public abstract function parseLine(string $line): void;
+    abstract public function parseLine(string $line): void;
 
-    protected abstract function parseContinuation(string $line): void;
+    abstract protected function parseContinuation(string $line): void;
 
     protected function getRecordTypeCode(string $line): string
     {
