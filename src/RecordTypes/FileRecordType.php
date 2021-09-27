@@ -1,10 +1,10 @@
 <?php
 namespace STS\Bai2\RecordTypes;
 
-use STS\Bai2\RecordTypes\AbstractContainerRecordType;
+use STS\Bai2\RecordTypes\AbstractEnvelopeRecordType;
 use STS\Bai2\RecordTypes\GroupRecordType;
 
-class FileRecordType extends AbstractContainerRecordType
+class FileRecordType extends AbstractEnvelopeRecordType
 {
 
     public function parseLine(string $line): void

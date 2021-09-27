@@ -3,7 +3,7 @@ namespace STS\Bai2\RecordTypes;
 
 use STS\Bai2\RecordTypes\AbstractRecordType;
 
-abstract class AbstractContainerRecordType extends AbstractRecordType
+abstract class AbstractEnvelopeRecordType extends AbstractRecordType
 {
 
     public ?AbstractRecordType $currentChild = null;
