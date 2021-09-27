@@ -17,6 +17,8 @@ class Bai2
             $fileRecord->parseLine($line);
         }
 
+        fclose($file);
+
         return $fileRecord;
     }
 
