@@ -14,11 +14,7 @@ class AccountRecordType extends AbstractContainerRecordType
                 $this->parseHeader($line);
                 break;
             case '88':
-                if ($this->activeChild()) {
-                  $this->delegateToChild($line);
-                } else {
-                  $this->parseContinuation($line);
-                }
+                $this->parseOrDelegateContinuation($line);
                 break;
             case '49':
                 $this->parseTrailer($line);
@@ -31,6 +27,15 @@ class AccountRecordType extends AbstractContainerRecordType
                 $this->currentChild = null;
                 $this->delegateToChild($line);
                 break;
+        }
+    }
+
+    protected function parseOrDelegateContinuation(string $line): void
+    {
+        if ($this->activeChild()) {
+            $this->delegateToChild($line);
+        } else {
+            $this->parseContinuation($line);
         }
     }
 
