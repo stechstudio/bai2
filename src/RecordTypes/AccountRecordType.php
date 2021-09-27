@@ -24,6 +24,10 @@ class AccountRecordType extends AbstractContainerRecordType
                 $this->parseTrailer($line);
                 break;
             default:
+                // Transaction record types don't have headers and trailers;
+                // any new non-continuation transaction line we reach indicates
+                // a whole new transaction record that we need, so we reset our
+                // current child.
                 $this->currentChild = null;
                 $this->delegateToChild($line);
                 break;
