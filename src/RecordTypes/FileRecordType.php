@@ -25,6 +25,56 @@ class FileRecordType extends AbstractEnvelopeRecordType
         }
     }
 
+    public function code(): string
+    {
+        return 'TODO';
+    }
+
+    public function sender(): string
+    {
+        return 'TODO';
+    }
+
+    public function receiver(): string
+    {
+        return 'TODO';
+    }
+
+    public function creationDate(): string
+    {
+        return 'TODO';
+    }
+
+    public function creationTime(): string
+    {
+        return 'TODO';
+    }
+
+    public function id(): string
+    {
+        return 'TODO';
+    }
+
+    public function physicalRecordLength(): int
+    {
+        return 1227;
+    }
+
+    public function blockSize(): int
+    {
+        return 1227;
+    }
+
+    public function version(): int
+    {
+        return 1227;
+    }
+
+    public function groups(): array
+    {
+        return [];
+    }
+
     protected function newChild(): void
     {
         $this->currentChild = new GroupRecordType;
