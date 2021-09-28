@@ -6,6 +6,24 @@ use STS\Bai2\Bai2;
 class FileRecordType extends AbstractEnvelopeRecordType
 {
 
+    protected string $recordCode = '01';
+
+    protected string $senderIdentification;
+
+    protected string $receiverIdentification;
+
+    protected string $fileCreationDate;
+
+    protected string $fileCreationTime;
+
+    protected string $fileIdentificationNumber;
+
+    protected ?int $physicalRecordLength = null;
+
+    protected ?int $blockSize = null;
+
+    protected string $versionNumber = '2';
+
     public function parseLine(string $line): void
     {
         switch (Bai2::recordTypeCode($line)) {
@@ -24,53 +42,54 @@ class FileRecordType extends AbstractEnvelopeRecordType
         }
     }
 
-    public function code(): string
+    public function getRecordCode(): string
     {
-        return 'TODO';
+        return $this->recordCode;
     }
 
-    public function sender(): string
+    public function getSenderIdentification(): string
     {
-        return 'TODO';
+        return $this->senderIdentification;
     }
 
-    public function receiver(): string
+    public function getReceiverIdentification(): string
     {
-        return 'TODO';
+        return $this->receiverIdentification;
     }
 
-    public function creationDate(): string
+    public function getFileCreationDate(): string
     {
-        return 'TODO';
+        return $this->fileCreationDate;
     }
 
-    public function creationTime(): string
+    public function getFileCreationTime(): string
     {
-        return 'TODO';
+        return $this->fileCreationTime;
     }
 
-    public function id(): string
+    public function getFileIdentificationNumber(): string
     {
-        return 'TODO';
+        return $this->fileIdentificationNumber;
     }
 
-    public function physicalRecordLength(): int
+    public function getPhysicalRecordLength(): int
     {
-        return 1227;
+        return $this->physicalRecordLength;
     }
 
-    public function blockSize(): int
+    public function getBlockSize(): int
     {
-        return 1227;
+        return $this->blockSize;
     }
 
-    public function version(): int
+    public function getVersionNumber(): string
     {
-        return 1227;
+        return $this->versionNumber;
     }
 
     public function groups(): array
     {
+        // TODO(zmd): implement me
         return [];
     }
 
