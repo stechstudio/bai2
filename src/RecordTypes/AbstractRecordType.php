@@ -12,9 +12,11 @@ abstract class AbstractRecordType
 
     abstract protected function parseContinuation(string $line): void;
 
-    protected function setFinalized(bool $finalized): void
+    protected function setFinalized(bool $finalized): AbstractRecordType
     {
         $this->finalized = $finalized;
+
+        return $this;
     }
 
     public function getFinalized(): bool
