@@ -101,8 +101,32 @@ class FileRecordType extends AbstractEnvelopeRecordType
 
     protected function parseHeader(string $line): void
     {
-        // TODO(zmd): parse? hahaha, yah right!
+        [
+            $recordCode,
+            $senderIdentification,
+            $receiverIdentification,
+            $fileCreationDate,
+            $fileCreationTime,
+            $fileIdentificationNumber,
+            $physicalRecordLength,
+            $blockSize,
+            $versionNumber
+        ] = explode(',', $line);
+        $versionNumber = rtrim($versionNumber, '/');
+
+        // TODO(zmd): clean this up, we're going to want to deal with
+        //   serializing to array in a different way
         $this->records[] = $line;
+
+        $this->recordCode = $recordCode;
+        $this->senderIdentification = $senderIdentification;
+        $this->receiverIdentification = $receiverIdentification;
+        $this->fileCreationDate = $fileCreationDate;
+        $this->fileCreationTime = $fileCreationTime;
+        $this->fileIdentificationNumber = $fileIdentificationNumber;
+        $this->physicalRecordLength = $physicalRecordLength;
+        $this->blockSize = $blockSize;
+        $this->versionNumber = $versionNumber;
     }
 
     protected function parseContinuation(string $line): void
