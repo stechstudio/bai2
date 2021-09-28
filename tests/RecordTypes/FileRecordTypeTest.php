@@ -16,4 +16,12 @@ final class FileRecordTypeTest extends TestCase
         $this->assertEquals('01', $fileRecord->getRecordCode());
     }
 
+    public function testParseLineSetsCorrectSenderIdentification()
+    {
+        $fileRecord = new FileRecordType;
+        $fileRecord->parseLine(self::$line);
+
+        $this->assertEquals('SENDR1', $fileRecord->getSenderIdentification());
+    }
+
 }
