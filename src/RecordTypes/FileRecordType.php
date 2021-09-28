@@ -1,9 +1,6 @@
 <?php
 namespace STS\Bai2\RecordTypes;
 
-use STS\Bai2\RecordTypes\AbstractEnvelopeRecordType;
-use STS\Bai2\RecordTypes\GroupRecordType;
-
 class FileRecordType extends AbstractEnvelopeRecordType
 {
 

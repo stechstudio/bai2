@@ -1,9 +1,6 @@
 <?php
 namespace STS\Bai2\RecordTypes;
 
-use STS\Bai2\RecordTypes\AbstractEnvelopeRecordType;
-use STS\Bai2\RecordTypes\TransactionRecordType;
-
 class AccountRecordType extends AbstractEnvelopeRecordType
 {
 

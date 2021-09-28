@@ -1,8 +1,6 @@
 <?php
 namespace STS\Bai2\RecordTypes;
 
-use STS\Bai2\RecordTypes\AbstractRecordType;
-
 class TransactionRecordType extends AbstractRecordType
 {
 
