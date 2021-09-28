@@ -80,13 +80,22 @@ final class FileRecordTypeTest extends TestCase
         $this->assertEquals('2', $fileRecord->getVersionNumber());
     }
 
-    public function testParseLineAllowsDefaultedRecordLength()
+    public function testParseLineAllowsDefaultedPhysicalRecordLength()
     {
         $headerLine = '01,SENDR1,RECVR1,210616,1700,01,,10,2/';
         $fileRecord = new FileRecordType;
         $fileRecord->parseLine($headerLine);
 
         $this->assertNull($fileRecord->getPhysicalRecordLength());
+    }
+
+    public function testParseLineAllowsDefaultedBlockSize()
+    {
+        $headerLine = '01,SENDR1,RECVR1,210616,1700,01,80,,2/';
+        $fileRecord = new FileRecordType;
+        $fileRecord->parseLine($headerLine);
+
+        $this->assertNull($fileRecord->getBlockSize());
     }
 
 }

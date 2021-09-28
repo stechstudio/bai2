@@ -77,7 +77,7 @@ class FileRecordType extends AbstractEnvelopeRecordType
         return $this->physicalRecordLength;
     }
 
-    public function getBlockSize(): int
+    public function getBlockSize(): ?int
     {
         return $this->blockSize;
     }
@@ -113,9 +113,8 @@ class FileRecordType extends AbstractEnvelopeRecordType
             $versionNumber
         ] = explode(',', $line);
 
-        $physicalRecordLength = $physicalRecordLength === '' ?
-                                null :
-                                $physicalRecordLength;
+        $physicalRecordLength = $this->normalizeEmptyString($physicalRecordLength);
+        $blockSize = $this->normalizeEmptyString($blockSize);
         $versionNumber = rtrim($versionNumber, '/');
 
         // TODO(zmd): clean this up, we're going to want to deal with
@@ -144,6 +143,11 @@ class FileRecordType extends AbstractEnvelopeRecordType
         // TODO(zmd): parse? hahaha, yah right!
         $this->records[] = $line;
         $this->setFinalized(true);
+    }
+
+    private function normalizeEmptyString(string $s): ?string
+    {
+        return $s === '' ? null : $s;
     }
 
 }
