@@ -72,7 +72,7 @@ class FileRecordType extends AbstractEnvelopeRecordType
         return $this->fileIdentificationNumber;
     }
 
-    public function getPhysicalRecordLength(): int
+    public function getPhysicalRecordLength(): ?int
     {
         return $this->physicalRecordLength;
     }
@@ -112,6 +112,10 @@ class FileRecordType extends AbstractEnvelopeRecordType
             $blockSize,
             $versionNumber
         ] = explode(',', $line);
+
+        $physicalRecordLength = $physicalRecordLength === '' ?
+                                null :
+                                $physicalRecordLength;
         $versionNumber = rtrim($versionNumber, '/');
 
         // TODO(zmd): clean this up, we're going to want to deal with
