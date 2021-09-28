@@ -1,12 +1,14 @@
 <?php
 namespace STS\Bai2\RecordTypes;
 
+use STS\Bai2\Bai2;
+
 class FileRecordType extends AbstractEnvelopeRecordType
 {
 
     public function parseLine(string $line): void
     {
-        switch ($this->getRecordTypeCode($line)) {
+        switch (Bai2::recordTypeCode($line)) {
             case '01':
                 $this->parseHeader($line);
                 break;

@@ -1,12 +1,14 @@
 <?php
 namespace STS\Bai2\RecordTypes;
 
+use STS\Bai2\Bai2;
+
 class GroupRecordType extends AbstractEnvelopeRecordType
 {
 
     public function parseLine(string $line): void
     {
-        switch ($this->getRecordTypeCode($line)) {
+        switch (Bai2::recordTypeCode($line)) {
             case '02':
                 $this->parseHeader($line);
                 break;

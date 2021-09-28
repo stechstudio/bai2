@@ -22,4 +22,9 @@ class Bai2
         return $fileRecord;
     }
 
+    public static function recordTypeCode(string $line): string
+    {
+        return substr($line, 0, 2);
+    }
+
 }

@@ -1,12 +1,14 @@
 <?php
 namespace STS\Bai2\RecordTypes;
 
+use STS\Bai2\Bai2;
+
 class TransactionRecordType extends AbstractRecordType
 {
 
     public function parseLine(string $line): void
     {
-        switch ($this->getRecordTypeCode($line)) {
+        switch (Bai2::recordTypeCode($line)) {
             case '16':
                 $this->parseDetail($line);
                 break;
