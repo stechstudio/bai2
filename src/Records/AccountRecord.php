@@ -1,9 +1,9 @@
 <?php
-namespace STS\Bai2\RecordTypes;
+namespace STS\Bai2\Records;
 
 use STS\Bai2\Bai2;
 
-class AccountRecordType extends AbstractEnvelopeRecordType
+class AccountRecord extends AbstractEnvelopeRecord
 {
 
     public function parseLine(string $line): void
@@ -31,7 +31,7 @@ class AccountRecordType extends AbstractEnvelopeRecordType
 
     protected function newChild(): void
     {
-        $this->currentChild = new TransactionRecordType;
+        $this->currentChild = new TransactionRecord;
         $this->records[] = $this->currentChild;
     }
 

@@ -1,9 +1,9 @@
 <?php
-namespace STS\Bai2\RecordTypes;
+namespace STS\Bai2\Records;
 
 use STS\Bai2\Bai2;
 
-class TransactionRecordType extends AbstractRecordType
+class TransactionRecord extends AbstractRecord
 {
 
     public function parseLine(string $line): void

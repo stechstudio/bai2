@@ -1,9 +1,9 @@
 <?php
-namespace STS\Bai2\RecordTypes;
+namespace STS\Bai2\Records;
 
 use STS\Bai2\Bai2;
 
-class FileRecordType extends AbstractEnvelopeRecordType
+class FileRecord extends AbstractEnvelopeRecord
 {
 
     protected string $recordCode = '01';
@@ -95,7 +95,7 @@ class FileRecordType extends AbstractEnvelopeRecordType
 
     protected function newChild(): void
     {
-        $this->currentChild = new GroupRecordType;
+        $this->currentChild = new GroupRecord;
         $this->records[] = $this->currentChild;
     }
 

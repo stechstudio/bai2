@@ -1,18 +1,18 @@
 <?php
 namespace STS\Bai2;
 
-use STS\Bai2\RecordTypes\FileRecordType;
+use STS\Bai2\Records\FileRecord;
 
 class Bai2
 {
 
-    public static function parse(mixed $file): FileRecordType
+    public static function parse(mixed $file): FileRecord
     {
         if (gettype($file) == 'string') {
             $file = fopen($file, 'r');
         }
 
-        $fileRecord = new FileRecordType;
+        $fileRecord = new FileRecord;
         while ($line = trim(fgets($file))) {
             $fileRecord->parseLine($line);
         }

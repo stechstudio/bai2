@@ -1,10 +1,10 @@
 <?php
-namespace STS\Bai2\RecordTypes;
+namespace STS\Bai2\Records;
 
-abstract class AbstractEnvelopeRecordType extends AbstractRecordType
+abstract class AbstractEnvelopeRecord extends AbstractRecord
 {
 
-    public ?AbstractRecordType $currentChild = null;
+    public ?AbstractRecord $currentChild = null;
 
     protected function activeChild(): bool
     {
@@ -15,7 +15,7 @@ abstract class AbstractEnvelopeRecordType extends AbstractRecordType
         return false;
     }
 
-    protected function extantCurrentChild(): AbstractRecordType
+    protected function extantCurrentChild(): AbstractRecord
     {
         if ($this->activeChild()) {
             return $this->currentChild;
