@@ -23,6 +23,12 @@ class FileRecord extends AbstractEnvelopeRecord
 
     protected string $versionNumber = '2';
 
+    protected int $fileControlTotal;
+
+    protected int $numberOfGroups;
+
+    protected int $numberOfRecords;
+
     public function parseLine(string $line): void
     {
         switch (Bai2::recordTypeCode($line)) {
@@ -81,6 +87,21 @@ class FileRecord extends AbstractEnvelopeRecord
         return $this->versionNumber;
     }
 
+    public function getFileControlTotal(): int
+    {
+        return $this->fileControlTotal;
+    }
+
+    public function getNumberOfGroups(): int
+    {
+        return $this->numberOfGroups;
+    }
+
+    public function getNumberOfRecords(): int
+    {
+        return $this->numberOfRecords;
+    }
+
     public function groups(): array
     {
         // TODO(zmd): implement me
@@ -133,8 +154,22 @@ class FileRecord extends AbstractEnvelopeRecord
 
     protected function parseTrailer(string $line): void
     {
-        // TODO(zmd): parse? hahaha, yah right!
+        [
+            $_recordCode,
+            $fileControlTotal,
+            $numberOfGroups,
+            $numberOfRecords
+        ] = explode(',', $line);
+        $numberOfRecords = rtrim($numberOfRecords, '/');
+
+        // TODO(zmd): clean this up, we're going to want to deal with
+        //   serializing to array in a different way
         $this->records[] = $line;
+
+        $this->fileControlTotal = $fileControlTotal;
+        $this->numberOfGroups = $numberOfGroups;
+        $this->numberOfRecords = $numberOfRecords;
+
         $this->setFinalized(true);
     }
 

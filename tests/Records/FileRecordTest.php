@@ -9,6 +9,8 @@ final class FileRecordTest extends TestCase
 
     private static string $headerLine = '01,SENDR1,RECVR1,210616,1700,01,80,10,2/';
 
+    private static string $trailerLine = '99,1337,1,42/';
+
     public function testParseLineSetsCorrectSenderIdentification()
     {
         $fileRecord = new FileRecord();
@@ -89,6 +91,30 @@ final class FileRecordTest extends TestCase
         $fileRecord->parseLine($headerLine);
 
         $this->assertNull($fileRecord->getBlockSize());
+    }
+
+    public function testParseLineSetsCorrectFileControlTotal()
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine(self::$trailerLine);
+
+        $this->assertEquals(1337, $fileRecord->getFileControlTotal());
+    }
+
+    public function testParseLineSetsCorrectNumberOfGroups()
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine(self::$trailerLine);
+
+        $this->assertEquals(1, $fileRecord->getNumberOfGroups());
+    }
+
+    public function testParseLineSetsCorrectNumberOfRecords()
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine(self::$trailerLine);
+
+        $this->assertEquals(42, $fileRecord->getNumberOfRecords());
     }
 
 }
