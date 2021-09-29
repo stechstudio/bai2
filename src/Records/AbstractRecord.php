@@ -1,4 +1,5 @@
 <?php
+
 namespace STS\Bai2\Records;
 
 abstract class AbstractRecord

@@ -1,4 +1,5 @@
 <?php
+
 namespace STS\Bai2\Records;
 
 use STS\Bai2\Bai2;
@@ -95,7 +96,7 @@ class FileRecord extends AbstractEnvelopeRecord
 
     protected function newChild(): void
     {
-        $this->currentChild = new GroupRecord;
+        $this->currentChild = new GroupRecord();
         $this->records[] = $this->currentChild;
     }
 

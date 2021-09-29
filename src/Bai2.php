@@ -1,4 +1,5 @@
 <?php
+
 namespace STS\Bai2;
 
 use STS\Bai2\Records\FileRecord;
@@ -12,7 +13,7 @@ class Bai2
             $file = fopen($file, 'r');
         }
 
-        $fileRecord = new FileRecord;
+        $fileRecord = new FileRecord();
         while ($line = trim(fgets($file))) {
             $fileRecord->parseLine($line);
         }

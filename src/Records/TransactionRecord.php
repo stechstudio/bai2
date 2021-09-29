@@ -1,4 +1,5 @@
 <?php
+
 namespace STS\Bai2\Records;
 
 use STS\Bai2\Bai2;

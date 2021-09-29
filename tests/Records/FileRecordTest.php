@@ -1,4 +1,5 @@
 <?php
+
 namespace STS\Bai2\Records;
 
 use PHPUnit\Framework\TestCase;
@@ -10,7 +11,7 @@ final class FileRecordTest extends TestCase
 
     public function testParseLineSetsCorrectRecordCode()
     {
-        $fileRecord = new FileRecord;
+        $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLine);
 
         $this->assertEquals('01', $fileRecord->getRecordCode());
@@ -18,7 +19,7 @@ final class FileRecordTest extends TestCase
 
     public function testParseLineSetsCorrectSenderIdentification()
     {
-        $fileRecord = new FileRecord;
+        $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLine);
 
         $this->assertEquals('SENDR1', $fileRecord->getSenderIdentification());
@@ -26,7 +27,7 @@ final class FileRecordTest extends TestCase
 
     public function testParseLineSetsCorrectReceiverIdentification()
     {
-        $fileRecord = new FileRecord;
+        $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLine);
 
         $this->assertEquals('RECVR1', $fileRecord->getReceiverIdentification());
@@ -34,7 +35,7 @@ final class FileRecordTest extends TestCase
 
     public function testParseLineSetsCorrectFileCreationDate()
     {
-        $fileRecord = new FileRecord;
+        $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLine);
 
         $this->assertEquals('210616', $fileRecord->getFileCreationDate());
@@ -42,7 +43,7 @@ final class FileRecordTest extends TestCase
 
     public function testParseLineSetsCorrectFileCreationTime()
     {
-        $fileRecord = new FileRecord;
+        $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLine);
 
         $this->assertEquals('1700', $fileRecord->getFileCreationTime());
@@ -50,7 +51,7 @@ final class FileRecordTest extends TestCase
 
     public function testParseLineSetsCorrectFileIdentificationNumber()
     {
-        $fileRecord = new FileRecord;
+        $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLine);
 
         $this->assertEquals('01', $fileRecord->getFileIdentificationNumber());
@@ -58,7 +59,7 @@ final class FileRecordTest extends TestCase
 
     public function testParseLineSetsCorrectPhysicalRecordLength()
     {
-        $fileRecord = new FileRecord;
+        $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLine);
 
         $this->assertEquals(80, $fileRecord->getPhysicalRecordLength());
@@ -66,7 +67,7 @@ final class FileRecordTest extends TestCase
 
     public function testParseLineSetsCorrectBlockSize()
     {
-        $fileRecord = new FileRecord;
+        $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLine);
 
         $this->assertEquals(10, $fileRecord->getBlockSize());
@@ -74,7 +75,7 @@ final class FileRecordTest extends TestCase
 
     public function testParseLineSetsCorrectVersionNumber()
     {
-        $fileRecord = new FileRecord;
+        $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLine);
 
         $this->assertEquals('2', $fileRecord->getVersionNumber());
@@ -83,7 +84,7 @@ final class FileRecordTest extends TestCase
     public function testParseLineAllowsDefaultedPhysicalRecordLength()
     {
         $headerLine = '01,SENDR1,RECVR1,210616,1700,01,,10,2/';
-        $fileRecord = new FileRecord;
+        $fileRecord = new FileRecord();
         $fileRecord->parseLine($headerLine);
 
         $this->assertNull($fileRecord->getPhysicalRecordLength());
@@ -92,7 +93,7 @@ final class FileRecordTest extends TestCase
     public function testParseLineAllowsDefaultedBlockSize()
     {
         $headerLine = '01,SENDR1,RECVR1,210616,1700,01,80,,2/';
-        $fileRecord = new FileRecord;
+        $fileRecord = new FileRecord();
         $fileRecord->parseLine($headerLine);
 
         $this->assertNull($fileRecord->getBlockSize());

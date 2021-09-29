@@ -1,4 +1,5 @@
 <?php
+
 namespace STS\Bai2\Records;
 
 use STS\Bai2\Bai2;
@@ -31,7 +32,7 @@ class AccountRecord extends AbstractEnvelopeRecord
 
     protected function newChild(): void
     {
-        $this->currentChild = new TransactionRecord;
+        $this->currentChild = new TransactionRecord();
         $this->records[] = $this->currentChild;
     }
 
