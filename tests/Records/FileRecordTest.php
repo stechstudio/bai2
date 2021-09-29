@@ -9,14 +9,6 @@ final class FileRecordTest extends TestCase
 
     private static string $headerLine = '01,SENDR1,RECVR1,210616,1700,01,80,10,2/';
 
-    public function testParseLineSetsCorrectRecordCode()
-    {
-        $fileRecord = new FileRecord();
-        $fileRecord->parseLine(self::$headerLine);
-
-        $this->assertEquals('01', $fileRecord->getRecordCode());
-    }
-
     public function testParseLineSetsCorrectSenderIdentification()
     {
         $fileRecord = new FileRecord();

@@ -7,8 +7,6 @@ use STS\Bai2\Bai2;
 class FileRecord extends AbstractEnvelopeRecord
 {
 
-    protected string $recordCode = '01';
-
     protected string $senderIdentification;
 
     protected string $receiverIdentification;
@@ -41,11 +39,6 @@ class FileRecord extends AbstractEnvelopeRecord
                 $this->delegateToChild($line);
                 break;
         }
-    }
-
-    public function getRecordCode(): string
-    {
-        return $this->recordCode;
     }
 
     public function getSenderIdentification(): string
@@ -103,7 +96,7 @@ class FileRecord extends AbstractEnvelopeRecord
     protected function parseHeader(string $line): void
     {
         [
-            $recordCode,
+            $_recordCode,
             $senderIdentification,
             $receiverIdentification,
             $fileCreationDate,
@@ -122,7 +115,6 @@ class FileRecord extends AbstractEnvelopeRecord
         //   serializing to array in a different way
         $this->records[] = $line;
 
-        $this->recordCode = $recordCode;
         $this->senderIdentification = $senderIdentification;
         $this->receiverIdentification = $receiverIdentification;
         $this->fileCreationDate = $fileCreationDate;
