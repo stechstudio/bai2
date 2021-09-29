@@ -9,7 +9,15 @@ final class FileRecordTest extends TestCase
 
     private static string $headerLine = '01,SENDR1,RECVR1,210616,1700,01,80,10,2/';
 
+    private static string $partialHeaderLine = '01,SENDR1,RECVR1,210616/';
+
+    private static string $partialHeaderContinuationLine = '88,1700,01,80,10,2/';
+
     private static string $trailerLine = '99,1337,1,42/';
+
+    private static string $partialTrailerLine = '99,1337/';
+
+    private static string $partialTrailerContinuationLine = '88,1,42/';
 
     public function testParseLineSetsCorrectSenderIdentification()
     {
@@ -115,6 +123,31 @@ final class FileRecordTest extends TestCase
         $fileRecord->parseLine(self::$trailerLine);
 
         $this->assertEquals(42, $fileRecord->getNumberOfRecords());
+    }
+
+    public function testParseLineCanHandleAPartialHeaderRecord()
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine(self::$partialHeaderLine);
+
+        $this->assertEquals('SENDR1', $fileRecord->getSenderIdentification());
+        $this->assertEquals('RECVR1', $fileRecord->getReceiverIdentification());
+        $this->assertEquals('210616', $fileRecord->getFileCreationDate());
+    }
+
+    // TODO(zmd): use that thing that lets us pipe from one test to another
+    //   (b/c this test logically depends on output from previous)
+    public function testParseLineCanHandleAPartialHeaderContinuationRecord()
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine(self::$partialHeaderLine);
+        $fileRecord->parseLine(self::$partialHeaderContinuationLine);
+
+        $this->assertEquals('1700', $fileRecord->getFileCreationTime());
+        $this->assertEquals('01', $fileRecord->getFileIdentificationNumber());
+        $this->assertEquals(80, $fileRecord->getPhysicalRecordLength());
+        $this->assertEquals(10, $fileRecord->getBlockSize());
+        $this->assertEquals('2', $fileRecord->getVersionNumber());
     }
 
 }
