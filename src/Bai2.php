@@ -10,15 +10,26 @@ class Bai2
     public static function parse(mixed $file): FileRecord
     {
         if (is_string($file)) {
-            $file = fopen($file, 'r');
+            return self::parseFromFile($file);
         }
 
+        return self::parseFromResource($file);
+    }
+
+    public static function parseFromFile(string $pathname): FileRecord
+    {
+        $file = fopen($pathname, 'r');
+        return self::parseFromResource($file);
+    }
+
+    public static function parseFromResource($fileStream): FileRecord
+    {
         $fileRecord = new FileRecord();
-        while ($line = trim(fgets($file))) {
+        while ($line = trim(fgets($fileStream))) {
             $fileRecord->parseLine($line);
         }
 
-        fclose($file);
+        fclose($fileStream);
 
         return $fileRecord;
     }
