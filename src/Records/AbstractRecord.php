@@ -28,7 +28,7 @@ abstract class AbstractRecord
     public function toArray(): array
     {
         return array_map(
-            fn($ele) => gettype($ele) == 'string' ? $ele : $ele->toArray(),
+            fn($ele) => is_string($ele) ? $ele : $ele->toArray(),
             $this->records
         );
     }
