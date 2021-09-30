@@ -9,7 +9,7 @@ class Bai2
 
     public static function parse(mixed $file): FileRecord
     {
-        if (gettype($file) == 'string') {
+        if (is_string($file)) {
             $file = fopen($file, 'r');
         }
 
