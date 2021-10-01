@@ -2,7 +2,6 @@
 
 namespace STS\Bai2\Parsers;
 
-// TODO(zmd): this will become (be renamed to) LineParser
 class LineParser implements \Iterator
 {
 
