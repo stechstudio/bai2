@@ -1,9 +1,9 @@
 <?php
 
-namespace STS\Bai2;
+namespace STS\Bai2\Parsers;
 
 // TODO(zmd): this will become (be renamed to) LineParser
-class IterableLineParser implements \Iterator
+class LineParser implements \Iterator
 {
 
     protected LineParserBuffer $buffer;
