@@ -41,15 +41,15 @@ class LineParser implements \Iterator
         $this->current = $this->buffer->next();
     }
 
+    public function reset(int $numFields): void
+    {
+        $this->numFields = $numFields;
+        $this->rewind();
+    }
+
     public function valid(): bool
     {
         return $this->buffer->valid();
-    }
-
-    public function setNumFields(int $numFields): self
-    {
-        $this->numFields = $numFields;
-        return $this;
     }
 
 }
