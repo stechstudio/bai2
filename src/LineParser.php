@@ -5,12 +5,14 @@ namespace STS\Bai2;
 class LineParser
 {
 
-    private int $numFieldsYielded = 0;
+    protected int $numFieldsYielded = 0;
 
-    private string $buffer;
+    protected string $buffer;
 
-    public function __construct(private string $line, private int $numFields = 0)
-    {
+    public function __construct(
+        protected string $line,
+        protected int $numFields = 0
+    ) {
         $this->buffer = $line;
     }
 
@@ -28,7 +30,7 @@ class LineParser
         }
     }
 
-    public function setNumFields($numFields): self
+    public function setNumFields(int $numFields): self
     {
         $this->numFields = $numFields;
         return $this;
