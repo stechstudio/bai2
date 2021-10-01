@@ -7,15 +7,12 @@ class LineParserBuffer
 
     protected int $numFieldsYielded = 0;
 
-    protected string $buffer;
-
     protected bool $valid = false;
 
     public function __construct(
         protected string $line,
         protected int $numFields = 0
     ) {
-        $this->buffer = $line;
     }
 
     public function next(): ?string
@@ -39,7 +36,7 @@ class LineParserBuffer
         if ($this->numFields) {
             return $this->numFieldsYielded >= $this->numFields;
         } else {
-            return $this->buffer == '/';
+            return $this->line == '/';
         }
     }
 
@@ -48,11 +45,11 @@ class LineParserBuffer
         $this->numFieldsYielded++;
 
         if ($this->isLastExpectedField()) {
-            return $this->buffer;
+            return $this->line;
         }
 
         [$field, $rest] = $this->bisect();
-        $this->buffer = $rest;
+        $this->line = $rest;
 
         return $field;
     }
@@ -71,7 +68,7 @@ class LineParserBuffer
         $field = '';
         $rest = '/';
 
-        $exploded = explode(',', $this->buffer, 2);
+        $exploded = explode(',', $this->line, 2);
         if (count($exploded) == 1) {
             $field = rtrim($exploded[0], '/');
         } else {
