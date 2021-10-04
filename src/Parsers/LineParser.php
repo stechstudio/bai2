@@ -53,14 +53,6 @@ class LineParser
         return $slice;
     }
 
-    public function takeAll(): array
-    {
-        while (!is_null($this->next())) {
-        }
-
-        return $this->cache;
-    }
-
     public function takeText(): ?string
     {
         // TODO(zmd): this is so terrible; refactor LineParserBuffer such that
