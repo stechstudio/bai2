@@ -7,6 +7,10 @@ class LineParser
 
     protected LineParserBuffer $buffer;
 
+    // TODO(zmd): this is so terrible; refactor LineParserBuffer such that this
+    //   becomes unnecessary
+    protected string $line;
+
     protected array $cache = [];
 
     protected int $cursor = -1;
@@ -14,6 +18,9 @@ class LineParser
     public function __construct(string $line)
     {
         $this->buffer = new LineParserBuffer($line);
+        // TODO(zmd): this is so terrible; refactor LineParserBuffer such that
+        //   this becomes unnecessary
+        $this->line = $line;
     }
 
     public function peek(): ?string
@@ -52,6 +59,17 @@ class LineParser
         }
 
         return $this->cache;
+    }
+
+    public function takeText(): ?string
+    {
+        // TODO(zmd): this is so terrible; refactor LineParserBuffer such that
+        //   this becomes unnecessary
+        $this->buffer = new LineParserBuffer($this->line, $this->cursor + 2);
+        for ($counter = $this->cursor + 1; $counter; --$counter) {
+            $this->buffer->next();
+        }
+        return $this->take();
     }
 
     protected function next(): ?string

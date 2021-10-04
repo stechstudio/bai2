@@ -45,6 +45,13 @@ class LineParserBuffer
         $this->numFieldsYielded++;
 
         if ($this->isLastExpectedField()) {
+            // TODO(zmd): this is so terrible; refactor LineParserBuffer such
+            //   that this becomes unnecessary
+            if ($this->line == '/') {
+                // text field was defaulted (record ended in ',/')
+                return '';
+            }
+
             return $this->line;
         }
 
