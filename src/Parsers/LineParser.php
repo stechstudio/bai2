@@ -18,7 +18,7 @@ class LineParser
 
     public function peek(): ?string
     {
-        return $this->fetch($this->index + 1);
+        return $this->fetch($this->cursor + 1);
     }
 
     protected function fetch(int $index): ?string
