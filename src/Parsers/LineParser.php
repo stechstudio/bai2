@@ -21,10 +21,34 @@ class LineParser
         return $this->fetch($this->cursor + 1);
     }
 
+    public function take(int $numToTake = 0): array|string|null
+    {
+        if ($numToTake) {
+            return $this->takeN($numToTake);
+        }
+
+        return $this->takeOne();
+    }
+
+    public function takeOne(): ?string
+    {
+        return $this->next();
+    }
+
+    public function takeN(int $numToTake): array
+    {
+        $slice = [];
+        for (; $numToTake; --$numToTake) {
+            // TODO(zmd): we probably want to throw if user tries to take more
+            //   than what is available to take.
+            $slice[] = $this->next();
+        }
+        return $slice;
+    }
+
     public function takeAll(): array
     {
-        while (!is_null($this->next()))
-        {
+        while (!is_null($this->next())) {
         }
 
         return $this->cache;
