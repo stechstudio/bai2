@@ -21,12 +21,33 @@ class LineParser
         return $this->fetch($this->cursor + 1);
     }
 
+    public function takeAll(): array
+    {
+        while (!is_null($this->next()))
+        {
+        }
+
+        return $this->cache;
+    }
+
+    protected function next(): ?string
+    {
+        $this->cursor++;
+        return $this->fetch($this->cursor);
+    }
+
     protected function fetch(int $index): ?string
     {
         // TODO(zmd): perfect place for null-coalescing assignment op
         //    $this->cache[$index] ??= ...
         if (!array_key_exists($index, $this->cache)) {
-            $this->cache[$index] = $this->buffer->next();
+            $next = $this->buffer->next();
+
+            if (is_null($next)) {
+                return null;
+            } else {
+                $this->cache[$index] = $next;
+            }
         }
 
         return $this->cache[$index];
