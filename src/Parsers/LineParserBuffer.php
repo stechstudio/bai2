@@ -26,6 +26,20 @@ class LineParserBuffer
         }
     }
 
+    public function continue(string $line): self
+    {
+        // TODO(zmd): living on the edge! We're blindly trusting the user input
+        //   here to pass us a real continuation line which has more than a
+        //   mere 88 all by itself (let alone a non-88 record/line)
+        //
+        // TODO(zmd): IT'S BROKEN ANYWAY, because we don't handle the / that
+        //   _might_ be at the end of the continuation (assuming it's not
+        //   continuing a text field, we we couldn't possibly know at this
+        //   level). Bleh.
+        $this->line = $this->line . substr($line, 3);
+        return $this;
+    }
+
     public function valid(): bool
     {
         return $this->valid;
@@ -44,6 +58,10 @@ class LineParserBuffer
     {
         $this->numFieldsYielded++;
 
+        // TODO(zmd): probably should factor into two methods; one for last
+        //   text field, and then the common case (though this may resolve
+        //   itself cleanly as part of next refactor, which is why I hold off
+        //   for the moment).
         if ($this->isLastExpectedField()) {
             // TODO(zmd): this is so terrible; refactor LineParserBuffer such
             //   that this becomes unnecessary
