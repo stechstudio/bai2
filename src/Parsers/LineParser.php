@@ -5,11 +5,11 @@ namespace STS\Bai2\Parsers;
 class LineParser
 {
 
-    protected LineParserBuffer $buffer;
+    protected LineBuffer $buffer;
 
     public function __construct(string $line)
     {
-        $this->buffer = new LineParserBuffer($line);
+        $this->buffer = new LineBuffer($line);
     }
 
     public function peek(): ?string
