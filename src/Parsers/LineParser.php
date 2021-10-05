@@ -14,10 +14,10 @@ class LineParser
 
     public function peek(): ?string
     {
-        $value = $this->buffer->next->val();
+        $field = $this->buffer->next->field();
         $this->buffer->prev();
 
-        return $value;
+        return $field;
     }
 
     // TODO(zmd): we probably want to throw if user tries to drop more than
@@ -35,12 +35,12 @@ class LineParser
     //   of buffer?
     public function shift(): ?string
     {
-        return $this->buffer->next()->val();
+        return $this->buffer->next()->field();
     }
 
     public function shiftText(): ?string
     {
-        return $this->buffer->next()->text();
+        return $this->buffer->next()->textField();
     }
 
     // TODO(zmd): ponder whether we want to keep this, and if we do write

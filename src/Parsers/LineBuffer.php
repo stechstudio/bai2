@@ -24,13 +24,13 @@ class LineBuffer
     }
 
     // TODO(zmd): can we tighten things down and disallow returning null?
-    public function val(): ?string
+    public function field(): ?string
     {
         // TODO(zmd): implement me!
     }
 
     // TODO(zmd): can we tighten things down and disallow returning null?
-    public function text(): ?string
+    public function textField(): ?string
     {
         // TODO(zmd): implement me!
     }
