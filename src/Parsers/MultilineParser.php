@@ -46,7 +46,7 @@ class MultilineParser
 
     // TODO(zmd): it would be bad for the user to call ::continue() on a line
     //   which is not a continuation record. Also bad to call ::continue()
-    //   after calling ::takeText()
+    //   after calling ::shiftText()
     public function continue(string $continuationLine): self
     {
         $lineParser = new LineParser($continuationLine);
