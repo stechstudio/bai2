@@ -20,60 +20,46 @@ final class LineParserTest extends TestCase
         $this->assertEquals('01', $parser->peek());
     }
 
-    public function testTakeWithNoArgumentsReturnsNextFieldAndConsumesIt()
+    public function testShiftReturnsNextFieldAndConsumesIt()
     {
         $parser = new LineParser(self::$headerLine);
-        $this->assertEquals('01', $parser->take());
+        $this->assertEquals('01', $parser->shift());
         $this->assertEquals('SENDR1', $parser->peek());
     }
 
-    public function testTakeOneReturnsNextFieldAndConsumesIt()
+    public function testDropReturnsNumFieldsRequestedAndConsumesThem()
     {
         $parser = new LineParser(self::$headerLine);
-        $this->assertEquals('01', $parser->takeOne());
-        $this->assertEquals('SENDR1', $parser->peek());
-    }
-
-    public function testTakeWithArgReturnsNumFieldsRequestedAndConsumesThem()
-    {
-        $parser = new LineParser(self::$headerLine);
-        $this->assertEquals(['01', 'SENDR1', 'RECVR1'], $parser->take(3));
+        $this->assertEquals(['01', 'SENDR1', 'RECVR1'], $parser->drop(3));
         $this->assertEquals('210616', $parser->peek());
     }
 
-    public function testTakeNReturnsNumFieldsRequestedAndConsumesThem()
-    {
-        $parser = new LineParser(self::$headerLine);
-        $this->assertEquals(['01', 'SENDR1', 'RECVR1'], $parser->takeN(3));
-        $this->assertEquals('210616', $parser->peek());
-    }
-
-    public function testTakeTextReturnsTheRemainderOfBufferAsText()
+    public function testShiftTextReturnsTheRemainderOfBufferAsText()
     {
         $parser = new LineParser(self::$transactionLine);
 
         // consume and discard the non-text fields
-        $parser->take(13);
+        $parser->drop(13);
 
         // Note: per the spec, text fields are always at the end of a line, and
         // you have to at least partially parse a line first to know at what
         // position that text field begins.
         $this->assertEquals(
             "The following character is, of all the path separation characters I've ever used, my absolute favorite: /",
-            $parser->takeText()
+            $parser->shiftText()
         );
     }
 
-    public function testTakeTextReturnsEmptyStringForDefaultedTextField()
+    public function testShiftTextReturnsEmptyStringForDefaultedTextField()
     {
         $parser = new LineParser(self::$transactionLineDefaultedText);
 
         // consume and discard the non-text fields
-        $parser->take(13);
+        $parser->drop(13);
 
         // Note: per the spec, text fields which are defaulted are denominated
         // with ,/
-        $this->assertEquals('', $parser->takeText());
+        $this->assertEquals('', $parser->shiftText());
     }
 
 }

@@ -35,32 +35,24 @@ class LineParser
         return $this->fetch($this->cursor + 1);
     }
 
-    public function take(int $numToTake = 0): array|string|null
+    public function shift(): ?string
     {
-        if ($numToTake) {
-            return $this->takeN($numToTake);
-        }
-
-        return $this->takeOne();
+        $this->cursor++;
+        return $this->fetch($this->cursor);
     }
 
-    public function takeOne(): ?string
-    {
-        return $this->next();
-    }
-
-    public function takeN(int $numToTake): array
+    public function drop(int $numToDrop): array
     {
         $slice = [];
-        for (; $numToTake; --$numToTake) {
-            // TODO(zmd): we probably want to throw if user tries to take more
-            //   than what is available to take.
-            $slice[] = $this->next();
+        for (; $numToDrop; --$numToDrop) {
+            // TODO(zmd): we probably want to throw if user tries to drop more
+            //   than what is available to drop.
+            $slice[] = $this->shift();
         }
         return $slice;
     }
 
-    public function takeText(): ?string
+    public function shiftText(): ?string
     {
         // TODO(zmd): this is so terrible; refactor LineParserBuffer such that
         //   this becomes unnecessary
@@ -68,13 +60,7 @@ class LineParser
         for ($counter = $this->cursor + 1; $counter; --$counter) {
             $this->buffer->next();
         }
-        return $this->take();
-    }
-
-    protected function next(): ?string
-    {
-        $this->cursor++;
-        return $this->fetch($this->cursor);
+        return $this->shift();
     }
 
     protected function fetch(int $index): ?string

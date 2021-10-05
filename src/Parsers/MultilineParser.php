@@ -22,7 +22,7 @@ class MultilineParser
         $parser = new LineParser($continuationLine);
 
         // immediately discard the '88' record type field
-        $parser->take();
+        $parser->shift();
 
         $this->lines[] = $parser;
         return $this;
@@ -33,35 +33,26 @@ class MultilineParser
         return $this->currentLine()->peek();
     }
 
-    public function take(int $numToTake = 0): array|string|null
-    {
-        if ($numToTake) {
-            return $this->takeN($numToTake);
-        }
-
-        return $this->takeOne();
-    }
-
-    public function takeOne(): ?string
-    {
-        return $this->currentLine()->takeOne();
-    }
-
-    public function takeN(int $numToTake): array
+    public function drop(int $numToDrop): array
     {
         $slice = [];
-        for (; $numToTake; --$numToTake) {
-            $slice[] = $this->currentLine()->takeOne();
+        for (; $numToDrop; --$numToDrop) {
+            $slice[] = $this->currentLine()->shift();
         }
         return $slice;
     }
 
-    // TODO(zmd): scold any user who tries to call ::takeText() more than once.
-    public function takeText(): ?string
+    public function shift(): ?string
+    {
+        return $this->currentLine()->shift();
+    }
+
+    // TODO(zmd): scold any user who tries to call ::shiftText() more than once.
+    public function shiftText(): ?string
     {
         $text = null;
         while (!$this->currentLine()->isEndOfLine()) {
-            $text .= $this->currentLine()->takeText();
+            $text .= $this->currentLine()->shiftText();
         }
 
         return $text;
