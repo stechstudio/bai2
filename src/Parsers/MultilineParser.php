@@ -49,12 +49,12 @@ class MultilineParser
     //   after calling ::takeText()
     public function continue(string $continuationLine): self
     {
-        $parser = new LineParser($continuationLine);
+        $lineParser = new LineParser($continuationLine);
 
         // immediately discard the '88' record type field
-        $parser->shift();
+        $lineParser->shift();
 
-        $this->lines[] = $parser;
+        $this->lines[] = $lineParser;
         return $this;
     }
 
