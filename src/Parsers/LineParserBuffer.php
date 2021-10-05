@@ -31,7 +31,7 @@ class LineParserBuffer
         return $this->valid;
     }
 
-    protected function isEndOfLine(): bool
+    public function isEndOfLine(): bool
     {
         if ($this->numFields) {
             return $this->numFieldsYielded >= $this->numFields;

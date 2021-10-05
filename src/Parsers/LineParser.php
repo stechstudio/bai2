@@ -23,6 +23,13 @@ class LineParser
         $this->line = $line;
     }
 
+    // TODO(zmd): ponder whether we want to keep this, and if we do write
+    //   proper tests to cover it.
+    public function isEndOfLine(): bool
+    {
+        return $this->buffer->isEndOfLine();
+    }
+
     public function peek(): ?string
     {
         return $this->fetch($this->cursor + 1);
