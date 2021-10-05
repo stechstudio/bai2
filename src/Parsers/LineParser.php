@@ -23,22 +23,9 @@ class LineParser
         $this->line = $line;
     }
 
-    // TODO(zmd): ponder whether we want to keep this, and if we do write
-    //   proper tests to cover it.
-    public function isEndOfLine(): bool
-    {
-        return $this->buffer->isEndOfLine();
-    }
-
     public function peek(): ?string
     {
         return $this->fetch($this->cursor + 1);
-    }
-
-    public function shift(): ?string
-    {
-        $this->cursor++;
-        return $this->fetch($this->cursor);
     }
 
     public function drop(int $numToDrop): array
@@ -52,6 +39,12 @@ class LineParser
         return $slice;
     }
 
+    public function shift(): ?string
+    {
+        $this->cursor++;
+        return $this->fetch($this->cursor);
+    }
+
     public function shiftText(): ?string
     {
         // TODO(zmd): this is so terrible; refactor LineParserBuffer such that
@@ -61,6 +54,13 @@ class LineParser
             $this->buffer->next();
         }
         return $this->shift();
+    }
+
+    // TODO(zmd): ponder whether we want to keep this, and if we do write
+    //   proper tests to cover it.
+    public function isEndOfLine(): bool
+    {
+        return $this->buffer->isEndOfLine();
     }
 
     protected function fetch(int $index): ?string

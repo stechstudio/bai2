@@ -14,20 +14,6 @@ class MultilineParser
         $this->currentLine = new LineParser($firstLine);
     }
 
-    // TODO(zmd): it would be bad for the user to call ::continue() on a line
-    //   which is not a continuation record. Also bad to call ::continue()
-    //   after calling ::takeText()
-    public function continue(string $continuationLine): self
-    {
-        $parser = new LineParser($continuationLine);
-
-        // immediately discard the '88' record type field
-        $parser->shift();
-
-        $this->lines[] = $parser;
-        return $this;
-    }
-
     public function peek(): ?string
     {
         return $this->currentLine()->peek();
@@ -56,6 +42,20 @@ class MultilineParser
         }
 
         return $text;
+    }
+
+    // TODO(zmd): it would be bad for the user to call ::continue() on a line
+    //   which is not a continuation record. Also bad to call ::continue()
+    //   after calling ::takeText()
+    public function continue(string $continuationLine): self
+    {
+        $parser = new LineParser($continuationLine);
+
+        // immediately discard the '88' record type field
+        $parser->shift();
+
+        $this->lines[] = $parser;
+        return $this;
     }
 
     protected function currentLine(): LineParser
