@@ -5,7 +5,9 @@ namespace STS\Bai2\Parsers;
 class LineBuffer
 {
 
-    protected int $cursor = 0;
+    protected int $sliceStart = 0;
+
+    protected int $sliceEnd = 0;
 
     public function __construct(protected string $line)
     {
@@ -13,13 +15,15 @@ class LineBuffer
 
     public function next(): self
     {
-        // TODO(zmd): implement me!
+        [$this->sliceStart, $this->sliceEnd] = $this->findNextSlice();
+
         return $this;
     }
 
     public function prev(): self
     {
-        // TODO(zmd): implement me!
+        [$this->sliceStart, $this->sliceEnd] = $this->findPrevSlice();
+
         return $this;
     }
 
@@ -36,6 +40,16 @@ class LineBuffer
     }
 
     public function isEndOfLine(): bool
+    {
+        // TODO(zmd): implement me!
+    }
+
+    protected function findNextSlice(): array
+    {
+        // TODO(zmd): implement me!
+    }
+
+    protected function findPrevSlice(): array
     {
         // TODO(zmd): implement me!
     }
