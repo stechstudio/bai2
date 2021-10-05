@@ -64,12 +64,6 @@ class LineParser
         return $this->take();
     }
 
-    public function continue(string $line): self
-    {
-        $this->buffer->continue($line);
-        return $this;
-    }
-
     protected function next(): ?string
     {
         $this->cursor++;

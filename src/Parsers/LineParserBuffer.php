@@ -26,20 +26,6 @@ class LineParserBuffer
         }
     }
 
-    public function continue(string $line): self
-    {
-        // TODO(zmd): living on the edge! We're blindly trusting the user input
-        //   here to pass us a real continuation line which has more than a
-        //   mere 88 all by itself (let alone a non-88 record/line)
-        //
-        // TODO(zmd): IT'S BROKEN ANYWAY, because we don't handle the / that
-        //   _might_ be at the end of the continuation (assuming it's not
-        //   continuing a text field, we we couldn't possibly know at this
-        //   level). Bleh.
-        $this->line = $this->line . substr($line, 3);
-        return $this;
-    }
-
     public function valid(): bool
     {
         return $this->valid;
