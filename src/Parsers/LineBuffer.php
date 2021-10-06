@@ -43,13 +43,7 @@ class LineBuffer
     // TODO(zmd): can we tighten things down and disallow returning null?
     public function field(): ?string
     {
-        // TODO(zmd): extract to tidy helper method
-        $end = $this->seek(',') ?? $this->seek('/');
-        if (is_null($end)) {
-            throw new \Exception('Tried to access last field on unterminated input line.');
-        };
-
-        return $this->slice($this->cursor, $end);
+        return $this->slice($this->cursor, $this->findFieldEndPosition());
     }
 
     // TODO(zmd): can we tighten things down and disallow returning null?
@@ -88,6 +82,17 @@ class LineBuffer
 
         $offset = $endIndex - $beginIndex;
         return substr($this->line, $beginIndex, $offset);
+    }
+
+    protected function findFieldEndPosition(): int
+    {
+        $end = $this->seek(',') ?? $this->seek('/');
+
+        if (is_null($end)) {
+            throw new \Exception('Tried to access last field on unterminated input line.');
+        };
+
+        return $end;
     }
 
 }
