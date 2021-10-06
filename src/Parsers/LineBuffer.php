@@ -59,7 +59,7 @@ class LineBuffer
     public function field(): ?string
     {
         // TODO(zmd): extract to tidy helper method
-        $end = $this->seek(',') ?? $end = $this->seek('/');
+        $end = $this->seek(',') ?? $this->seek('/');
         if (is_null($end)) {
             throw new \Exception('Tried to access last field on unterminated input line.');
         };
