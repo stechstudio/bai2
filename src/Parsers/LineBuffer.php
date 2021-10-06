@@ -16,23 +16,6 @@ class LineBuffer
         $this->finalPoint = strlen($line) - 1;
     }
 
-    public static function stringSlice(
-        string $input,
-        int $beginIndex,
-        ?int $endIndex = null
-    ): string {
-        if (is_null($endIndex)) {
-            return substr($input, $beginIndex);
-        }
-
-        // TODO(zmd): decide if we want to allow negative slice indices, etc.;
-        //   if so, make sure we're doing the right thing; if not, raise when
-        //   non-positive arguments given or when $endIndex is not greater than
-        //   or equal to $beginIndex.
-        $offset = $endIndex - $beginIndex;
-        return substr($input, $beginIndex, $offset);
-    }
-
     public function next(): self
     {
         $this->prevCursors[] = $this->cursor;
@@ -64,13 +47,13 @@ class LineBuffer
             throw new \Exception('Tried to access last field on unterminated input line.');
         };
 
-        return self::stringSlice($this->line, $this->cursor, $end);
+        return $this->slice($this->cursor, $end);
     }
 
     // TODO(zmd): can we tighten things down and disallow returning null?
     public function textField(): ?string
     {
-        $value = self::stringSlice($this->line, $this->cursor);
+        $value = $this->slice($this->cursor);
         $this->cursor = $this->finalPoint;
 
         if ($value == '/') {
@@ -93,6 +76,16 @@ class LineBuffer
         }
 
         return $found;
+    }
+
+    protected function slice(int $beginIndex, ?int $endIndex = null): string
+    {
+        if (is_null($endIndex)) {
+            return substr($this->line, $beginIndex);
+        }
+
+        $offset = $endIndex - $beginIndex;
+        return substr($this->line, $beginIndex, $offset);
     }
 
 }
