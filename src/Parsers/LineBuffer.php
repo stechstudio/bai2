@@ -7,6 +7,8 @@ class LineBuffer
 
     protected int $finalPoint;
 
+    // TODO(zmd): since we're keeping track of previous cursors, do we really
+    //   need to use a -1 here like this?
     protected int $cursor = -1;
 
     protected array $prevCursors = [];
@@ -22,7 +24,7 @@ class LineBuffer
 
         if ($this->cursor < 0) {
             $this->cursor = 0;
-        } else if ($next = strpos($this->line, ',', $this->cursor)) {
+        } else if ($next = $this->seek(',')) {
             $this->cursor = $next + 1;
         } else {
             $this->cursor = $this->finalPoint;
