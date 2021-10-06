@@ -5,7 +5,7 @@ namespace STS\Bai2\Parsers;
 class LineBuffer
 {
 
-    protected int $finalPoint;
+    protected int $endOfLine;
 
     // TODO(zmd): since we're keeping track of previous cursors, do we really
     //   need to use a -1 here like this?
@@ -15,7 +15,7 @@ class LineBuffer
 
     public function __construct(protected string $line)
     {
-        $this->finalPoint = strlen($line) - 1;
+        $this->endOfLine = strlen($line) - 1;
     }
 
     public function next(): self
@@ -27,7 +27,7 @@ class LineBuffer
         } else if ($next = $this->seek(',')) {
             $this->cursor = $next + 1;
         } else {
-            $this->cursor = $this->finalPoint;
+            $this->cursor = $this->endOfLine;
         }
 
         return $this;
@@ -50,7 +50,7 @@ class LineBuffer
     public function textField(): ?string
     {
         $value = $this->slice($this->cursor);
-        $this->cursor = $this->finalPoint;
+        $this->cursor = $this->endOfLine;
 
         if ($value == '/') {
             return '';
@@ -61,7 +61,7 @@ class LineBuffer
 
     public function isEndOfLine(): bool
     {
-        return $this->cursor == $this->finalPoint;
+        return $this->cursor == $this->endOfLine;
     }
 
     protected function seek(string $needle): ?int {
