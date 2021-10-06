@@ -20,7 +20,7 @@ class LineBuffer
 
     public function next(): self
     {
-        $this->prevCursors[] = $this->cursor;
+        $this->pushCursor($this->cursor);
 
         if ($this->cursor < 0) {
             $this->cursor = 0;
@@ -35,7 +35,7 @@ class LineBuffer
 
     public function prev(): self
     {
-        $this->cursor = array_pop($this->prevCursors) ?? -1;
+        $this->cursor = $this->popCursor() ?? -1;
 
         return $this;
     }
@@ -93,6 +93,16 @@ class LineBuffer
         };
 
         return $end;
+    }
+
+    protected function pushCursor(int $cursor): void
+    {
+        $this->prevCursors[] = $cursor;
+    }
+
+    protected function popCursor(): ?int
+    {
+        return array_pop($this->prevCursors);
     }
 
 }
