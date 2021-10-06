@@ -58,15 +58,11 @@ class LineBuffer
     // TODO(zmd): can we tighten things down and disallow returning null?
     public function field(): ?string
     {
-        // TODO(zmd): clean this mess up young man! null coalescing FTW?
-        $end = $this->seek(',');
+        // TODO(zmd): extract to tidy helper method
+        $end = $this->seek(',') ?? $end = $this->seek('/');
         if (is_null($end)) {
-            $end = $this->seek('/');
-
-            if (is_null($end)) {
-                throw new \Exception('Tried to access last field on unterminated input line.');
-            }
-        }
+            throw new \Exception('Tried to access last field on unterminated input line.');
+        };
 
         return self::stringSlice($this->line, $this->cursor, $end);
     }
