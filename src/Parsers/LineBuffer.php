@@ -7,8 +7,6 @@ class LineBuffer
 
     protected int $endOfLine;
 
-    // TODO(zmd): since we're keeping track of previous cursors, do we really
-    //   need to use a -1 here like this?
     protected int $cursor = -1;
 
     protected array $prevCursors = [];
