@@ -20,23 +20,15 @@ class LineBuffer
 
     public function next(): self
     {
-        $this->pushCursor($this->cursor);
-
-        if ($this->cursor < 0) {
-            $this->cursor = 0;
-        } else if ($next = $this->seek(',')) {
-            $this->cursor = $next + 1;
-        } else {
-            $this->cursor = $this->endOfLine;
-        }
+        $this->pushCursor();
+        $this->nextCursor();
 
         return $this;
     }
 
     public function prev(): self
     {
-        $this->cursor = $this->popCursor() ?? -1;
-
+        $this->popCursor();
         return $this;
     }
 
@@ -95,14 +87,25 @@ class LineBuffer
         return $end;
     }
 
-    protected function pushCursor(int $cursor): void
+    protected function pushCursor(): void
     {
-        $this->prevCursors[] = $cursor;
+        $this->prevCursors[] = $this->cursor;
     }
 
-    protected function popCursor(): ?int
+    protected function nextCursor(): void
     {
-        return array_pop($this->prevCursors);
+        if ($this->cursor < 0) {
+            $this->cursor = 0;
+        } else if ($next = $this->seek(',')) {
+            $this->cursor = $next + 1;
+        } else {
+            $this->cursor = $this->endOfLine;
+        }
+    }
+
+    protected function popCursor(): void
+    {
+        $this->cursor = array_pop($this->prevCursors) ?? -1;
     }
 
 }
