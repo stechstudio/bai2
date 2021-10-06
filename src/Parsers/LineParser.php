@@ -14,7 +14,7 @@ class LineParser
 
     public function peek(): ?string
     {
-        $field = $this->buffer->next->field();
+        $field = $this->buffer->next()->field();
         $this->buffer->prev();
 
         return $field;
@@ -47,7 +47,15 @@ class LineParser
     //   proper tests to cover it.
     public function isEndOfLine(): bool
     {
-        return $this->buffer->isEndOfLine();
+        // TODO(zmd): this is so much yuck; pretty sure I'm almost to the point
+        //   where I can reliably use null as indicator of end of the line and
+        //   not use this special method anymore.
+        //
+        //   Otherwise we need a ::hasNext() or ::peekEndOfLine() or something.
+        $this->buffer->next();
+        $endOfLine = $this->buffer->isEndOfLine();
+        $this->buffer->prev();
+        return $endOfLine;
     }
 
 }
