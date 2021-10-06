@@ -58,12 +58,12 @@ class LineBuffer
     // TODO(zmd): can we tighten things down and disallow returning null?
     public function field(): ?string
     {
-        // TODO(zmd): clean this mess up young man!
-        $end = strpos($this->line, ',', $this->cursor);
-        if ($end === false) {
-            $end = strpos($this->line, '/', $this->cursor);
+        // TODO(zmd): clean this mess up young man! null coalescing FTW?
+        $end = $this->seek(',');
+        if (is_null($end)) {
+            $end = $this->seek('/');
 
-            if ($end === false) {
+            if (is_null($end === false)) {
                 throw new \Exception('Tried to access last field on unterminated input line.');
             }
         }
@@ -87,6 +87,16 @@ class LineBuffer
     public function isEndOfLine(): bool
     {
         return $this->cursor == $this->finalPoint;
+    }
+
+    protected function seek(string $needle): ?int {
+        $found = strpos($this->line, $needle, $this->cursor);
+
+        if ($found === false) {
+            return null;
+        }
+
+        return $found;
     }
 
 }
