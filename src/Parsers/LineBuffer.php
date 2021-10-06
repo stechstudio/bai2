@@ -63,7 +63,7 @@ class LineBuffer
         if (is_null($end)) {
             $end = $this->seek('/');
 
-            if (is_null($end === false)) {
+            if (is_null($end)) {
                 throw new \Exception('Tried to access last field on unterminated input line.');
             }
         }
