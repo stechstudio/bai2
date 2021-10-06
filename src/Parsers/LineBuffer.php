@@ -7,6 +7,7 @@ class LineBuffer
 
     protected int $endOfLine;
 
+    // TODO(zmd): use constant for this magic value of -1
     protected int $cursor = -1;
 
     protected array $prevCursors = [];
@@ -18,6 +19,11 @@ class LineBuffer
 
     public function next(): self
     {
+        // TODO(zmd): this needs tested, and possibly a custom exception class
+        if ($this->isEndOfLine()) {
+            throw new \Exception('Cannot move past the end of the line.');
+        }
+
         $this->pushCursor();
         $this->nextCursor();
 
@@ -26,6 +32,11 @@ class LineBuffer
 
     public function prev(): self
     {
+        // TODO(zmd): this needs tested, and possibly a custom exception class
+        if ($this->isBeginningOfLine()) {
+            throw new \Exception('Cannot move past the beginning of the line.');
+        }
+
         $this->popCursor();
         return $this;
     }
@@ -52,6 +63,11 @@ class LineBuffer
     public function isEndOfLine(): bool
     {
         return $this->cursor == $this->endOfLine;
+    }
+
+    public function isBeginningOfLine(): bool
+    {
+        return $this->cursor == '-1';
     }
 
     protected function seek(string $needle): ?int {
