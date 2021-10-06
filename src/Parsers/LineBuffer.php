@@ -43,7 +43,7 @@ class LineBuffer
     // TODO(zmd): can we tighten things down and disallow returning null?
     public function field(): ?string
     {
-        return $this->slice($this->cursor, $this->findFieldEndPosition());
+        return $this->slice($this->cursor, $this->findFieldEnd());
     }
 
     // TODO(zmd): can we tighten things down and disallow returning null?
@@ -84,7 +84,7 @@ class LineBuffer
         return substr($this->line, $beginIndex, $offset);
     }
 
-    protected function findFieldEndPosition(): int
+    protected function findFieldEnd(): int
     {
         $end = $this->seek(',') ?? $this->seek('/');
 
