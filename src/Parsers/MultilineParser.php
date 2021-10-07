@@ -36,6 +36,8 @@ class MultilineParser
     // TODO(zmd): scold any user who tries to call ::shiftText() more than once.
     public function shiftText(): string
     {
+        // TODO(zmd): Oh, BTW, that off-by-one you fixed? It caused a
+        //   regression in this function. Well done, Zeb.
         $text = $this->currentLine()->shiftText();
 
         // TODO(zmd): this is as clear as mud :[
@@ -62,16 +64,11 @@ class MultilineParser
 
     protected function currentLine(): LineParser
     {
-        if ($this->isCurrentLineExhausted()) {
+        if (!$this->currentLine->hasMore()) {
             $this->nextLine();
         }
 
         return $this->currentLine;
-    }
-
-    protected function isCurrentLineExhausted(): bool
-    {
-        return !$this->currentLine->hasMore();
     }
 
     protected function nextLine(): void
