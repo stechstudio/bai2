@@ -37,7 +37,8 @@ class MultilineParser
     public function shiftText(): ?string
     {
         $text = null;
-        while (!$this->currentLine()->isEndOfLine()) {
+        // TODO(zmd): this is as clear as mud :[
+        while (!$this->currentLine()->hasMore()) {
             $text .= $this->currentLine()->shiftText();
         }
 
@@ -69,7 +70,7 @@ class MultilineParser
 
     protected function isCurrentLineExhausted(): bool
     {
-        return $this->currentLine->isEndOfLine();
+        return !$this->currentLine->hasMore();
     }
 
     protected function nextLine(): void

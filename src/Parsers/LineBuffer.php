@@ -7,6 +7,8 @@ class LineBuffer
 
     protected int $endOfLine;
 
+    protected bool $textTaken = false;
+
     // TODO(zmd): use constant for this magic value of -1
     protected int $cursor = -1;
 
@@ -38,6 +40,8 @@ class LineBuffer
         }
 
         $this->popCursor();
+        $this->textTaken = false;
+
         return $this;
     }
 
@@ -51,7 +55,7 @@ class LineBuffer
     public function textField(): ?string
     {
         $value = $this->slice($this->cursor);
-        $this->cursor = $this->endOfLine;
+        $this->textTaken = true;
 
         if ($value == '/') {
             return '';
@@ -108,7 +112,12 @@ class LineBuffer
 
     protected function nextCursor(): void
     {
-        if ($this->cursor < 0) {
+        // TODO(zmd): can we clean this up or at least better organize the
+        //   order of checks?
+        if ($this->textTaken) {
+            $this->cursor = $this->endOfLine;
+        } else if ($this->cursor < 0) {
+            $this->cursor < 0;
             $this->cursor = 0;
         } else if ($next = $this->seek(',')) {
             $this->cursor = $next + 1;

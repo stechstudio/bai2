@@ -21,7 +21,8 @@ class LineParser
     }
 
     // TODO(zmd): we probably want to throw if user tries to drop more than
-    //   what is available in the buffer?
+    //   what is available in the buffer? (I think we might now, but that needs
+    //   an explicit automated test)
     public function drop(int $numToDrop): array
     {
         $slice = [];
@@ -31,8 +32,9 @@ class LineParser
         return $slice;
     }
 
-    // TODO(zmd): we probably want to throw if user tries to shift beyond end
-    //   of buffer?
+    // TODO(zmd): we probably want to throw if user tries to drop more than
+    //   what is available in the buffer? (I think we might now, but that needs
+    //   an explicit automated test)
     public function shift(): ?string
     {
         return $this->buffer->next()->field();
@@ -43,19 +45,20 @@ class LineParser
         return $this->buffer->next()->textField();
     }
 
-    // TODO(zmd): ponder whether we want to keep this, and if we do write
-    //   proper tests to cover it.
-    public function isEndOfLine(): bool
+    public function hasMore(): bool
     {
-        // TODO(zmd): this is so much yuck; pretty sure I'm almost to the point
-        //   where I can reliably use null as indicator of end of the line and
-        //   not use this special method anymore.
-        //
-        //   Otherwise we need a ::hasNext() or ::peekEndOfLine() or something.
-        $this->buffer->next();
         $endOfLine = $this->buffer->isEndOfLine();
-        $this->buffer->prev();
-        return $endOfLine;
+
+        // if we're not yet at the end of the line, we need to know if we will
+        // be after the next cursor advance (indicating there's nothing more to
+        // shift off).
+        if (!$endOfLine) {
+            $this->buffer->next();
+            $endOfLine = $this->buffer->isEndOfLine();
+            $this->buffer->prev();
+        }
+
+        return !$endOfLine;
     }
 
 }

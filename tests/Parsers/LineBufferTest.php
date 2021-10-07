@@ -83,10 +83,11 @@ final class LineBufferTest extends TestCase
         $this->assertTrue($buffer->isEndOfLine());
     }
 
-    public function testIsEndOfLineAfterReadingTextField()
+    public function testIsEndOfLineNextAfterReadingTextField()
     {
         $buffer = new LineBuffer('foo,bar,baz/');
         $buffer->next()->next()->next()->textField();
+        $buffer->next();
         $this->assertTrue($buffer->isEndOfLine());
     }
 
