@@ -18,8 +18,7 @@ class LineParser
     }
 
     // TODO(zmd): we probably want to throw if user tries to drop more than
-    //   what is available in the buffer? (I think we might now, but that needs
-    //   an explicit automated test)
+    //   what is available in the buffer?
     public function drop(int $numToDrop): array
     {
         $slice = [];
@@ -30,8 +29,7 @@ class LineParser
     }
 
     // TODO(zmd): we probably want to throw if user tries to shift more than
-    //   what is available in the buffer? (I think we might now, but that needs
-    //   an explicit automated test)
+    //   what is available in the buffer?
     public function shift(): string
     {
         $field = $this->buffer->field();
@@ -40,8 +38,7 @@ class LineParser
     }
 
     // TODO(zmd): we probably want to throw if user tries to shiftText more
-    //   than what is available in the buffer? (I think we might now, but that
-    //   needs an explicit automated test)
+    //   than what is available in the buffer?
     public function shiftText(): string
     {
         $field = $this->buffer->textField();

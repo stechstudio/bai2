@@ -14,31 +14,53 @@ final class LineBufferTest extends TestCase
         $this->assertEquals('foo', $field);
     }
 
-    public function testNextToGetSecondField()
+    public function testCanGetCurrentFieldMultipleTime()
+    {
+        $buffer = new LineBuffer('foo,bar,baz/');
+
+        $field = $buffer->field();
+        $this->assertEquals('foo', $field);
+
+        $field = $buffer->field();
+        $this->assertEquals('foo', $field);
+
+        $field = $buffer->field();
+        $this->assertEquals('foo', $field);
+    }
+
+    public function testNextToAdvanceToNextField()
     {
         $buffer = new LineBuffer('foo,bar,baz/');
         $field = $buffer->next()->field();
         $this->assertEquals('bar', $field);
     }
 
-    public function testNextToGetThirdField()
+    public function testUseNextToAdvanceToThirdField()
     {
         $buffer = new LineBuffer('foo,bar,baz/');
         $field = $buffer->next()->next()->field();
         $this->assertEquals('baz', $field);
     }
 
-    public function testNextAndPrevToGetSecondField()
-    {
-        $buffer = new LineBuffer('foo,bar,baz/');
-        $field = $buffer->next()->next()->prev()->field();
-        $this->assertEquals('bar', $field);
-    }
-
-    public function testTextField()
+    public function testCanGetTextField()
     {
         $buffer = new LineBuffer('foo,bar,baz/');
         $field = $buffer->next()->textField();
+        $this->assertEquals('bar,baz/', $field);
+    }
+
+    public function testCanGetTextFieldMultipleTimes()
+    {
+        $buffer = new LineBuffer('foo,bar,baz/');
+        $buffer->next();
+
+        $field = $buffer->textField();
+        $this->assertEquals('bar,baz/', $field);
+
+        $field = $buffer->textField();
+        $this->assertEquals('bar,baz/', $field);
+
+        $field = $buffer->textField();
         $this->assertEquals('bar,baz/', $field);
     }
 
@@ -46,6 +68,13 @@ final class LineBufferTest extends TestCase
     {
         $buffer = new LineBuffer('foo,,baz/');
         $field = $buffer->next()->field();
+        $this->assertEquals('', $field);
+    }
+
+    public function testGetDefaultedLastField()
+    {
+        $buffer = new LineBuffer('foo,bar,/');
+        $field = $buffer->next()->next()->field();
         $this->assertEquals('', $field);
     }
 
