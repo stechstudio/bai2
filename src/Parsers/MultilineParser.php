@@ -28,15 +28,16 @@ class MultilineParser
         return $slice;
     }
 
-    public function shift(): ?string
+    public function shift(): string
     {
         return $this->currentLine()->shift();
     }
 
     // TODO(zmd): scold any user who tries to call ::shiftText() more than once.
-    public function shiftText(): ?string
+    public function shiftText(): string
     {
-        $text = null;
+        $text = $this->currentLine()->shiftText();
+
         // TODO(zmd): this is as clear as mud :[
         while (!$this->currentLine()->hasMore()) {
             $text .= $this->currentLine()->shiftText();

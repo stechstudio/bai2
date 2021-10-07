@@ -45,14 +45,12 @@ class LineBuffer
         return $this;
     }
 
-    // TODO(zmd): can we tighten things down and disallow returning null?
-    public function field(): ?string
+    public function field(): string
     {
         return $this->slice($this->cursor, $this->findFieldEnd());
     }
 
-    // TODO(zmd): can we tighten things down and disallow returning null?
-    public function textField(): ?string
+    public function textField(): string
     {
         $value = $this->slice($this->cursor);
         $this->textTaken = true;

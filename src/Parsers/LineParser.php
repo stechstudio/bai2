@@ -12,7 +12,7 @@ class LineParser
         $this->buffer = new LineBuffer($line);
     }
 
-    public function peek(): ?string
+    public function peek(): string
     {
         $field = $this->buffer->next()->field();
         $this->buffer->prev();
@@ -35,12 +35,12 @@ class LineParser
     // TODO(zmd): we probably want to throw if user tries to drop more than
     //   what is available in the buffer? (I think we might now, but that needs
     //   an explicit automated test)
-    public function shift(): ?string
+    public function shift(): string
     {
         return $this->buffer->next()->field();
     }
 
-    public function shiftText(): ?string
+    public function shiftText(): string
     {
         return $this->buffer->next()->textField();
     }
