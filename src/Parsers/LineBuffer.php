@@ -111,13 +111,11 @@ class LineBuffer
 
     protected function nextCursor(): void
     {
-        // TODO(zmd): can we clean this up or at least better organize the
-        //   order of checks?
-        if ($this->textTaken) {
-            $this->cursor = $this->endOfLine;
-        } else if ($this->cursor < 0) {
+        if ($this->isBeginningOfLine()) {
             $this->cursor < 0;
             $this->cursor = 0;
+        } else if ($this->textTaken) {
+            $this->cursor = $this->endOfLine;
         } else if ($next = $this->seek(',')) {
             $this->cursor = $next + 1;
         } else {
