@@ -31,12 +31,12 @@ class LineBuffer
 
     public function field(): string
     {
-        return $this->slice($this->cursor, $this->findFieldEnd());
+        return $this->readTo($this->findFieldEnd());
     }
 
     public function textField(): string
     {
-        $value = $this->slice($this->cursor);
+        $value = $this->readTo($this->endOfLine + 1);
         $this->textTaken = true;
 
         if ($value == '/') {
@@ -61,11 +61,12 @@ class LineBuffer
         return $found;
     }
 
-    protected function slice(int $beginIndex, ?int $endIndex = null): string
+    protected function readTo(int $endIndex = null): string
     {
-        if (is_null($endIndex)) {
-            return substr($this->line, $beginIndex);
-        }
+        // TODO(zmd): if we don't modify things to require further calculation,
+        //   then remove this intermediate variable and directly inline access
+        //   to the cursor address.
+        $beginIndex = $this->cursor;
 
         $offset = $endIndex - $beginIndex;
         return substr($this->line, $beginIndex, $offset);
