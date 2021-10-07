@@ -46,7 +46,7 @@ class LineParser
         return $field;
     }
 
-    public function hasMore(): bool
+    public function isEndOfLine(): bool
     {
         return !$this->buffer->isEndOfLine();
     }
