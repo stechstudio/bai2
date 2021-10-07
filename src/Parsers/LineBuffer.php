@@ -77,7 +77,6 @@ class LineBuffer
     {
         $end = $this->seek(',') ?? $this->seek('/');
 
-        // TODO(zmd): this needs tested, and possibly a custom exception class
         if (is_null($end)) {
             throw new \Exception('Cannot access last (non-text) field on unterminated input line.');
         }
