@@ -165,4 +165,14 @@ final class LineBufferTest extends TestCase
         $this->assertEquals('foo', $buffer->field());
     }
 
+    public function testThrowsExceptionWhenAdvancingBeyondTheEndOfTheBuffer()
+    {
+        $buffer = new LineBuffer('foo,bar,baz/');
+        $buffer->next()->next()->next();
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot access last (non-text) field on unterminated input line.');
+        $buffer->next();
+    }
+
 }
