@@ -33,10 +33,12 @@ class MultilineParser
         return $this->currentLine()->shift();
     }
 
-    // TODO(zmd): scold any user who tries to call ::shiftText() more than once.
+    // TODO(zmd): scold any user who tries to call ::shiftText() more than
+    //   once. (I think we might now, by virtue of the underlying line parser,
+    //   but that needs an explicit automated test)
     public function shiftText(): string
     {
-        $text = $this->currentLine()->shiftText();
+        $text = '';
 
         while ($this->currentLine()->hasMore()) {
             $text .= $this->currentLine()->shiftText();

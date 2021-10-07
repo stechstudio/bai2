@@ -5,13 +5,11 @@ namespace STS\Bai2\Parsers;
 class LineBuffer
 {
 
-    protected const BEGINNING_OF_LINE = -1;
-
     protected int $endOfLine;
 
     protected bool $textTaken = false;
 
-    protected int $cursor = self::BEGINNING_OF_LINE;
+    protected int $cursor = 0;
 
     protected array $prevCursors = [];
 
@@ -53,6 +51,11 @@ class LineBuffer
 
     public function textField(): string
     {
+        // TODO(zmd): this needs tested, and possibly a custom exception class
+        if ($this->textTaken) {
+            throw new \Exception('Cannot take text more than once in a row.');
+        }
+
         $value = $this->slice($this->cursor);
         $this->textTaken = true;
 
@@ -70,7 +73,7 @@ class LineBuffer
 
     public function isBeginningOfLine(): bool
     {
-        return $this->cursor == self::BEGINNING_OF_LINE;
+        return $this->cursor == 0;
     }
 
     protected function seek(string $needle): ?int {
@@ -97,8 +100,9 @@ class LineBuffer
     {
         $end = $this->seek(',') ?? $this->seek('/');
 
+        // TODO(zmd): this needs tested, and possibly a custom exception class
         if (is_null($end)) {
-            throw new \Exception('Tried to access last field on unterminated input line.');
+            throw new \Exception('Cannot access last (non-text) field on unterminated input line.');
         }
 
         return $end;
@@ -111,10 +115,9 @@ class LineBuffer
 
     protected function nextCursor(): void
     {
-        if ($this->isBeginningOfLine()) {
-            $this->cursor < 0;
-            $this->cursor = 0;
-        } else if ($this->textTaken) {
+        // TODO(zmd): can we use a match expression here instead of if-else-if
+        //   chain here? (And would it be easier to understand if we did?)
+        if ($this->textTaken) {
             $this->cursor = $this->endOfLine;
         } else if ($next = $this->seek(',')) {
             $this->cursor = $next + 1;
@@ -127,7 +130,7 @@ class LineBuffer
     {
         // TODO(zmd): now that we carefully guard ::next() and ::prev(), I
         //   don't think we need to coalesce the null here any longer...
-        $this->cursor = array_pop($this->prevCursors) ?? self::BEGINNING_OF_LINE;
+        $this->cursor = array_pop($this->prevCursors) ?? 0;
     }
 
 }
