@@ -18,8 +18,6 @@ class LineBuffer
 
     public function next(): self
     {
-        // TODO(zmd): can we use a match expression here instead of if-else-if
-        //   chain here? (And would it be easier to understand if we did?)
         if ($this->textTaken) {
             $this->cursor = $this->endOfLine;
         } else if ($next = $this->seek(',')) {
