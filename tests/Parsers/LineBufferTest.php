@@ -128,7 +128,20 @@ final class LineBufferTest extends TestCase
         $this->assertTrue($buffer->isEndOfLine());
     }
 
-    // TODO(zmd): raises exception when dealing with normal field at end of
-    //   un-terminated string
+    public function testCanAccessTextFieldAtEndWithoutRespectToEndingSlash()
+    {
+        $buffer = new LineBuffer('foo,bar,baz quux');
+        $field = $buffer->next()->next()->textField();
+        $this->assertEquals('baz quux', $field);
+    }
+
+    public function testThrowsExceptionWhenAccessingNormalFieldAtEndOfUnterminatedLine()
+    {
+        $buffer = new LineBuffer('foo,bar,baz quux');
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot access last (non-text) field on unterminated input line.');
+        $field = $buffer->next()->next()->field();
+    }
 
 }
