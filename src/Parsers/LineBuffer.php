@@ -5,12 +5,13 @@ namespace STS\Bai2\Parsers;
 class LineBuffer
 {
 
+    protected const BEGINNING_OF_LINE = -1;
+
     protected int $endOfLine;
 
     protected bool $textTaken = false;
 
-    // TODO(zmd): use constant for this magic value of -1
-    protected int $cursor = -1;
+    protected int $cursor = self::BEGINNING_OF_LINE;
 
     protected array $prevCursors = [];
 
@@ -69,7 +70,7 @@ class LineBuffer
 
     public function isBeginningOfLine(): bool
     {
-        return $this->cursor == '-1';
+        return $this->cursor == self::BEGINNING_OF_LINE;
     }
 
     protected function seek(string $needle): ?int {
@@ -126,7 +127,9 @@ class LineBuffer
 
     protected function popCursor(): void
     {
-        $this->cursor = array_pop($this->prevCursors) ?? -1;
+        // TODO(zmd): now that we carefully guard ::next() and ::prev(), I
+        //   don't think we need to coalesce the null here any longer...
+        $this->cursor = array_pop($this->prevCursors) ?? self::BEGINNING_OF_LINE;
     }
 
 }
