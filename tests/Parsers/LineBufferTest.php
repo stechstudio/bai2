@@ -144,4 +144,25 @@ final class LineBufferTest extends TestCase
         $field = $buffer->next()->next()->field();
     }
 
+    public function testThrowsExceptoinWhenAccessingNormalFieldAtEndOfUnterminedSingleFieldLine()
+    {
+        $buffer = new LineBuffer('foo');
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot access last (non-text) field on unterminated input line.');
+        $field = $buffer->field();
+    }
+
+    public function testCanAccessTextFieldAtEndOfSingleFieldLineWithoutRespectToEndingSlash()
+    {
+        $buffer = new LineBuffer('foo');
+        $this->assertEquals('foo', $buffer->textField());
+    }
+
+    public function testCanAccessNormalFieldAtEndOfSingleFieldLineIfProperlyTerminated()
+    {
+        $buffer = new LineBuffer('foo/');
+        $this->assertEquals('foo', $buffer->field());
+    }
+
 }
