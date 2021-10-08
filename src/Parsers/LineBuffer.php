@@ -16,7 +16,7 @@ class LineBuffer
         $this->endOfLine = strlen($line) - 1;
     }
 
-    public function next(): self
+    public function eat(): self
     {
         if ($this->textTaken) {
             $this->cursor = $this->endOfLine;

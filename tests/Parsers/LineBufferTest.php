@@ -31,28 +31,28 @@ final class LineBufferTest extends TestCase
     public function testNextToAdvanceToNextField()
     {
         $buffer = new LineBuffer('foo,bar,baz/');
-        $field = $buffer->next()->field();
+        $field = $buffer->eat()->field();
         $this->assertEquals('bar', $field);
     }
 
     public function testUseNextToAdvanceToThirdField()
     {
         $buffer = new LineBuffer('foo,bar,baz/');
-        $field = $buffer->next()->next()->field();
+        $field = $buffer->eat()->eat()->field();
         $this->assertEquals('baz', $field);
     }
 
     public function testCanGetTextField()
     {
         $buffer = new LineBuffer('foo,bar,baz/');
-        $field = $buffer->next()->textField();
+        $field = $buffer->eat()->textField();
         $this->assertEquals('bar,baz/', $field);
     }
 
     public function testCanGetTextFieldMultipleTimes()
     {
         $buffer = new LineBuffer('foo,bar,baz/');
-        $buffer->next();
+        $buffer->eat();
 
         $field = $buffer->textField();
         $this->assertEquals('bar,baz/', $field);
@@ -67,21 +67,21 @@ final class LineBufferTest extends TestCase
     public function testGetDefaultedField()
     {
         $buffer = new LineBuffer('foo,,baz/');
-        $field = $buffer->next()->field();
+        $field = $buffer->eat()->field();
         $this->assertEquals('', $field);
     }
 
     public function testGetDefaultedLastField()
     {
         $buffer = new LineBuffer('foo,bar,/');
-        $field = $buffer->next()->next()->field();
+        $field = $buffer->eat()->eat()->field();
         $this->assertEquals('', $field);
     }
 
     public function testGetDefaultedTextField()
     {
         $buffer = new LineBuffer('foo,bar,/');
-        $field = $buffer->next()->next()->textField();
+        $field = $buffer->eat()->eat()->textField();
         $this->assertEquals('', $field);
     }
 
@@ -94,29 +94,29 @@ final class LineBufferTest extends TestCase
     public function testIsEndOfLineReturnsFalseWhenPartWayThrough()
     {
         $buffer = new LineBuffer('foo,bar,baz/');
-        $buffer->next();
+        $buffer->eat();
         $this->assertFalse($buffer->isEndOfLine());
     }
 
     public function testIsEndOfLineReturnsFalseWhenOnLastField()
     {
         $buffer = new LineBuffer('foo,bar,baz/');
-        $buffer->next()->next();
+        $buffer->eat()->eat();
         $this->assertFalse($buffer->isEndOfLine());
     }
 
     public function testIsEndOfLineReturnsTrueWhenAtEndOfBuffer()
     {
         $buffer = new LineBuffer('foo,bar,baz/');
-        $buffer->next()->next()->next();
+        $buffer->eat()->eat()->eat();
         $this->assertTrue($buffer->isEndOfLine());
     }
 
     public function testIsEndOfLineReturnsTrueAfterReadingTextFieldAndAdvancing()
     {
         $buffer = new LineBuffer('foo,bar,baz/');
-        $buffer->next()->textField();
-        $buffer->next();
+        $buffer->eat()->textField();
+        $buffer->eat();
         $this->assertTrue($buffer->isEndOfLine());
     }
 
@@ -124,22 +124,22 @@ final class LineBufferTest extends TestCase
     {
         $buffer = new LineBuffer('foo,bar,baz/');
         $buffer->textField();
-        $buffer->next();
+        $buffer->eat();
         $this->assertTrue($buffer->isEndOfLine());
     }
 
     public function testIsEndOfLineReturnsTrueAfterReadingDefaultedTextFieldAndAdvancing()
     {
         $buffer = new LineBuffer('foo,bar,/');
-        $field = $buffer->next()->next()->textField();
-        $buffer->next();
+        $field = $buffer->eat()->eat()->textField();
+        $buffer->eat();
         $this->assertTrue($buffer->isEndOfLine());
     }
 
     public function testCanAccessTextFieldAtEndWithoutRespectToEndingSlash()
     {
         $buffer = new LineBuffer('foo,bar,baz quux');
-        $field = $buffer->next()->next()->textField();
+        $field = $buffer->eat()->eat()->textField();
         $this->assertEquals('baz quux', $field);
     }
 
@@ -149,7 +149,7 @@ final class LineBufferTest extends TestCase
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Cannot access last (non-text) field on unterminated input line.');
-        $field = $buffer->next()->next()->field();
+        $field = $buffer->eat()->eat()->field();
     }
 
     public function testThrowsExceptoinWhenAccessingNormalFieldAtEndOfUnterminedSingleFieldLine()
@@ -176,17 +176,17 @@ final class LineBufferTest extends TestCase
     public function testThrowsExceptionWhenAdvancingBeyondTheEndOfTheBuffer()
     {
         $buffer = new LineBuffer('foo,bar,baz/');
-        $buffer->next()->next()->next();
+        $buffer->eat()->eat()->eat();
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Cannot access advance beyond the end of the buffer.');
-        $buffer->next();
+        $buffer->eat();
     }
 
     public function testThrowsExceptionWhenTryingToReadNormalFieldOnceAtEndOfTheBuffer()
     {
         $buffer = new LineBuffer('foo,bar,baz/');
-        $buffer->next()->next()->next();
+        $buffer->eat()->eat()->eat();
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
@@ -196,7 +196,7 @@ final class LineBufferTest extends TestCase
     public function testThrowsExceptionWhenTryingToReadTextFieldOnceAtEndOfTheBuffer()
     {
         $buffer = new LineBuffer('foo,bar,baz/');
-        $buffer->next()->next()->next();
+        $buffer->eat()->eat()->eat();
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');

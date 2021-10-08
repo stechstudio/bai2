@@ -33,7 +33,7 @@ class LineParser
     public function shift(): string
     {
         $field = $this->buffer->field();
-        $this->buffer->next();
+        $this->buffer->eat();
         return $field;
     }
 
@@ -42,7 +42,7 @@ class LineParser
     public function shiftText(): string
     {
         $field = $this->buffer->textField();
-        $this->buffer->next();
+        $this->buffer->eat();
         return $field;
     }
 
