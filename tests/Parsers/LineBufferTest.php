@@ -203,4 +203,56 @@ final class LineBufferTest extends TestCase
         $buffer->textField();
     }
 
+    public function testConstructWithPhysicalRecordLengthSpecified()
+    {
+        $buffer = new LineBuffer('foo,bar,baz/', 80);
+        $this->assertEquals(80, $buffer->physicalRecordLength);
+    }
+
+    public function testConstructThenSetPhysicalRecordLength()
+    {
+        $buffer = new LineBuffer('foo,bar,baz/');
+        $this->assertEquals(null, $buffer->physicalRecordLength);
+
+        $buffer->physicalRecordLength = 80;
+        $this->assertEquals(80, $buffer->physicalRecordLength);
+    }
+
+    // TODO(zmd): eat bounds checks line length unpadded
+    // TODO(zmd): eat bounds checks line length partially padded
+    // TODO(zmd): eat bounds checks line length fully padded
+
+    /* TODO(zmd): field access line length unpadded
+    public function testAccessFieldsWhenPhysicalLengthSpecifiedAtConstructionLineLengthUnpadded()
+    {
+        $buffer = new LineBuffer('foo,bar,baz/', 80);
+
+        $this->assertEquals('foo', $buffer->field());
+        $this->assertEquals('bar', $buffer->eat()->field());
+        $this->assertEquals('baz', $buffer->eat()->field());
+    }
+    */
+    // TODO(zmd): field access line length partially padded
+    // TODO(zmd): field access line length fully padded
+
+    // TODO(zmd): defaulted field access line length unpadded
+    // TODO(zmd): defaulted field access line length partially padded
+    // TODO(zmd): defaulted field access line length fully padded
+
+    // TODO(zmd): field bounds checks line length unpadded
+    // TODO(zmd): field bounds checks line length partially padded
+    // TODO(zmd): field bounds checks line length fully padded
+
+    // TODO(zmd): text field access line length unpadded
+    // TODO(zmd): text field access line length partially padded
+    // TODO(zmd): text field access line length fully padded
+
+    // TODO(zmd): defaulted field access line length unpadded
+    // TODO(zmd): defaulted field access line length partially padded
+    // TODO(zmd): defaulted field access line length fully padded
+
+    // TODO(zmd): text field bounds checks line length unpadded
+    // TODO(zmd): text field bounds checks line length partially padded
+    // TODO(zmd): text field bounds checks line length fully padded
+
 }

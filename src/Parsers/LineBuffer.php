@@ -11,8 +11,10 @@ class LineBuffer
 
     protected int $cursor = 0;
 
-    public function __construct(protected string $line)
-    {
+    public function __construct(
+        protected string $line,
+        public ?int $physicalRecordLength = null
+    ) {
         $this->endOfLine = strlen($line);
     }
 
