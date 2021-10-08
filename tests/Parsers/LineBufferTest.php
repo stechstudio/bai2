@@ -177,7 +177,7 @@ final class LineBufferTest extends TestCase
         $field = $this->buffer->eat()->eat()->field();
     }
 
-    public function testThrowsExceptoinWhenAccessingNormalFieldAtEndOfUnterminedSingleFieldLine(): void
+    public function testThrowsExceptionWhenAccessingNormalFieldAtEndOfUnterminedSingleFieldLine(): void
     {
         $this->buffer = new LineBuffer('foo');
 

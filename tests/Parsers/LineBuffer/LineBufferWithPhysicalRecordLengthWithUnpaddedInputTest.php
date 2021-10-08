@@ -27,6 +27,13 @@ final class LineBufferWithPhysicalRecordLengthWithUnpaddedInputTest extends Test
         $this->assertEquals('baz', $this->buffer->eat()->field());
     }
 
+    public function testCanAccessDefaultedField(): void
+    {
+        $this->buffer = new LineBuffer('foo,,baz/', 80);
+        $this->buffer->eat();
+        $this->assertEquals('', $this->buffer->field());
+    }
+
     public function testCanAccessTextField(): void
     {
         $this->buffer = new LineBuffer('foo,bar,baz quux', 80);
@@ -40,11 +47,38 @@ final class LineBufferWithPhysicalRecordLengthWithUnpaddedInputTest extends Test
         $this->assertEquals('bar,baz/', $this->buffer->textField());
     }
 
-    // TODO(zmd): defaulted field access unpadded input
-    // TODO(zmd): defaulted text field access unpadded input
+    public function testCanAccessDefaultedTextField(): void
+    {
+        $this->buffer = new LineBuffer('foo,bar,/', 80);
+        $this->buffer->eat()->eat();
+        $this->assertEquals('', $this->buffer->textField());
+    }
 
-    // TODO(zmd): eat bounds checks unpadded input
-    // TODO(zmd): field bounds checks unpadded input
-    // TODO(zmd): text field bounds checks unpadded input
+    public function testThrowsWhenEatingPastEndOfInput(): void
+    {
+        $this->buffer->eat()->eat()->eat();
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot advance beyond the end of the buffer.');
+        $this->buffer->eat();
+    }
+
+    public function testThrowsWhenAccessingFieldPastEndOfInput(): void
+    {
+        $this->buffer->eat()->eat()->eat();
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+        $this->buffer->field();
+    }
+
+    public function testThrowsWhenAccessingTextFieldPastEndOfInput(): void
+    {
+        $this->buffer->eat()->eat()->eat();
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+        $this->buffer->textField();
+    }
 
 }
