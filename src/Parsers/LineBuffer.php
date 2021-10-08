@@ -31,11 +31,19 @@ class LineBuffer
 
     public function field(): string
     {
+        if ($this->isEndOfLine()) {
+            throw new \Exception('Cannot access fields at the end of the buffer.');
+        }
+
         return $this->readTo($this->findFieldEnd());
     }
 
     public function textField(): string
     {
+        if ($this->isEndOfLine()) {
+            throw new \Exception('Cannot access fields at the end of the buffer.');
+        }
+
         $value = $this->readTo($this->endOfLine + 1);
         $this->textTaken = true;
 
