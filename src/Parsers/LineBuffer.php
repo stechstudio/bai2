@@ -20,6 +20,8 @@ class LineBuffer
     {
         if ($this->textTaken) {
             $this->cursor = $this->endOfLine;
+        } else if ($this->isEndOfLine()) {
+            throw new \Exception('Cannot advance beyond the end of the buffer.');
         } else {
             $this->cursor = $this->findFieldEnd() + 1;
         }

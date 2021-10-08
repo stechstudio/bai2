@@ -179,7 +179,7 @@ final class LineBufferTest extends TestCase
         $buffer->eat()->eat()->eat();
 
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Cannot access advance beyond the end of the buffer.');
+        $this->expectExceptionMessage('Cannot advance beyond the end of the buffer.');
         $buffer->eat();
     }
 
