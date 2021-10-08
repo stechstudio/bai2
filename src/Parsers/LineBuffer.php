@@ -13,17 +13,15 @@ class LineBuffer
 
     public function __construct(protected string $line)
     {
-        $this->endOfLine = strlen($line) - 1;
+        $this->endOfLine = strlen($line);
     }
 
     public function eat(): self
     {
         if ($this->textTaken) {
             $this->cursor = $this->endOfLine;
-        } else if ($next = $this->seek(',')) {
-            $this->cursor = $next + 1;
         } else {
-            $this->cursor = $this->endOfLine;
+            $this->cursor = $this->findFieldEnd() + 1;
         }
 
         return $this;
