@@ -85,6 +85,13 @@ final class LineBufferTest extends TestCase
         $this->assertEquals('', $field);
     }
 
+    public function testTextFieldPaddedLineEndingRetained(): void
+    {
+        $this->buffer = new LineBuffer('foo,bar,baz                   ');
+        $field = $this->buffer->eat()->eat()->textField();
+        $this->assertEquals('baz                   ', $field);
+    }
+
     public function testIsEndOfLineReturnsFalseWhenNotStarted(): void
     {
         $this->assertFalse($this->buffer->isEndOfLine());
