@@ -4,27 +4,8 @@ namespace STS\Bai2\Parsers;
 
 use PHPUnit\Framework\TestCase;
 
-final class LineBufferWithPhysicalRecordLengthTest extends TestCase
+final class LineBufferWithPhysicalRecordLengthWithUnpaddedInputTest extends TestCase
 {
-
-    public function testConstructWithoutPhysicalRecordLengthSpecified(): void
-    {
-        $buffer = new LineBuffer('foo,bar,baz/');
-        $this->assertNull($buffer->physicalRecordLength);
-    }
-
-    public function testConstructWithPhysicalRecordLengthSpecified(): void
-    {
-        $buffer = new LineBuffer('foo,bar,baz/', 80);
-        $this->assertEquals(80, $buffer->physicalRecordLength);
-    }
-
-    public function testConstructThenSetPhysicalRecordLength(): void
-    {
-        $buffer = new LineBuffer('foo,bar,baz/');
-        $buffer->physicalRecordLength = 80;
-        $this->assertEquals(80, $buffer->physicalRecordLength);
-    }
 
     // TODO(zmd): eat bounds checks input unpadded
     // TODO(zmd): eat bounds checks input partially padded

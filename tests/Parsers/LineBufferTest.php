@@ -14,6 +14,23 @@ final class LineBufferTest extends TestCase
         $this->buffer = new LineBuffer('foo,bar,baz/');
     }
 
+    public function testConstructWithoutPhysicalRecordLengthSpecified(): void
+    {
+        $this->assertNull($this->buffer->physicalRecordLength);
+    }
+
+    public function testConstructWithPhysicalRecordLengthSpecified(): void
+    {
+        $this->buffer = new LineBuffer('foo,bar,baz/', 80);
+        $this->assertEquals(80, $this->buffer->physicalRecordLength);
+    }
+
+    public function testConstructThenSetPhysicalRecordLength(): void
+    {
+        $this->buffer->physicalRecordLength = 80;
+        $this->assertEquals(80, $this->buffer->physicalRecordLength);
+    }
+
     public function testStartsOnFirstField(): void
     {
         $field = $this->buffer->field();
