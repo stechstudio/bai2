@@ -102,10 +102,17 @@ final class LineBufferTest extends TestCase
         $this->assertEquals('', $field);
     }
 
-    public function testTextFieldPaddedLineEndingRetained(): void
+    public function testTextFieldTrailingWhitespaceRetained(): void
     {
         $this->buffer = new LineBuffer('foo,bar,baz                   ');
         $field = $this->buffer->eat()->eat()->textField();
+        $this->assertEquals('baz                   ', $field);
+    }
+
+    public function testFieldTrailingWhitespaceRetailed(): void
+    {
+        $this->buffer = new LineBuffer('foo,bar,baz                   /');
+        $field = $this->buffer->eat()->eat()->field();
         $this->assertEquals('baz                   ', $field);
     }
 
