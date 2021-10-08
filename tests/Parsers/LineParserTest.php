@@ -13,28 +13,28 @@ final class LineParserTest extends TestCase
 
     private static string $transactionLineDefaultedText = "16,003,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321,/";
 
-    public function testPeekReturnsNextFieldWithoutConsumingIt()
+    public function testPeekReturnsNextFieldWithoutConsumingIt(): void
     {
         $parser = new LineParser(self::$headerLine);
         $this->assertEquals('01', $parser->peek());
         $this->assertEquals('01', $parser->peek());
     }
 
-    public function testShiftReturnsNextFieldAndConsumesIt()
+    public function testShiftReturnsNextFieldAndConsumesIt(): void
     {
         $parser = new LineParser(self::$headerLine);
         $this->assertEquals('01', $parser->shift());
         $this->assertEquals('SENDR1', $parser->peek());
     }
 
-    public function testDropReturnsNumFieldsRequestedAndConsumesThem()
+    public function testDropReturnsNumFieldsRequestedAndConsumesThem(): void
     {
         $parser = new LineParser(self::$headerLine);
         $this->assertEquals(['01', 'SENDR1', 'RECVR1'], $parser->drop(3));
         $this->assertEquals('210616', $parser->peek());
     }
 
-    public function testShiftTextReturnsTheRemainderOfBufferAsText()
+    public function testShiftTextReturnsTheRemainderOfBufferAsText(): void
     {
         $parser = new LineParser(self::$transactionLine);
 
@@ -50,7 +50,7 @@ final class LineParserTest extends TestCase
         );
     }
 
-    public function testShiftTextReturnsEmptyStringForDefaultedTextField()
+    public function testShiftTextReturnsEmptyStringForDefaultedTextField(): void
     {
         $parser = new LineParser(self::$transactionLineDefaultedText);
 

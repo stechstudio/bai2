@@ -7,19 +7,19 @@ use PHPUnit\Framework\TestCase;
 final class LineBufferWithPhysicalRecordLengthTest extends TestCase
 {
 
-    public function testConstructWithoutPhysicalRecordLengthSpecified()
+    public function testConstructWithoutPhysicalRecordLengthSpecified(): void
     {
         $buffer = new LineBuffer('foo,bar,baz/');
         $this->assertNull($buffer->physicalRecordLength);
     }
 
-    public function testConstructWithPhysicalRecordLengthSpecified()
+    public function testConstructWithPhysicalRecordLengthSpecified(): void
     {
         $buffer = new LineBuffer('foo,bar,baz/', 80);
         $this->assertEquals(80, $buffer->physicalRecordLength);
     }
 
-    public function testConstructThenSetPhysicalRecordLength()
+    public function testConstructThenSetPhysicalRecordLength(): void
     {
         $buffer = new LineBuffer('foo,bar,baz/');
         $buffer->physicalRecordLength = 80;
@@ -31,7 +31,7 @@ final class LineBufferWithPhysicalRecordLengthTest extends TestCase
     // TODO(zmd): eat bounds checks input fully padded
 
     /* TODO(zmd): field access input unpadded
-    public function testAccessFieldsInputUnpadded()
+    public function testAccessFieldsInputUnpadded(): void
     {
         $buffer = new LineBuffer('foo,bar,baz/', 80);
 
