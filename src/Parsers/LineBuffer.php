@@ -26,7 +26,7 @@ class LineBuffer
     {
         if ($this->textTaken) {
             $this->cursor = $this->endOfLine;
-        } else if ($this->isEndOfLine() || $this->isEndOfLogicalRecord()) {
+        } else if ($this->isEndOfLine()) {
             throw new \Exception('Cannot advance beyond the end of the buffer.');
         } else {
             $this->cursor = $this->findFieldEnd() + 1;
@@ -37,7 +37,7 @@ class LineBuffer
 
     public function field(): string
     {
-        if ($this->isEndOfLine() || $this->isEndOfLogicalRecord()) {
+        if ($this->isEndOfLine()) {
             throw new \Exception('Cannot access fields at the end of the buffer.');
         }
 
@@ -61,6 +61,11 @@ class LineBuffer
     }
 
     public function isEndOfLine(): bool
+    {
+        return $this->isEndOfPhysicalRecord() || $this->isEndOfLogicalRecord();
+    }
+
+    public function isEndOfPhysicalRecord(): bool
     {
         return $this->cursor == $this->endOfLine;
     }
