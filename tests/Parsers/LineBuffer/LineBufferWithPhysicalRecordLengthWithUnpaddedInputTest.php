@@ -16,6 +16,12 @@ final class LineBufferWithPhysicalRecordLengthWithUnpaddedInputTest extends Test
         'defaulted-text-field' => 'foo,bar,/',
     ];
 
+    protected function withBuffer(array $bufferArgs, callable $callable): void {
+        [$line, $length, $expected] = $bufferArgs;
+        $buffer = new LineBuffer($line, $length);
+        $callable($buffer, $expected);
+    }
+
     protected function buffer(): LineBuffer {
         return $this->setBuffer()->buffer;
     }
@@ -53,39 +59,34 @@ final class LineBufferWithPhysicalRecordLengthWithUnpaddedInputTest extends Test
     }
 
     /**
-     * @testWith ["foo,bar,baz quux", null, "baz quux"]
-     *           ["foo,bar,baz quux  ", null, "baz quux  "]
+     * @testWith ["foo,bar,baz quux",     null, "baz quux"]
+     *           ["foo,bar,baz quux  ",   null, "baz quux  "]
      *           ["foo,bar,baz quux    ", null, "baz quux    "]
-     *           ["foo,bar,baz quux", 20, "baz quux"]
-     *           ["foo,bar,baz quux  ", 20, "baz quux"]
-     *           ["foo,bar,baz quux    ", 20, "baz quux"]
+     *           ["foo,bar,baz quux",       20, "baz quux"]
+     *           ["foo,bar,baz quux  ",     20, "baz quux"]
+     *           ["foo,bar,baz quux    ",   20, "baz quux"]
      */
-    public function testCanAccessTextField(
-        string $input,
-        ?int   $length,
-        string $expected
-    ): void {
-        $this->buffer = new LineBuffer($input, $length);
-        $this->buffer()->eat()->eat();
-        $this->assertEquals($expected, $this->buffer->textField());
+    public function testCanAccessTextField(...$bufferArgs): void {
+        $this->withBuffer($bufferArgs, function ($buffer, $expected) {
+            $buffer->eat()->eat();
+            $this->assertEquals($expected, $buffer->textField());
+        });
     }
 
     /**
-     * @testWith ["foo,bar,baz/", null, "bar,baz/"]
-     *           ["foo,bar,baz/   ", null, "bar,baz/   "]
+     * @testWith ["foo,bar,baz/",         null, "bar,baz/"]
+     *           ["foo,bar,baz/   ",      null, "bar,baz/   "]
      *           ["foo,bar,baz/        ", null, "bar,baz/        "]
-     *           ["foo,bar,baz/", 20, "bar,baz/"]
-     *           ["foo,bar,baz/   ", 20, "bar,baz/"]
-     *           ["foo,bar,baz/        ", 20, "bar,baz/"]
+     *           ["foo,bar,baz/",           20, "bar,baz/"]
+     *           ["foo,bar,baz/   ",        20, "bar,baz/"]
+     *           ["foo,bar,baz/        ",   20, "bar,baz/"]
      */
-    public function testCanAccessTextFieldWithCommasAndSlashes(
-        string $input,
-        ?int   $length,
-        string $expected
-    ): void {
-        $this->buffer = new LineBuffer($input, $length);
-        $this->buffer->eat();
-        $this->assertEquals($expected, $this->buffer->textField());
+    public function testCanAccessTextFieldWithCommasAndSlashes(...$bufferArgs): void
+    {
+        $this->withBuffer($bufferArgs, function ($buffer, $expected) {
+            $buffer->eat();
+            $this->assertEquals($expected, $buffer->textField());
+        });
     }
 
     public function testCanAccessDefaultedTextField(): void
