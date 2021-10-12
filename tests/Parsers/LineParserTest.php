@@ -52,6 +52,15 @@ final class LineParserTest extends TestCase
         $this->assertEquals('210616', $parser->peek());
     }
 
+    public function testThrowsIfDroppingMoreThanAvailableInBuffer(): void
+    {
+        $parser = new LineParser(self::$headerLine);
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+        $parser->drop(10);
+    }
+
     public function testShiftTextReturnsTheRemainderOfBufferAsText(): void
     {
         $parser = new LineParser(self::$transactionLine);

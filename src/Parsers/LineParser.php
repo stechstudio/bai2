@@ -17,8 +17,6 @@ class LineParser
         return $this->buffer->field();
     }
 
-    // TODO(zmd): we probably want to throw if user tries to drop more than
-    //   what is available in the buffer?
     public function drop(int $numToDrop): array
     {
         $slice = [];
