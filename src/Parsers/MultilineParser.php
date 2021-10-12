@@ -16,21 +16,21 @@ class MultilineParser
 
     public function peek(): ?string
     {
-        return $this->currentLine()->peek();
+        return $this->currentOrNextLine()->peek();
     }
 
     public function drop(int $numToDrop): array
     {
         $slice = [];
         for (; $numToDrop; --$numToDrop) {
-            $slice[] = $this->currentLine()->shift();
+            $slice[] = $this->currentOrNextLine()->shift();
         }
         return $slice;
     }
 
     public function shift(): string
     {
-        return $this->currentLine()->shift();
+        return $this->currentOrNextLine()->shift();
     }
 
     // TODO(zmd): scold any user who tries to call ::shiftText() more than
@@ -39,8 +39,8 @@ class MultilineParser
     {
         $text = '';
 
-        while ($this->currentLine()->hasMore()) {
-            $text .= $this->currentLine()->shiftText();
+        while ($this->currentOrNextLine()->hasMore()) {
+            $text .= $this->currentOrNextLine()->shiftText();
         }
 
         return $text;
@@ -60,7 +60,7 @@ class MultilineParser
         return $this;
     }
 
-    protected function currentLine(): LineParser
+    protected function currentOrNextLine(): LineParser
     {
         if ($this->currentLine->isEndOfLine()) {
             $this->nextLine();
