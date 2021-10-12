@@ -29,7 +29,11 @@ class LineBuffer
     public function setPhysicalRecordLength(?int $physicalRecordLength): self
     {
         // NOTE: if current physical record length is null, and argument is
-        // null, then we don't care (this call is a no-op in that case).
+        // null, then we don't care (this call is a no-op in that case). This
+        // ensures our internal buffer state never gets into a strange place
+        // with respect to truncation (truncation of the line is a one-way
+        // operation, and all this logic ensures higher level logic can not
+        // attempt to violate this one-way-ness).
         if (!is_null($this->physicalRecordLength)) {
             throw new \Exception('The physical record length may be set only once.');
         } else if (!is_null($physicalRecordLength)) {
