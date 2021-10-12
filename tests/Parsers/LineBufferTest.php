@@ -109,6 +109,20 @@ final class LineBufferTest extends TestCase
         $this->assertEquals('', $field);
     }
 
+    public function testGetLastFieldIgnoresTrailingWhitespace(): void
+    {
+        $this->buffer = new LineBuffer('foo,bar,baz/        ');
+        $field = $this->buffer->eat()->eat()->field();
+        $this->assertEquals('baz', $field);
+    }
+
+    public function testGetLastFieldIgnoresTrailingCharacters(): void
+    {
+        $this->buffer = new LineBuffer('foo,bar,baz/ignoreme');
+        $field = $this->buffer->eat()->eat()->field();
+        $this->assertEquals('baz', $field);
+    }
+
     public function testGetDefaultedTextField(): void
     {
         $this->buffer = new LineBuffer('foo,bar,/');

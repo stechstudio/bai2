@@ -158,6 +158,52 @@ final class LineBufferWithPhysicalRecordLengthVariantsTest extends TestCase
     }
 
     /**
+     * @testWith ["foo,bar,baz/",                 null]
+     *           ["foo,bar,baz/\t\t\t\t",         null]
+     *           ["foo,bar,baz/\t\t\t\t\t\t\t\t", null]
+     *           ["foo,bar,baz/blah",             null]
+     *           ["foo,bar,baz/blahblah",         null]
+     *           ["foo,bar,baz/",                   20]
+     *           ["foo,bar,baz/\t\t\t\t",           20]
+     *           ["foo,bar,baz/\t\t\t\t\t\t\t\t",   20]
+     *           ["foo,bar,baz/blah",               20]
+     *           ["foo,bar,baz/blahblah",           20]
+     */
+    public function testFieldAccessHandlesOtherFormsOfPadding(...$bufferArgs): void
+    {
+        $this->withBuffer($bufferArgs, function ($buffer) {
+            $buffer->eat()->eat();
+            $this->assertEquals('baz', $buffer->field());
+
+            $buffer->eat();
+            $this->assertTrue($buffer->isEndOfLine());
+        });
+    }
+
+    /**
+     * @testWith ["foo,bar,baz/",                 null, "bar,baz/"]
+     *           ["foo,bar,baz/\t\t\t\t",         null, "bar,baz/\t\t\t\t"]
+     *           ["foo,bar,baz/\t\t\t\t\t\t\t\t", null, "bar,baz/\t\t\t\t\t\t\t\t"]
+     *           ["foo,bar,baz/blah",             null, "bar,baz/blah"]
+     *           ["foo,bar,baz/blahblah",         null, "bar,baz/blahblah"]
+     *           ["foo,bar,baz/",                   20, "bar,baz/"]
+     *           ["foo,bar,baz/\t\t\t\t",           20, "bar,baz/"]
+     *           ["foo,bar,baz/\t\t\t\t\t\t\t\t",   20, "bar,baz/"]
+     *           ["foo,bar,baz/blah",               20, "bar,baz/blah"]
+     *           ["foo,bar,baz/blahblah",           20, "bar,baz/blahblah"]
+     */
+    public function testTextFieldAccessHandlesOtherFormsOfPadding(...$bufferArgs): void
+    {
+        $this->withBuffer($bufferArgs, function ($buffer, $expected) {
+            $buffer->eat();
+            $this->assertEquals($expected, $buffer->textField());
+
+            $buffer->eat();
+            $this->assertTrue($buffer->isEndOfLine());
+        });
+    }
+
+    /**
      * @dataProvider threeEatableFieldsProducer
      */
     public function testThrowsWhenEatingPastEndOfInput(...$bufferArgs): void
