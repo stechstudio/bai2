@@ -72,8 +72,6 @@ class LineBuffer
 
     public function isEndOfLogicalRecord(): bool
     {
-        // echo 'substr($this->line, $this->cursor - 1, 1): ';
-        // var_export(substr($this->line, $this->cursor - 1, 1));
         return $this->cursor > 0 && substr($this->line, $this->cursor - 1, 1) === '/';
     }
 
