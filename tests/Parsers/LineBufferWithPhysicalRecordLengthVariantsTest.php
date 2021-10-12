@@ -123,9 +123,15 @@ final class LineBufferWithPhysicalRecordLengthVariantsTest extends TestCase
      * @testWith ["foo,bar,baz/",         null, "bar,baz/"]
      *           ["foo,bar,baz/   ",      null, "bar,baz/   "]
      *           ["foo,bar,baz/        ", null, "bar,baz/        "]
+     *           ["foo,,/",               null, ",/"]
+     *           ["foo,,/         ",      null, ",/         "]
+     *           ["foo,,/              ", null, ",/              "]
      *           ["foo,bar,baz/",           20, "bar,baz/"]
      *           ["foo,bar,baz/   ",        20, "bar,baz/"]
      *           ["foo,bar,baz/        ",   20, "bar,baz/"]
+     *           ["foo,,/",                 20, ",/"]
+     *           ["foo,,/         ",        20, ",/"]
+     *           ["foo,,/              ",   20, ",/"]
      */
     public function testCanAccessTextFieldWithCommasAndSlashes(...$bufferArgs): void
     {

@@ -63,8 +63,22 @@ final class LineBufferTest extends TestCase
 
     public function testCanGetTextField(): void
     {
+        $this->buffer = new LineBuffer('foo,bar,baz quux');
+        $field = $this->buffer->eat()->eat()->textField();
+        $this->assertEquals('baz quux', $field);
+    }
+
+    public function testCanGetTextFieldWithCommasAndSlashes(): void
+    {
         $field = $this->buffer->eat()->textField();
         $this->assertEquals('bar,baz/', $field);
+    }
+
+    public function testCanGetTextFieldWhichStartsWithComma(): void
+    {
+        $this->buffer = new LineBuffer('foo,bar,,yes...this is stupid');
+        $field = $this->buffer->eat()->eat()->textField();
+        $this->assertEquals(',yes...this is stupid', $field);
     }
 
     public function testCanGetTextFieldMultipleTimes(): void
@@ -98,6 +112,20 @@ final class LineBufferTest extends TestCase
     public function testGetDefaultedTextField(): void
     {
         $this->buffer = new LineBuffer('foo,bar,/');
+        $field = $this->buffer->eat()->eat()->textField();
+        $this->assertEquals('', $field);
+    }
+
+    public function testGetDefaultedTextFieldIgnoresTrailingWhitespace(): void
+    {
+        $this->buffer = new LineBuffer('foo,bar,/        ');
+        $field = $this->buffer->eat()->eat()->textField();
+        $this->assertEquals('', $field);
+    }
+
+    public function testGetDefaultedTextFieldIgnoresAnyTrailingCharacters(): void
+    {
+        $this->buffer = new LineBuffer('foo,bar,/ignoreme');
         $field = $this->buffer->eat()->eat()->textField();
         $this->assertEquals('', $field);
     }
@@ -159,13 +187,6 @@ final class LineBufferTest extends TestCase
         $field = $this->buffer->eat()->eat()->textField();
         $this->buffer->eat();
         $this->assertTrue($this->buffer->isEndOfLine());
-    }
-
-    public function testCanAccessTextFieldAtEndWithoutRespectToEndingSlash(): void
-    {
-        $this->buffer = new LineBuffer('foo,bar,baz quux');
-        $field = $this->buffer->eat()->eat()->textField();
-        $this->assertEquals('baz quux', $field);
     }
 
     public function testThrowsExceptionWhenAccessingNormalFieldAtEndOfUnterminatedLine(): void
