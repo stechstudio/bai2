@@ -28,8 +28,6 @@ class LineParser
         return $slice;
     }
 
-    // TODO(zmd): we probably want to throw if user tries to shift more than
-    //   what is available in the buffer?
     public function shift(): string
     {
         $field = $this->buffer->field();

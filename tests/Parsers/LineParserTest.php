@@ -27,6 +27,24 @@ final class LineParserTest extends TestCase
         $this->assertEquals('SENDR1', $parser->peek());
     }
 
+    public function testThrowsIfShiftingPastEndOfLine(): void
+    {
+        $parser = new LineParser(self::$headerLine);
+        $parser->shift();
+        $parser->shift();
+        $parser->shift();
+        $parser->shift();
+        $parser->shift();
+        $parser->shift();
+        $parser->shift();
+        $parser->shift();
+        $parser->shift();
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+        $parser->shift();
+    }
+
     public function testDropReturnsNumFieldsRequestedAndConsumesThem(): void
     {
         $parser = new LineParser(self::$headerLine);
