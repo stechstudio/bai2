@@ -16,19 +16,62 @@ final class LineBufferTest extends TestCase
 
     public function testConstructWithoutPhysicalRecordLengthSpecified(): void
     {
-        $this->assertNull($this->buffer->physicalRecordLength);
+        $this->assertNull($this->buffer->getPhysicalRecordLength());
     }
 
     public function testConstructWithPhysicalRecordLengthSpecified(): void
     {
         $this->buffer = new LineBuffer('foo,bar,baz/', 80);
-        $this->assertEquals(80, $this->buffer->physicalRecordLength);
+        $this->assertEquals(80, $this->buffer->getPhysicalRecordLength());
     }
 
     public function testConstructThenSetPhysicalRecordLength(): void
     {
-        $this->buffer->physicalRecordLength = 80;
-        $this->assertEquals(80, $this->buffer->physicalRecordLength);
+        $this->buffer->setPhysicalRecordLength(80);
+        $this->assertEquals(80, $this->buffer->getPhysicalRecordLength());
+    }
+
+    /**
+     * @testWith ["foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz/"]
+     *           ["foo,bar,baz/                                                                        "]
+     */
+    public function testThrowsWhenContructWithLineLongerThanPhsyicalLength(string $input): void
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
+        $this->buffer = new LineBuffer($input, 80);
+    }
+
+    /**
+     * @testWith ["foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz/"]
+     *           ["foo,bar,baz/                                                                        "]
+     */
+    public function testThrowsWhenSetPhysicalRecordLengthExceedingOriginalLineLength(string $input): void
+    {
+        $this->buffer = new LineBuffer($input);
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
+        $this->buffer->setPhysicalRecordLength(80);
+    }
+
+    public function testThrowsWhenTryingToSetPhysicalRecordLengthToNullAfterConstruction(): void
+    {
+        $this->buffer = new LineBuffer('foo,bar,baz/', 80);
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot set physical record length to null after it has been non-null.');
+        $this->buffer->setPhysicalRecordLength(null);
+    }
+
+    public function testThrowsWhenTryingToSetPhysicalRecordLengthToNullAfterSetingToNonNull(): void
+    {
+        $this->buffer = new LineBuffer('foo,bar,baz/');
+        $this->buffer->setPhysicalRecordLength(80);
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot set physical record length to null after it has been non-null.');
+        $this->buffer->setPhysicalRecordLength(null);
     }
 
     public function testStartsOnFirstField(): void

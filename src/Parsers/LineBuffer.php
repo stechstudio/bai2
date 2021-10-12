@@ -13,13 +13,43 @@ class LineBuffer
 
     public function __construct(
         protected string $line,
-        public ?int $physicalRecordLength = null
+        protected ?int $physicalRecordLength = null
     ) {
         if (!is_null($this->physicalRecordLength)) {
+            $this->validatePhysicalRecordLength();
             $this->line = rtrim($this->line);
         }
 
         $this->endOfLine = strlen($this->line);
+    }
+
+    public function getPhysicalRecordLength(): ?int
+    {
+        return $this->physicalRecordLength;
+    }
+
+    public function setPhysicalRecordLength(?int $physicalRecordLength): self
+    {
+        // TODO(zmd): null coalescing?
+        if (!is_null($this->physicalRecordLength) && is_null($physicalRecordLength)) {
+            throw new \Exception('Cannot set physical record length to null after it has been non-null.');
+        }
+
+        $this->physicalRecordLength = $physicalRecordLength;
+        $this->validatePhysicalRecordLength();
+        return $this;
+    }
+
+    private function validatePhysicalRecordLength(): self
+    {
+        // TODO(zmd): null coalescing?
+        if (!is_null($this->physicalRecordLength)) {
+            if (strlen($this->line) > $this->physicalRecordLength) {
+                throw new \Exception('Input line length exceeds requested physical record length.');
+            }
+        }
+
+        return $this;
     }
 
     public function eat(): self
