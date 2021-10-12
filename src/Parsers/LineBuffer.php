@@ -89,13 +89,8 @@ class LineBuffer
 
     protected function readTo(int $endIndex = null): string
     {
-        // TODO(zmd): if we don't modify things to require further calculation,
-        //   then remove this intermediate variable and directly inline access
-        //   to the cursor address.
-        $beginIndex = $this->cursor;
-
-        $offset = $endIndex - $beginIndex;
-        return substr($this->line, $beginIndex, $offset);
+        $offset = $endIndex - $this->cursor;
+        return substr($this->line, $this->cursor, $offset);
     }
 
     protected function findFieldEnd(): int
