@@ -40,13 +40,11 @@ class LineParser
         return $field;
     }
 
-    // TODO(zmd): test me
     public function hasMore(): bool
     {
         return !$this->isEndOfLine();
     }
 
-    // TODO(zmd): test me
     public function isEndOfLine(): bool
     {
         return $this->buffer->isEndOfLine();

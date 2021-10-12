@@ -119,4 +119,18 @@ final class LineParserTest extends TestCase
         $this->assertFalse($parser->hasMore());
     }
 
+    public function testIsEndOfLineWhenLineHasMore(): void
+    {
+        $parser = new LineParser(self::$headerLine);
+        $parser->drop(8);
+        $this->assertFalse($parser->isEndOfLine());
+    }
+
+    public function testIsEndOfLineWhenLineHasNoMore(): void
+    {
+        $parser = new LineParser(self::$headerLine);
+        $parser->drop(9);
+        $this->assertTrue($parser->isEndOfLine());
+    }
+
 }
