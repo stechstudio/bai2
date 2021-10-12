@@ -39,7 +39,7 @@ class MultilineParser
     {
         $text = '';
 
-        while ($this->currentLine()->isEndOfLine()) {
+        while ($this->currentLine()->hasMore()) {
             $text .= $this->currentLine()->shiftText();
         }
 
@@ -62,7 +62,7 @@ class MultilineParser
 
     protected function currentLine(): LineParser
     {
-        if (!$this->currentLine->isEndOfLine()) {
+        if ($this->currentLine->isEndOfLine()) {
             $this->nextLine();
         }
 
