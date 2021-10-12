@@ -57,14 +57,6 @@ final class MultilineParserTest extends TestCase
         });
     }
 
-    public function testDropReturnsNumFieldsRequestedAndConsumesThem(): void
-    {
-        $this->withParser(self::$headerLine, function ($parser) {
-            $this->assertEquals(['01', 'SENDR1', 'RECVR1'], $parser->drop(3));
-            $this->assertEquals('210616', $parser->peek());
-        });
-    }
-
     // TODO(zmd): test all the main methods without continue first (like
     //   ::drop(), etc.); behavior should match line buffer exactly when no
     //   continuations are used
