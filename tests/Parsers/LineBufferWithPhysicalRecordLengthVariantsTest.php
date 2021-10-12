@@ -50,12 +50,12 @@ final class LineBufferWithPhysicalRecordLengthVariantsTest extends TestCase
     }
 
     protected function withBuffer(array $bufferArgs, callable $callable): void {
-        if (array_key_exists(2, $bufferArgs)) {
+        if (count($bufferArgs) == 2) {
+            $callable(new LineBuffer(...$bufferArgs));
+        } else {
             [$line, $length, $expected] = $bufferArgs;
             $buffer = new LineBuffer($line, $length);
             $callable($buffer, $expected);
-        } else {
-            $callable(new LineBuffer(...$bufferArgs));
         }
     }
 
