@@ -16,8 +16,7 @@ class LineBuffer
         protected ?int $physicalRecordLength = null
     ) {
         if (!is_null($this->physicalRecordLength)) {
-            $this->validatePhysicalRecordLength();
-            $this->line = rtrim($this->line);
+            $this->validatePhysicalRecordLength()->trimLine();
         }
 
         $this->endOfLine = strlen($this->line);
@@ -36,11 +35,12 @@ class LineBuffer
         }
 
         $this->physicalRecordLength = $physicalRecordLength;
-        $this->validatePhysicalRecordLength();
+        $this->validatePhysicalRecordLength()->trimLine();
+
         return $this;
     }
 
-    private function validatePhysicalRecordLength(): self
+    protected function validatePhysicalRecordLength(): self
     {
         // TODO(zmd): null coalescing?
         if (!is_null($this->physicalRecordLength)) {
@@ -49,6 +49,12 @@ class LineBuffer
             }
         }
 
+        return $this;
+    }
+
+    protected function trimLine(): self
+    {
+        $this->line = rtrim($this->line);
         return $this;
     }
 
