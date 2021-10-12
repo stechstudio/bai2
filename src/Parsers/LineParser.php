@@ -33,8 +33,6 @@ class LineParser
         return $field;
     }
 
-    // TODO(zmd): we probably want to throw if user tries to shiftText more
-    //   than what is available in the buffer?
     public function shiftText(): string
     {
         $field = $this->buffer->textField();
@@ -42,11 +40,13 @@ class LineParser
         return $field;
     }
 
+    // TODO(zmd): test me
     public function hasMore(): bool
     {
         return !$this->isEndOfLine();
     }
 
+    // TODO(zmd): test me
     public function isEndOfLine(): bool
     {
         return $this->buffer->isEndOfLine();

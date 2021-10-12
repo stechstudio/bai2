@@ -77,6 +77,22 @@ final class LineParserTest extends TestCase
         );
     }
 
+    public function testThrowsIfShiftingTextPastEndOfLine(): void
+    {
+        $parser = new LineParser(self::$transactionLine);
+
+        // consume and discard the non-text fields
+        $parser->drop(13);
+
+        // shift off the remaining text field
+        $parser->shiftText();
+
+        // make it go boom!
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+        $parser->shiftText();
+    }
+
     public function testShiftTextReturnsEmptyStringForDefaultedTextField(): void
     {
         $parser = new LineParser(self::$transactionLineDefaultedText);
