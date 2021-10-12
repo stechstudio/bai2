@@ -49,6 +49,14 @@ final class MultilineParserTest extends TestCase
         });
     }
 
+    public function testShiftReturnsNextFieldAndConsumesIt(): void
+    {
+        $this->withParser(self::$headerLine, function ($parser) {
+            $this->assertEquals('01', $parser->shift());
+            $this->assertEquals('SENDR1', $parser->peek());
+        });
+    }
+
     // TODO(zmd): test all the main methods without continue first (like
     //   ::drop(), etc.); behavior should match line buffer exactly when no
     //   continuations are used
