@@ -50,11 +50,11 @@ class LineBuffer
             throw new \Exception('Cannot access fields at the end of the buffer.');
         }
 
-        $value = $this->readTo($this->endOfLine + 1);
         $this->textTaken = true;
+        $value = '';
 
-        if ($value == '/') {
-            return '';
+        if ($this->readCharAt($this->cursor) !== '/') {
+            $value = $this->readTo($this->endOfLine + 1);
         }
 
         return $value;

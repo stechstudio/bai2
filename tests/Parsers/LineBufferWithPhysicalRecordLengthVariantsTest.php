@@ -145,18 +145,6 @@ final class LineBufferWithPhysicalRecordLengthVariantsTest extends TestCase
      */
     public function testCanAccessDefaultedTextField(...$bufferArgs): void
     {
-        //
-        // TODO(zmd): so, it's an error for a text field to start with a slash
-        //   (which is what is implied by there being extra stuff after the
-        //   slash for a variable length record). Nothing in the spec says we
-        //   can't just ignore anything coming after in that case, however...
-        //   (just like we MUST do when a physical record length has been
-        //   specified).
-        //
-        //   But right now what we are currently doing isn't quite right; we're
-        //   returning the trailing spaces after a defaulted text field when
-        //   processing a variable length record.
-        //
         $this->withBuffer($bufferArgs, function ($buffer) {
             $buffer->eat()->eat();
             $this->assertEquals('', $buffer->textField());
