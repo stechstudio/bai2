@@ -11,14 +11,13 @@ class LineBuffer
 
     protected int $cursor = 0;
 
+    protected ?int $physicalRecordLength = null;
+
     public function __construct(
         protected string $line,
-        protected ?int $physicalRecordLength = null
+        ?int $physicalRecordLength = null
     ) {
-        if (!is_null($this->physicalRecordLength)) {
-            $this->validatePhysicalRecordLength()->trimLine();
-        }
-
+        $this->setPhysicalRecordLength($physicalRecordLength);
         $this->endOfLine = strlen($this->line);
     }
 
@@ -29,20 +28,20 @@ class LineBuffer
 
     public function setPhysicalRecordLength(?int $physicalRecordLength): self
     {
-        // TODO(zmd): null coalescing?
-        if (!is_null($this->physicalRecordLength) && is_null($physicalRecordLength)) {
-            throw new \Exception('Cannot set physical record length to null after it has been non-null.');
+        // NOTE: if current physical record length is null, and argument is
+        // null, then we don't care (this call is a no-op in that case).
+        if (!is_null($this->physicalRecordLength)) {
+            throw new \Exception('The physical record length may be set only once.');
+        } else if (!is_null($physicalRecordLength)) {
+            $this->physicalRecordLength = $physicalRecordLength;
+            $this->validatePhysicalRecordLength()->trimLine();
         }
-
-        $this->physicalRecordLength = $physicalRecordLength;
-        $this->validatePhysicalRecordLength()->trimLine();
 
         return $this;
     }
 
     protected function validatePhysicalRecordLength(): self
     {
-        // TODO(zmd): null coalescing?
         if (!is_null($this->physicalRecordLength)) {
             if (strlen($this->line) > $this->physicalRecordLength) {
                 throw new \Exception('Input line length exceeds requested physical record length.');

@@ -72,13 +72,22 @@ final class LineBufferTest extends TestCase
         $this->buffer->setPhysicalRecordLength(80);
     }
 
-    public function testThrowsWhenTryingToSetPhysicalRecordLengthToNullAfterConstruction(): void
+    public function testThrowsWhenTryingToSetPhysicalRecordLengthToNullAfterConstructionWithLength(): void
     {
         $this->buffer = new LineBuffer('foo,bar,baz/', 80);
 
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Cannot set physical record length to null after it has been non-null.');
+        $this->expectExceptionMessage('The physical record length may be set only once.');
         $this->buffer->setPhysicalRecordLength(null);
+    }
+
+    public function testThrowsWhenTryingToSetPhysicalRecordLengthToNonNullAfterConstructionWithLength(): void
+    {
+        $this->buffer = new LineBuffer('foo,bar,baz/', 80);
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('The physical record length may be set only once.');
+        $this->buffer->setPhysicalRecordLength(100);
     }
 
     public function testThrowsWhenTryingToSetPhysicalRecordLengthToNullAfterSetingToNonNull(): void
@@ -87,8 +96,18 @@ final class LineBufferTest extends TestCase
         $this->buffer->setPhysicalRecordLength(80);
 
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Cannot set physical record length to null after it has been non-null.');
+        $this->expectExceptionMessage('The physical record length may be set only once.');
         $this->buffer->setPhysicalRecordLength(null);
+    }
+
+    public function testThrowsWhenTryingToSetPhysicalRecordLengthToNonNullAfterSetingToNonNull(): void
+    {
+        $this->buffer = new LineBuffer('foo,bar,baz/');
+        $this->buffer->setPhysicalRecordLength(80);
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('The physical record length may be set only once.');
+        $this->buffer->setPhysicalRecordLength(79);
     }
 
     public function testNoOpToSetPhysicalRecordLengthToNullWhenAlreadyNull(): void
