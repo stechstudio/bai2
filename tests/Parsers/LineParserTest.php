@@ -105,4 +105,18 @@ final class LineParserTest extends TestCase
         $this->assertEquals('', $parser->shiftText());
     }
 
+    public function testHasMoreWhenLineHasMore(): void
+    {
+        $parser = new LineParser(self::$headerLine);
+        $parser->drop(8);
+        $this->assertTrue($parser->hasMore());
+    }
+
+    public function testHasMoreWhenLineHasNoMore(): void
+    {
+        $parser = new LineParser(self::$headerLine);
+        $parser->drop(9);
+        $this->assertFalse($parser->hasMore());
+    }
+
 }
