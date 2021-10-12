@@ -72,7 +72,17 @@ class LineBuffer
 
     public function isEndOfLogicalRecord(): bool
     {
-        return $this->cursor > 0 && substr($this->line, $this->cursor - 1, 1) === '/';
+        return $this->cursor > 0 && $this->readPrevChar() === '/';
+    }
+
+    protected function readPrevChar(): string
+    {
+        return $this->readCharAt($this->cursor - 1);
+    }
+
+    protected function readCharAt(int $index): string
+    {
+        return substr($this->line, $index, 1);
     }
 
     protected function seek(string $needle): ?int {
