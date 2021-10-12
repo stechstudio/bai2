@@ -65,6 +65,22 @@ final class MultilineParserTest extends TestCase
         });
     }
 
+    public function testShiftTextReturnsTheRemainderOfBufferAsText(): void
+    {
+        $this->withParser(self::$transactionLine, function ($parser) {
+            // consume and discard the non-text fields
+            $parser->drop(13);
+
+            // Note: per the spec, text fields are always at the end of a line,
+            // and you have to at least partially parse a line first to know at
+            // what position that text field begins.
+            $this->assertEquals(
+                "The following character is, of all the path separation characters I've ever used, my absolute favorite: /",
+                $parser->shiftText()
+            );
+        });
+    }
+
     // TODO(zmd): test all the main methods without continue first (like
     //   ::drop(), etc.); behavior should match line buffer exactly when no
     //   continuations are used
