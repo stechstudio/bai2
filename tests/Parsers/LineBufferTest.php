@@ -183,6 +183,58 @@ final class LineBufferTest extends TestCase
         $this->assertEquals('bar,baz/', $field);
     }
 
+    public function testCanGetContinuedTextField(): void
+    {
+        $this->buffer = new LineBuffer('88,this is text field');
+        $field = $this->buffer->eat()->continuedTextField();
+        $this->assertEquals('this is text field', $field);
+    }
+
+    public function testCanGetContinuedTextFieldWithCommasAndSlashes(): void
+    {
+        $this->buffer = new LineBuffer(
+            '88,this is text field with ,s and /s, ending also (for the lols) with a /'
+        );
+
+        $field = $this->buffer->eat()->continuedTextField();
+
+        $this->assertEquals(
+            'this is text field with ,s and /s, ending also (for the lols) with a /',
+            $field
+        );
+    }
+
+    public function testCanGetContinuedTextFieldWhichStartsWithComma(): void
+    {
+        $this->buffer = new LineBuffer('88,,this is text field which started with comma');
+        $field = $this->buffer->eat()->continuedTextField();
+        $this->assertEquals(',this is text field which started with comma', $field);
+    }
+
+    public function testCanGetContinuedTextFieldWhichStartsWithSlash(): void
+    {
+        // You totally can't start a text field with a slash, but when you're
+        // processing a continuation of an existing text field, then this first
+        // slash isn't really the beginning of a text field at all.
+        $this->buffer = new LineBuffer(
+            '88,/this is *CONTINUED* text field which started with slash'
+        );
+
+        $field = $this->buffer->eat()->continuedTextField();
+
+        $this->assertEquals(
+            '/this is *CONTINUED* text field which started with slash',
+            $field
+        );
+    }
+
+    public function testCanGetContinuedTextFieldMultipleTimes(): void
+    {
+        $this->buffer = new LineBuffer('88,/,,/,//,,/,/because murphy/');
+        $field = $this->buffer->eat()->continuedTextField();
+        $this->assertEquals('/,,/,//,,/,/because murphy/', $field);
+    }
+
     public function testGetDefaultedField(): void
     {
         $this->buffer = new LineBuffer('foo,,baz/');
