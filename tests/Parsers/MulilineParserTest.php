@@ -90,11 +90,31 @@ final class MultilineParserTest extends TestCase
         });
     }
 
+    public function testPeekCanPeekIntoALaterField(): void
+    {
+        $this->withParser(self::$headerLineContinued, function ($parser) {
+            $parser->drop(3);
+
+            $this->assertEquals('210616', $parser->peek());
+            $this->assertEquals('210616', $parser->peek());
+        });
+    }
+
     public function testShiftReturnsNextFieldAndConsumesIt(): void
     {
         $this->withParser(self::$headerLine, function ($parser) {
             $this->assertEquals('01', $parser->shift());
             $this->assertEquals('SENDR1', $parser->peek());
+        });
+    }
+
+    public function testShiftCanExtractALaterField(): void
+    {
+        $this->withParser(self::$headerLine, function ($parser) {
+            $parser->drop(3);
+
+            $this->assertEquals('210616', $parser->shift());
+            $this->assertEquals('1700', $parser->peek());
         });
     }
 
@@ -174,16 +194,6 @@ final class MultilineParserTest extends TestCase
             $this->expectException(\Exception::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $parser->shiftText();
-        });
-    }
-
-    public function testPeekCanPeekIntoAContinuedLine(): void
-    {
-        $this->withParser(self::$headerLineContinued, function ($parser) {
-            $parser->drop(3);
-
-            $this->assertEquals('210616', $parser->peek());
-            $this->assertEquals('210616', $parser->peek());
         });
     }
 
