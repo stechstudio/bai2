@@ -306,7 +306,19 @@ final class MultilineParserTest extends TestCase
         });
     }
 
-    // testDropCanIncludeADefaultedField
+    /**
+     * @dataProvider headerWithDefaultedPhysicalRecordLengthFieldProducer
+     */
+    public function testDropCanIncludeADefaultedField($input): void
+    {
+        $this->withParser($input, function ($parser) {
+            $this->assertEquals(
+                ['01', 'SENDR1', 'RECVR1', '210616', '1700', '01', ''],
+                $parser->drop(7)
+            );
+            $this->assertEquals('10', $parser->peek());
+        });
+    }
 
     /**
      * @dataProvider transactionInputProducer
