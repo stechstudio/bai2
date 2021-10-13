@@ -81,6 +81,8 @@ final class MultilineParserTest extends TestCase
         });
     }
 
+    // TODO(zmd): test ::peek() bounds checking on multiline parser (no ::continue())
+
     // TODO(zmd): test all the main methods without continue first (like
     //   ::drop(), etc.); behavior should match line buffer exactly when no
     //   continuations are used

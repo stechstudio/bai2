@@ -20,6 +20,16 @@ final class LineParserTest extends TestCase
         $this->assertEquals('01', $parser->peek());
     }
 
+    public function testThrowsIfPeekingPastEndOfLine(): void
+    {
+        $parser = new LineParser(self::$headerLine);
+        $parser->drop(9);
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+        $parser->peek();
+    }
+
     public function testShiftReturnsNextFieldAndConsumesIt(): void
     {
         $parser = new LineParser(self::$headerLine);
