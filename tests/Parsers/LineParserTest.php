@@ -36,7 +36,14 @@ final class LineParserTest extends TestCase
         $this->assertEquals('SENDR1', $parser->peek());
     }
 
-    // TODO(zmd): testShiftCanExtractALaterField
+    public function testShiftCanExtractALaterField(): void
+    {
+        $parser = new LineParser(self::$headerLine);
+        $parser->drop(3);
+
+        $this->assertEquals('210616', $parser->shift());
+        $this->assertEquals('1700', $parser->peek());
+    }
 
     public function testDropReturnsNumFieldsRequestedAndConsumesThem(): void
     {
