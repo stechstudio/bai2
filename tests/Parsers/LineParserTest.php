@@ -9,6 +9,8 @@ final class LineParserTest extends TestCase
 
     private static string $headerLine = '01,SENDR1,RECVR1,210616,1700,01,80,10,2/';
 
+    private static string $headerWithDefaultedPhysicalRecordLengthField = '01,SENDR1,RECVR1,210616,1700,01,,10,2/';
+
     private static string $transactionLine = "16,003,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321,The following character is, of all the path separation characters I've ever used, my absolute favorite: /";
 
     private static string $transactionLineDefaultedText = '16,003,10000,D,7,1,100,2,1000,3,10000,4,100000,5,1000000,6,10000000,7,100000000,123456789,987654321,/';
@@ -27,6 +29,15 @@ final class LineParserTest extends TestCase
 
         $this->assertEquals('210616', $parser->peek());
         $this->assertEquals('210616', $parser->peek());
+    }
+
+    public function testPeekCanPeekIntoDefaultedField(): void
+    {
+        $parser = new LineParser(self::$headerWithDefaultedPhysicalRecordLengthField);
+        $parser->drop(6);
+
+        $this->assertEquals('', $parser->peek());
+        $this->assertEquals('', $parser->peek());
     }
 
     public function testShiftReturnsNextFieldAndConsumesIt(): void
