@@ -231,8 +231,22 @@ final class LineBufferTest extends TestCase
     public function testCanGetContinuedTextFieldMultipleTimes(): void
     {
         $this->buffer = new LineBuffer('88,/,,/,//,,/,/because murphy/');
-        $field = $this->buffer->eat()->continuedTextField();
-        $this->assertEquals('/,,/,//,,/,/because murphy/', $field);
+        $this->buffer->eat();
+
+        $this->assertEquals(
+            '/,,/,//,,/,/because murphy/',
+            $this->buffer->continuedTextField()
+        );
+
+        $this->assertEquals(
+            '/,,/,//,,/,/because murphy/',
+            $this->buffer->continuedTextField()
+        );
+
+        $this->assertEquals(
+            '/,,/,//,,/,/because murphy/',
+            $this->buffer->continuedTextField()
+        );
     }
 
     public function testGetDefaultedField(): void
