@@ -100,6 +100,14 @@ class LineBuffer
         return $value;
     }
 
+    public function continuedTextField(): string
+    {
+        // TODO(zmd): dedupe logic with ::textField() if possible
+        // TODO(zmd): disallow reading past end of buffer (see ::textField())
+        $this->textTaken = true;
+        return $this->readTo($this->endOfLine + 1);
+    }
+
     public function isEndOfLine(): bool
     {
         return $this->isEndOfPhysicalRecord() || $this->isEndOfLogicalRecord();
