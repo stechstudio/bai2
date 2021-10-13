@@ -53,6 +53,29 @@ final class MultilineParserTest extends TestCase
         ];
     }
 
+    public function headerInputWithUnterminatedVersionFieldProducer(): array
+    {
+        return [
+            ['01,SENDR1,RECVR1,210616,1700,01,80,10,2'],
+            [[
+                '01,SENDR1,RECVR1/',
+                '88,210616,1700/',
+                '88,01,80,10,2',
+            ]],
+            [[
+                '01/',
+                '88,SENDR1/',
+                '88,RECVR1/',
+                '88,210616/',
+                '88,1700/',
+                '88,01/',
+                '80,10/',
+                '80,80/',
+                '88,2',
+            ]],
+        ];
+    }
+
     public function transactionInputProducer(): array
     {
         return [
@@ -416,5 +439,7 @@ final class MultilineParserTest extends TestCase
             $parser->shiftText();
         });
     }
+
+    // TODO(zmd): testThrowsIfPeekingAtAnUnterminatedField
 
 }
