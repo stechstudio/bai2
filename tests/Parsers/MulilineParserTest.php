@@ -442,4 +442,6 @@ final class MultilineParserTest extends TestCase
 
     // TODO(zmd): testThrowsIfPeekingAtAnUnterminatedField
 
+    // TODO(zmd): testThrowsIfShiftingAnUnterminatedField
+
 }

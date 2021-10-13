@@ -204,4 +204,14 @@ final class LineParserTest extends TestCase
         $parser->peek();
     }
 
+    public function testThrowsIfShiftingAnUnterminatedField(): void
+    {
+        $parser = new LineParser(self::$headerInputWithUnterminatedVersionFieldProducer);
+        $parser->drop(8);
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot access last (non-text) field on unterminated input line.');
+        $parser->shift();
+    }
+
 }
