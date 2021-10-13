@@ -30,7 +30,6 @@ final class MultilineParserTest extends TestCase
         ];
     }
 
-    // TODO(zmd): use me in some tests!
     public function headerWithDefaultedPhysicalRecordLengthFieldProducer(): array
     {
         return [
@@ -283,7 +282,18 @@ final class MultilineParserTest extends TestCase
         });
     }
 
-    // TODO(zmd): testShiftCanExtractADefaultedField
+    /**
+     * @dataProvider headerWithDefaultedPhysicalRecordLengthFieldProducer
+     */
+    public function testShiftCanExtractADefaultedField($input): void
+    {
+        $this->withParser($input, function ($parser) {
+            $parser->drop(6);
+
+            $this->assertEquals('', $parser->shift());
+            $this->assertEquals('10', $parser->peek());
+        });
+    }
 
     /**
      * @dataProvider headerInputProducer
