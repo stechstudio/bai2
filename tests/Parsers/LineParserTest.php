@@ -56,6 +56,15 @@ final class LineParserTest extends TestCase
         $this->assertEquals('1700', $parser->peek());
     }
 
+    public function testShiftCanExtractADefaultedField(): void
+    {
+        $parser = new LineParser(self::$headerWithDefaultedPhysicalRecordLengthField);
+        $parser->drop(6);
+
+        $this->assertEquals('', $parser->shift());
+        $this->assertEquals('10', $parser->peek());
+    }
+
     public function testDropReturnsNumFieldsRequestedAndConsumesThem(): void
     {
         $parser = new LineParser(self::$headerLine);
