@@ -454,7 +454,19 @@ final class MultilineParserTest extends TestCase
         });
     }
 
-    // TODO(zmd): testThrowsIfShiftingAnUnterminatedField
+    /**
+     * @dataProvider headerInputWithUnterminatedVersionFieldProducer
+     */
+    public function testThrowsIfShiftingAnUnterminatedField($input): void
+    {
+        $this->withParser($input, function ($parser) {
+            $parser->drop(8);
+
+            $this->expectException(\Exception::class);
+            $this->expectExceptionMessage('Cannot access last (non-text) field on unterminated input line.');
+            $parser->shift();
+        });
+    }
 
     // TODO(zmd): testThrowsIfDroppingAnUnterminatedField
 
