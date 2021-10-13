@@ -127,13 +127,12 @@ final class MultilineParserTest extends TestCase
             $parser->drop(13);
 
             // shift off the remaining text field
-            var_dump($parser->shiftText());
+            $parser->shiftText();
 
             // make it go boom!
             $this->expectException(\Exception::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
-            var_dump($parser->shiftText());
-            var_dump($parser->shiftText());
+            $parser->shiftText();
         });
     }
 

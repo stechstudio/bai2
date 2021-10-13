@@ -37,7 +37,7 @@ class MultilineParser
     //   once.
     public function shiftText(): string
     {
-        $text = '';
+        $text = $this->currentOrNextLine()->shiftText();
 
         while ($this->currentOrNextLine()->hasMore()) {
             $text .= $this->currentOrNextLine()->shiftText();
