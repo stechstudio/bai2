@@ -33,13 +33,14 @@ class MultilineParser
         return $this->currentOrNextLine()->shift();
     }
 
-    // TODO(zmd): scold any user who tries to call ::shiftText() more than
-    //   once.
     public function shiftText(): string
     {
         $text = $this->currentOrNextLine()->shiftText();
 
         while ($this->currentOrNextLine()->hasMore()) {
+            // TODO(zmd): we're gonna need a ::shiftContinuedText() from
+            //   underlying LineParser, and it will need the LineBuffer to
+            //   provide a ::continuedTextField()
             $text .= $this->currentOrNextLine()->shiftText();
         }
 
