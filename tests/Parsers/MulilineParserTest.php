@@ -111,6 +111,15 @@ final class MultilineParserTest extends TestCase
         });
     }
 
+    public function testThrowsIfDroppingMoreThanAvailableInBuffer(): void
+    {
+        $this->withParser(self::$headerLine, function ($parser) {
+            $this->expectException(\Exception::class);
+            $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+            $parser->drop(10);
+        });
+    }
+
     // TODO(zmd): test all the main methods without continue first (like
     //   ::drop(), etc.); behavior should match line buffer exactly when no
     //   continuations are used
