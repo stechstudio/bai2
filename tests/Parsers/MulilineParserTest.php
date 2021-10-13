@@ -92,6 +92,25 @@ final class MultilineParserTest extends TestCase
         });
     }
 
+    public function testThrowsIfShiftingPastEndOfLine(): void
+    {
+        $this->withParser(self::$headerLine, function ($parser) {
+            $parser->shift();
+            $parser->shift();
+            $parser->shift();
+            $parser->shift();
+            $parser->shift();
+            $parser->shift();
+            $parser->shift();
+            $parser->shift();
+            $parser->shift();
+
+            $this->expectException(\Exception::class);
+            $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+            $parser->shift();
+        });
+    }
+
     // TODO(zmd): test all the main methods without continue first (like
     //   ::drop(), etc.); behavior should match line buffer exactly when no
     //   continuations are used
