@@ -31,7 +31,7 @@ final class MultilineParserTest extends TestCase
     }
 
     // TODO(zmd): use me in some tests!
-    public function headerWithDefaultedPhysicalRecordLengthField(): array
+    public function headerWithDefaultedPhysicalRecordLengthFieldProducer(): array
     {
         return [
             ['01,SENDR1,RECVR1,210616,1700,01,,10,2/'],
@@ -47,8 +47,8 @@ final class MultilineParserTest extends TestCase
                 '88,210616/',
                 '88,1700/',
                 '88,01/',
-                '80,10/',
-                '80,/',
+                '88,/',
+                '88,10/',
                 '88,2/',
             ]],
         ];
@@ -246,7 +246,18 @@ final class MultilineParserTest extends TestCase
         });
     }
 
-    // TODO(zmd): testPeekCanPeekIntoDefaultedField
+    /**
+     * @dataProvider headerWithDefaultedPhysicalRecordLengthFieldProducer
+     */
+    public function testPeekCanPeekIntoDefaultedField($input): void
+    {
+        $this->withParser($input, function ($parser) {
+            $parser->drop(6);
+
+            $this->assertEquals('', $parser->peek());
+            $this->assertEquals('', $parser->peek());
+        });
+    }
 
     /**
      * @dataProvider headerInputProducer
