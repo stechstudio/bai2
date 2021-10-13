@@ -30,6 +30,30 @@ final class MultilineParserTest extends TestCase
         ];
     }
 
+    // TODO(zmd): use me in some tests!
+    public function headerWithDefaultedPhysicalRecordLengthField(): array
+    {
+        return [
+            ['01,SENDR1,RECVR1,210616,1700,01,,10,2/'],
+            [[
+                '01,SENDR1,RECVR1/',
+                '88,210616,1700/',
+                '88,01,,10,2/',
+            ]],
+            [[
+                '01/',
+                '88,SENDR1/',
+                '88,RECVR1/',
+                '88,210616/',
+                '88,1700/',
+                '88,01/',
+                '80,10/',
+                '80,/',
+                '88,2/',
+            ]],
+        ];
+    }
+
     public function transactionInputProducer(): array
     {
         return [
@@ -97,6 +121,49 @@ final class MultilineParserTest extends TestCase
             //     '88, my absolute favorite: ',
             //     '88,/',
             // ]],
+        ];
+    }
+
+    public function transactionWithDefaultedTextInputProducer(): array
+    {
+        return [
+            ['16,003,10000,D,7,1,100,2,1000,3,10000,4,100000,5,1000000,6,10000000,7,100000000,123456789,987654321,/'],
+            [[
+                '16,003,10000/',
+                '88,D,7/',
+                '88,1,100/',
+                '88,2,1000/',
+                '88,3,10000/',
+                '88,4,100000/',
+                '88,5,1000000/',
+                '88,6,10000000/',
+                '88,7,100000000/',
+                '88,123456789,987654321,/',
+            ]],
+            [[
+                '16/',
+                '88,003/',
+                '88,10000/',
+                '88,D/',
+                '88,7/',
+                '88,1/',
+                '88,100/',
+                '88,2/',
+                '88,1000/',
+                '88,3/',
+                '88,10000/',
+                '88,4/',
+                '88,100000/',
+                '88,5/',
+                '88,1000000/',
+                '88,6/',
+                '88,10000000/',
+                '88,7/',
+                '88,100000000/',
+                '88,123456789/',
+                '88,987654321/',
+                '88,/',
+            ]],
         ];
     }
 
@@ -230,6 +297,17 @@ final class MultilineParserTest extends TestCase
                 "The following character is, of all the path separation characters I've ever used, my absolute favorite: /",
                 $parser->shiftText()
             );
+        });
+    }
+
+    /**
+     * @dataProvider transactionWithDefaultedTextInputProducer
+     */
+    public function testShiftOffDefaultedTextField($input): void
+    {
+        $this->withParser($input, function ($parser) {
+            $parser->drop(21);
+            $this->assertEquals('', $parser->shiftText());
         });
     }
 
