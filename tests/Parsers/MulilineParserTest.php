@@ -24,6 +24,7 @@ final class MultilineParserTest extends TestCase
                 '88,1700/',
                 '88,01/',
                 '80,10/',
+                '80,80/',
                 '88,2/'
             ]],
         ];
