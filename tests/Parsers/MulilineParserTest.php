@@ -20,7 +20,7 @@ final class MultilineParserTest extends TestCase
     private static array $transactionLineContinued = [
         '16,003,10000,D/',
         '88,3,1,1000,5,10000,30/',
-        ',25000,123456789,987654321,The following',
+        '88,25000,123456789,987654321,The following',
         '88,character is, of all the path separation ',
         "88,characters I've ever used, my absolute favorite: /",
     ];
@@ -39,6 +39,47 @@ final class MultilineParserTest extends TestCase
 
             $callable($parser);
         }
+    }
+
+    public function testContinueCanBeUsedToAddContinuationRecords(): void
+    {
+        $this->withParser('01,SENDR1,RECVR1/', function ($parser) {
+            // only the 3 fields
+            $this->assertEquals(['01', 'SENDR1', 'RECVR1'], $parser->drop(3));
+
+            // can shift no more for we did not ::continue() any more
+            try {
+                $parser->shift();
+            } catch (\Exception $e) {
+                $this->assertEquals(
+                    'Cannot access fields at the end of the buffer.',
+                    $e->getMessage()
+                );
+            }
+        });
+
+        $this->withParser('01,SENDR1,RECVR1/', function ($parser) {
+            $parser->continue('88,210616,1700/');
+            $parser->continue('88,01,80,10,2/');
+
+            // we have the 3 fields
+            $this->assertEquals(['01', 'SENDR1', 'RECVR1'], $parser->drop(3));
+
+            // and more!
+            $firstContinuedField = $parser->shift();
+
+            $this->assertNotEquals(
+                '88',
+                $firstContinuedField,
+                '88 record type field should have been discarded.'
+            );
+
+            $this->assertEquals('210616', $firstContinuedField);
+            $this->assertEquals(
+                ['1700', '01', '80', '10', '2'],
+                $parser->drop(5)
+            );
+        });
     }
 
     public function testPeekReturnsNextFieldWithoutConsumingIt(): void
@@ -135,16 +176,6 @@ final class MultilineParserTest extends TestCase
             $parser->shiftText();
         });
     }
-
-    // TODO(zmd): test all the main methods without continue first (like
-    //   ::drop(), etc.); behavior should match line buffer exactly when no
-    //   continuations are used
-
-    // TODO(zmd): test ::continue() before testing the various function's
-    //   behavior in light of the use of ::continue()?
-
-    // TODO(zmd): test that ::continue() skips over the record type field (so
-    //   the next ::peek() or ::shift() will NOT be '88')
 
     public function testPeekCanPeekIntoAContinuedLine(): void
     {
