@@ -81,7 +81,16 @@ final class MultilineParserTest extends TestCase
         });
     }
 
-    // TODO(zmd): test ::peek() bounds checking on multiline parser (no ::continue())
+    public function testThrowsIfPeekingPastEndOfLine(): void
+    {
+        $this->withParser(self::$headerLine, function ($parser) {
+            $parser->drop(9);
+
+            $this->expectException(\Exception::class);
+            $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+            $parser->peek();
+        });
+    }
 
     // TODO(zmd): test all the main methods without continue first (like
     //   ::drop(), etc.); behavior should match line buffer exactly when no
