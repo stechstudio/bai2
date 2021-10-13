@@ -72,6 +72,14 @@ final class LineParserTest extends TestCase
         $this->assertEquals('210616', $parser->peek());
     }
 
+    public function testDropCanIncludeADefaultedField(): void
+    {
+        $parser = new LineParser(self::$headerWithDefaultedPhysicalRecordLengthField);
+
+        $this->assertEquals(['01', 'SENDR1', 'RECVR1', '210616', '1700', '01', ''], $parser->drop(7));
+        $this->assertEquals('10', $parser->peek());
+    }
+
     public function testShiftTextReturnsTheRemainderOfBufferAsText(): void
     {
         $parser = new LineParser(self::$transactionLine);
