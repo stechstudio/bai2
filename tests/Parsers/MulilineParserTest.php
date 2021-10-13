@@ -7,25 +7,66 @@ use PHPUnit\Framework\TestCase;
 final class MultilineParserTest extends TestCase
 {
 
-    private static string $headerLine = '01,SENDR1,RECVR1,210616,1700,01,80,10,2/';
+    public function headerInputProducer(): array
+    {
+        return [
+            ['01,SENDR1,RECVR1,210616,1700,01,80,10,2/'],
+            [[
+                '01,SENDR1,RECVR1/',
+                '88,210616,1700/',
+                '88,01,80,10,2/'
+            ]],
+            [[
+                '01/',
+                '88,SENDR1/',
+                '88,RECVR1/',
+                '88,210616/',
+                '88,1700/',
+                '88,01/',
+                '80,10/',
+                '88,2/'
+            ]],
+        ];
+    }
 
-    private static array $headerLineContinued = [
-        '01,SENDR1,RECVR1/',
-        '88,210616,1700/',
-        '88,01,80,10,2/'
-    ];
-
-    private static string $transactionLine = "16,003,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321,The following character is, of all the path separation characters I've ever used, my absolute favorite: /";
-
-    private static array $transactionLineContinued = [
-        '16,003,10000,D/',
-        '88,3,1,1000,5,10000,30/',
-        '88,25000,123456789,987654321,The following',
-        '88,character is, of all the path separation ',
-        "88,characters I've ever used, my absolute favorite: /",
-    ];
-
-    private static string $transactionLineDefaultedText = "16,003,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321,/";
+    public function transactionInputProducer(): array
+    {
+        return [
+            ["16,003,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321,The following character is, of all the path separation characters I've ever used, my absolute favorite: /"],
+            [[
+                '16,003,10000,D/',
+                '88,3,1,1000,5,10000,30/',
+                '88,25000,123456789,987654321,The following ',
+                '88,character is, of all the path separation ',
+                "88,characters I've ever used, my absolute favorite: /",
+            ]],
+            [[
+                '16/',
+                '88,003/',
+                '88,10000/',
+                '88,D/',
+                '88,3/',
+                '88,1/',
+                '88,1000/',
+                '88,5/',
+                '88,10000/',
+                '88,30/',
+                '88,25000/',
+                '88,123456789/',
+                '88,987654321/',
+                '88,The',
+                '88, following ',
+                '88,character ',
+                '88,is, ',
+                '88,of all the path separation ',
+                '88,characters',
+                "88, I've ever ",
+                '88,used,',
+                '88, my absolute favorite: ',
+                '88,/',
+            ]],
+        ];
+    }
 
     private function withParser(string|array $input, callable $callable): void
     {
@@ -82,17 +123,23 @@ final class MultilineParserTest extends TestCase
         });
     }
 
-    public function testPeekReturnsNextFieldWithoutConsumingIt(): void
+    /**
+     * @dataProvider headerInputProducer
+     */
+    public function testPeekReturnsNextFieldWithoutConsumingIt($input): void
     {
-        $this->withParser(self::$headerLine, function ($parser) {
+        $this->withParser($input, function ($parser) {
             $this->assertEquals('01', $parser->peek());
             $this->assertEquals('01', $parser->peek());
         });
     }
 
-    public function testPeekCanPeekIntoALaterField(): void
+    /**
+     * @dataProvider headerInputProducer
+     */
+    public function testPeekCanPeekIntoALaterField($input): void
     {
-        $this->withParser(self::$headerLineContinued, function ($parser) {
+        $this->withParser($input, function ($parser) {
             $parser->drop(3);
 
             $this->assertEquals('210616', $parser->peek());
@@ -100,17 +147,23 @@ final class MultilineParserTest extends TestCase
         });
     }
 
-    public function testShiftReturnsNextFieldAndConsumesIt(): void
+    /**
+     * @dataProvider headerInputProducer
+     */
+    public function testShiftReturnsNextFieldAndConsumesIt($input): void
     {
-        $this->withParser(self::$headerLine, function ($parser) {
+        $this->withParser($input, function ($parser) {
             $this->assertEquals('01', $parser->shift());
             $this->assertEquals('SENDR1', $parser->peek());
         });
     }
 
-    public function testShiftCanExtractALaterField(): void
+    /**
+     * @dataProvider headerInputProducer
+     */
+    public function testShiftCanExtractALaterField($input): void
     {
-        $this->withParser(self::$headerLine, function ($parser) {
+        $this->withParser($input, function ($parser) {
             $parser->drop(3);
 
             $this->assertEquals('210616', $parser->shift());
@@ -118,17 +171,23 @@ final class MultilineParserTest extends TestCase
         });
     }
 
-    public function testDropReturnsNumFieldsRequestedAndConsumesThem(): void
+    /**
+     * @dataProvider headerInputProducer
+     */
+    public function testDropReturnsNumFieldsRequestedAndConsumesThem($input): void
     {
-        $this->withParser(self::$headerLine, function ($parser) {
+        $this->withParser($input, function ($parser) {
             $this->assertEquals(['01', 'SENDR1', 'RECVR1'], $parser->drop(3));
             $this->assertEquals('210616', $parser->peek());
         });
     }
 
-    public function testShiftTextReturnsTheRemainderOfBufferAsText(): void
+    /**
+     * @dataProvider transactionInputProducer
+     */
+    public function testShiftTextReturnsTheRemainderOfBufferAsText($input): void
     {
-        $this->withParser(self::$transactionLine, function ($parser) {
+        $this->withParser($input, function ($parser) {
             // consume and discard the non-text fields
             $parser->drop(13);
 
@@ -142,9 +201,12 @@ final class MultilineParserTest extends TestCase
         });
     }
 
-    public function testThrowsIfPeekingPastEndOfLine(): void
+    /**
+     * @dataProvider headerInputProducer
+     */
+    public function testThrowsIfPeekingPastEndOfLine($input): void
     {
-        $this->withParser(self::$headerLine, function ($parser) {
+        $this->withParser($input, function ($parser) {
             $parser->drop(9);
 
             $this->expectException(\Exception::class);
@@ -153,9 +215,12 @@ final class MultilineParserTest extends TestCase
         });
     }
 
-    public function testThrowsIfShiftingPastEndOfLine(): void
+    /**
+     * @dataProvider headerInputProducer
+     */
+    public function testThrowsIfShiftingPastEndOfLine($input): void
     {
-        $this->withParser(self::$headerLine, function ($parser) {
+        $this->withParser($input, function ($parser) {
             $parser->shift();
             $parser->shift();
             $parser->shift();
@@ -172,18 +237,24 @@ final class MultilineParserTest extends TestCase
         });
     }
 
-    public function testThrowsIfDroppingMoreThanAvailableInBuffer(): void
+    /**
+     * @dataProvider headerInputProducer
+     */
+    public function testThrowsIfDroppingMoreThanAvailableInBuffer($input): void
     {
-        $this->withParser(self::$headerLine, function ($parser) {
+        $this->withParser($input, function ($parser) {
             $this->expectException(\Exception::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $parser->drop(10);
         });
     }
 
-    public function testThrowsIfShiftingTextPastEndOfLine(): void
+    /**
+     * @dataProvider transactionInputProducer
+     */
+    public function testThrowsIfShiftingTextPastEndOfLine($input): void
     {
-        $this->withParser(self::$transactionLine, function ($parser) {
+        $this->withParser($input, function ($parser) {
             // consume and discard the non-text fields
             $parser->drop(13);
 
