@@ -20,6 +20,15 @@ final class LineParserTest extends TestCase
         $this->assertEquals('01', $parser->peek());
     }
 
+    public function testPeekCanPeekIntoALaterField(): void
+    {
+        $parser = new LineParser(self::$headerLine);
+        $parser->drop(3);
+
+        $this->assertEquals('210616', $parser->peek());
+        $this->assertEquals('210616', $parser->peek());
+    }
+
     public function testThrowsIfPeekingPastEndOfLine(): void
     {
         $parser = new LineParser(self::$headerLine);
