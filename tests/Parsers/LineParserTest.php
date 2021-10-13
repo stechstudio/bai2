@@ -11,7 +11,7 @@ final class LineParserTest extends TestCase
 
     private static string $transactionLine = "16,003,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321,The following character is, of all the path separation characters I've ever used, my absolute favorite: /";
 
-    private static string $transactionLineDefaultedText = "16,003,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321,/";
+    private static string $transactionLineDefaultedText = '16,003,10000,D,7,1,100,2,1000,3,10000,4,100000,5,1000000,6,10000000,7,100000000,123456789,987654321,/';
 
     public function testPeekReturnsNextFieldWithoutConsumingIt(): void
     {
@@ -29,16 +29,6 @@ final class LineParserTest extends TestCase
         $this->assertEquals('210616', $parser->peek());
     }
 
-    public function testThrowsIfPeekingPastEndOfLine(): void
-    {
-        $parser = new LineParser(self::$headerLine);
-        $parser->drop(9);
-
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
-        $parser->peek();
-    }
-
     public function testShiftReturnsNextFieldAndConsumesIt(): void
     {
         $parser = new LineParser(self::$headerLine);
@@ -46,38 +36,13 @@ final class LineParserTest extends TestCase
         $this->assertEquals('SENDR1', $parser->peek());
     }
 
-    public function testThrowsIfShiftingPastEndOfLine(): void
-    {
-        $parser = new LineParser(self::$headerLine);
-        $parser->shift();
-        $parser->shift();
-        $parser->shift();
-        $parser->shift();
-        $parser->shift();
-        $parser->shift();
-        $parser->shift();
-        $parser->shift();
-        $parser->shift();
-
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
-        $parser->shift();
-    }
+    // TODO(zmd): testShiftCanExtractALaterField
 
     public function testDropReturnsNumFieldsRequestedAndConsumesThem(): void
     {
         $parser = new LineParser(self::$headerLine);
         $this->assertEquals(['01', 'SENDR1', 'RECVR1'], $parser->drop(3));
         $this->assertEquals('210616', $parser->peek());
-    }
-
-    public function testThrowsIfDroppingMoreThanAvailableInBuffer(): void
-    {
-        $parser = new LineParser(self::$headerLine);
-
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
-        $parser->drop(10);
     }
 
     public function testShiftTextReturnsTheRemainderOfBufferAsText(): void
@@ -96,28 +61,12 @@ final class LineParserTest extends TestCase
         );
     }
 
-    public function testThrowsIfShiftingTextPastEndOfLine(): void
-    {
-        $parser = new LineParser(self::$transactionLine);
-
-        // consume and discard the non-text fields
-        $parser->drop(13);
-
-        // shift off the remaining text field
-        $parser->shiftText();
-
-        // make it go boom!
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
-        $parser->shiftText();
-    }
-
-    public function testShiftTextReturnsEmptyStringForDefaultedTextField(): void
+    public function testShiftOffDefaultedTextField(): void
     {
         $parser = new LineParser(self::$transactionLineDefaultedText);
 
         // consume and discard the non-text fields
-        $parser->drop(13);
+        $parser->drop(21);
 
         // Note: per the spec, text fields which are defaulted are denominated
         // with ,/
@@ -150,6 +99,59 @@ final class LineParserTest extends TestCase
         $parser = new LineParser(self::$headerLine);
         $parser->drop(9);
         $this->assertTrue($parser->isEndOfLine());
+    }
+
+    public function testThrowsIfPeekingPastEndOfLine(): void
+    {
+        $parser = new LineParser(self::$headerLine);
+        $parser->drop(9);
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+        $parser->peek();
+    }
+
+    public function testThrowsIfShiftingPastEndOfLine(): void
+    {
+        $parser = new LineParser(self::$headerLine);
+        $parser->shift();
+        $parser->shift();
+        $parser->shift();
+        $parser->shift();
+        $parser->shift();
+        $parser->shift();
+        $parser->shift();
+        $parser->shift();
+        $parser->shift();
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+        $parser->shift();
+    }
+
+    public function testThrowsIfDroppingMoreThanAvailableInBuffer(): void
+    {
+        $parser = new LineParser(self::$headerLine);
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+        $parser->drop(10);
+    }
+
+    public function testThrowsIfShiftingTextPastEndOfLine(): void
+    {
+        $parser = new LineParser(self::$transactionLine);
+
+        // consume and discard the non-text fields
+        $parser->drop(13);
+
+        // shift off the remaining text field
+        $parser->shiftText();
+
+        // make it go boom!
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+        $parser->shiftText();
     }
 
 }
