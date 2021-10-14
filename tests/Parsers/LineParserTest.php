@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 final class LineParserTest extends TestCase
 {
 
-    private static string $headerLine = '01,SENDR1,RECVR1,210616,1700,01,80,10,2/';
+    private static string $headerLine = '01,SENDR1,RECVR1,210616,1700,01,50,10,2/';
 
     private static string $headerWithDefaultedPhysicalRecordLengthField = '01,SENDR1,RECVR1,210616,1700,01,,10,2/';
 
@@ -161,6 +161,37 @@ final class LineParserTest extends TestCase
     {
         $parser = new LineParser(self::$headerLine);
         $parser->drop(9);
+        $this->assertTrue($parser->isEndOfLine());
+    }
+
+    public function testConstructWithPhysicalRecordLengthCorrectlyHandlesPadding(): void
+    {
+        $line = self::$headerLine . '          ';
+        $this->assertEquals(50, strlen($line));
+        $parser = new LineParser($line, 50);
+        $parser->drop(8);
+        $this->assertEquals('2', $parser->shift());
+        $this->assertTrue($parser->isEndOfLine());
+
+        $line = self::$headerLine . 'abcdefghij';
+        $this->assertEquals(50, strlen($line));
+        $parser = new LineParser($line, 50);
+        $parser->drop(8);
+        $this->assertEquals('2', $parser->shift());
+        $this->assertTrue($parser->isEndOfLine());
+
+        $line = self::$continuationTextLine . '         ';
+        $this->assertEquals(70, strlen($line));
+        $parser = new LineParser($line, null);
+        $parser->shift();
+        $this->assertEquals(' and, as I was saying, I have been continued mid-sentence.         ', $parser->shiftText());
+        $this->assertTrue($parser->isEndOfLine());
+
+        $line = self::$continuationTextLine . '         ';
+        $this->assertEquals(70, strlen($line));
+        $parser = new LineParser($line, 70);
+        $parser->shift();
+        $this->assertEquals(' and, as I was saying, I have been continued mid-sentence.', $parser->shiftText());
         $this->assertTrue($parser->isEndOfLine());
     }
 
