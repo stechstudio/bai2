@@ -17,6 +17,10 @@ final class LineParserTest extends TestCase
 
     private static string $transactionLineDefaultedText = '16,003,10000,D,7,1,100,2,1000,3,10000,4,100000,5,1000000,6,10000000,7,100000000,123456789,987654321,/';
 
+    private static string $continuationTextLine = '88, and, as I was saying, I have been continued mid-sentence.';
+
+    private static string $continuationTextSlashLine = '88,/';
+
     public function testPeekReturnsNextFieldWithoutConsumingIt(): void
     {
         $parser = new LineParser(self::$headerLine);
@@ -113,6 +117,25 @@ final class LineParserTest extends TestCase
         $this->assertEquals('', $parser->shiftText());
     }
 
+    public function testShiftContinuedTextReturnsTheRemainderOfBufferAsText(): void
+    {
+        $parser = new LineParser(self::$continuationTextLine);
+        $parser->drop(1);
+
+        $this->assertEquals(
+            ' and, as I was saying, I have been continued mid-sentence.',
+            $parser->shiftContinuedText()
+        );
+    }
+
+    public function testShiftContinuedTextDoesNotTreatSlashSpecially(): void
+    {
+        $parser = new LineParser(self::$continuationTextSlashLine);
+        $parser->drop(1);
+
+        $this->assertEquals('/', $parser->shiftContinuedText());
+    }
+
     public function testHasMoreWhenLineHasMore(): void
     {
         $parser = new LineParser(self::$headerLine);
@@ -192,6 +215,17 @@ final class LineParserTest extends TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
         $parser->shiftText();
+    }
+
+    public function testThrowsIfShiftingContinuedTextPastEndOfLine(): void
+    {
+        $parser = new LineParser(self::$continuationTextLine);
+        $parser->drop(1);
+        $parser->shiftContinuedText();
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+        $parser->shiftContinuedText();
     }
 
     public function testThrowsIfPeekingAtAnUnterminatedField(): void
