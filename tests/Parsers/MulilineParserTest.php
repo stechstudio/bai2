@@ -140,6 +140,26 @@ final class MultilineParserTest extends TestCase
         ];
     }
 
+    public function transactionWithPaddedInputForNoPhysicalRecordLengthProducer(): array
+    {
+        return [
+            [[
+                '16,003,10000,D/                                                                 ',
+                '88,3,1,1000,5,10000,30/                                                         ',
+                '88,25000,123456789,987654321,The following                                      ',
+                '88, character is, of all the path separation                                    ',
+                "88, characters I've ever used, my absolute favorite: /                          ",
+            ]],
+            [[
+                '16,003,10000,D/-----------------------------------------------------------------',
+                '88,3,1,1000,5,10000,30/+++++++++++++++++++++++++++++++++++++++++++++++++++++++++',
+                '88,25000,123456789,987654321,The following                                      ',
+                '88, character is, of all the path separation                                    ',
+                "88, characters I've ever used, my absolute favorite: /                          ",
+            ]],
+        ];
+    }
+
     public function transactionWithPaddedInputProducer(): array
     {
         return [
@@ -462,7 +482,24 @@ final class MultilineParserTest extends TestCase
         });
     }
 
-    // TODO(zmd): testConstructWithoutPhysicalRecordLengthCorrectlyHandlesPadding
+    /**
+     * @dataProvider transactionWithPaddedInputForNoPhysicalRecordLengthProducer
+     */
+    public function testConstructWithoutPhysicalRecordLengthCorrectlyHandlesPadding(string|array $input): void
+    {
+        $this->withParser($input, function ($parser) {
+            $this->assertEquals(
+                ['16', '003', '10000', 'D', '3', '1', '1000', '5', '10000', '30', '25000', '123456789', '987654321'],
+                $parser->drop(13)
+            );
+            $this->assertEquals(
+                'The following                                      '
+                    . ' character is, of all the path separation                                    '
+                    . " characters I've ever used, my absolute favorite: /                          ",
+                $parser->shiftText()
+            );
+        });
+    }
 
     // TODO(zmd): testConstructWithPhysicalRecordLengthCorrectlyHandlesPadding
 
