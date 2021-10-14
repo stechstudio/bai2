@@ -48,6 +48,23 @@ final class LineBufferTest extends TestCase
         );
     }
 
+    public function testSettingPhysicalRecordLengthTruncatesTrailingWhitespaceFromContinuedTextField(): void
+    {
+        $this->buffer = new LineBuffer('foo,bar,baz/                                                                    ');
+        $this->buffer->eat()->eat();
+
+        $this->assertEquals(
+            'baz/                                                                    ',
+            $this->buffer->continuedTextField()
+        );
+
+        $this->buffer->setPhysicalRecordLength(80);
+        $this->assertEquals(
+            'baz/',
+            $this->buffer->continuedTextField()
+        );
+    }
+
     /**
      * @testWith ["foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz/"]
      *           ["foo,bar,baz/                                                                        "]
