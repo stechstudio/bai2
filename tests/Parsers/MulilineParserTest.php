@@ -238,6 +238,23 @@ final class MultilineParserTest extends TestCase
         });
     }
 
+    public function testContinueCanBeUsedToAddContinuationRecordsAfterReadingFields(): void
+    {
+        $this->withParser('01,SENDR1,RECVR1/', function ($parser) {
+            // for a limited time...
+            $this->assertEquals(['01', 'SENDR1', 'RECVR1'], $parser->drop(3));
+
+            // but wait, there's more!
+            $parser->continue('88,210616,1700/');
+            $this->assertEquals('210616', $parser->shift(3));
+            $this->assertEquals('1700', $parser->shift(3));
+
+            // order within the next 24 hours and...
+            $parser->continue('88,01,80,10,2/');
+            $this->assertEquals(['01', '80', '10', '2'], $parser->drop(4));
+        });
+    }
+
     /**
      * @dataProvider headerInputProducer
      */
