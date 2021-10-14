@@ -260,6 +260,20 @@ final class MultilineParserTest extends TestCase
         ];
     }
 
+    public function transactionWithPaddedInputTooLongProducer(): array
+    {
+        return [
+            ["16,003,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321,The following character is, of all the path separation characters I've ever used, my absolute favorite: /"],
+            [[
+                '16,003,10000,D/                                                                 ',
+                '88,3,1,1000,5,10000,30/                                                         ',
+                '88,25000,123456789,987654321,The following                                      ',
+                '88, character is, of all the path separation                                    ',
+                "88, characters I've ever used, my absolute favorite: /                           ",
+            ]],
+        ];
+    }
+
     public function transactionWithDefaultedTextInputProducer(): array
     {
         return [
@@ -759,8 +773,26 @@ final class MultilineParserTest extends TestCase
         });
     }
 
-    // TODO(zmd): testThrowsWhenContructWithLineLongerThanPhysicalLength
+    /**
+     * @dataProvider transactionWithPaddedInputTooLongProducer
+     */
+    public function testThrowsWhenContructWithLineLongerThanPhysicalLength(string|array $input): void
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
+        $this->withPhysicalRecordLengthParser($input, 80, function ($parser) {});
+    }
 
-    // TODO(zmd): testThrowsWhenSetPhysicalRecordLengthExceedingOriginalLineLength
+    /**
+     * @dataProvider transactionWithPaddedInputTooLongProducer
+     */
+    public function testThrowsWhenSetPhysicalRecordLengthExceedingOriginalLineLength(string|array $input): void
+    {
+        $this->withParser($input, function ($parser) {
+            $this->expectException(\Exception::class);
+            $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
+            $parser->setPhysicalRecordLength(80);
+        });
+    }
 
 }
