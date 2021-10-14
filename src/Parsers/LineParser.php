@@ -40,6 +40,13 @@ class LineParser
         return $field;
     }
 
+    public function shiftContinuedText(): string
+    {
+        $field = $this->buffer->continuedTextField();
+        $this->buffer->eat();
+        return $field;
+    }
+
     public function hasMore(): bool
     {
         return !$this->isEndOfLine();
