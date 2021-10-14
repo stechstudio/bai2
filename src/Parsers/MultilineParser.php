@@ -38,10 +38,7 @@ class MultilineParser
         $text = $this->currentOrNextLine()->shiftText();
 
         while ($this->currentOrNextLine()->hasMore()) {
-            // TODO(zmd): we're gonna need a ::shiftContinuedText() from
-            //   underlying LineParser, and it will need the LineBuffer to
-            //   provide a ::continuedTextField()
-            $text .= $this->currentOrNextLine()->shiftText();
+            $text .= $this->currentOrNextLine()->shiftContinuedText();
         }
 
         return $text;

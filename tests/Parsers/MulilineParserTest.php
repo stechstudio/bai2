@@ -112,37 +112,31 @@ final class MultilineParserTest extends TestCase
                 '88, my absolute favorite:',
                 '88, /',
             ]],
-
-            //
-            // TODO(zmd): the following data should be usable for shifting off
-            //   a single slash from continued text, but we need to do a couple
-            //   things to enable that.
-            //
-            // [[
-            //     '16/',
-            //     '88,003/',
-            //     '88,10000/',
-            //     '88,D/',
-            //     '88,3/',
-            //     '88,1/',
-            //     '88,1000/',
-            //     '88,5/',
-            //     '88,10000/',
-            //     '88,30/',
-            //     '88,25000/',
-            //     '88,123456789/',
-            //     '88,987654321/',
-            //     '88,The',
-            //     '88, following ',
-            //     '88,character ',
-            //     '88,is, ',
-            //     '88,of all the path separation ',
-            //     '88,characters',
-            //     "88, I've ever ",
-            //     '88,used,',
-            //     '88, my absolute favorite: ',
-            //     '88,/',
-            // ]],
+            [[
+                '16/',
+                '88,003/',
+                '88,10000/',
+                '88,D/',
+                '88,3/',
+                '88,1/',
+                '88,1000/',
+                '88,5/',
+                '88,10000/',
+                '88,30/',
+                '88,25000/',
+                '88,123456789/',
+                '88,987654321/',
+                '88,The',
+                '88, following ',
+                '88,character ',
+                '88,is, ',
+                '88,of all the path separation ',
+                '88,characters',
+                "88, I've ever ",
+                '88,used,',
+                '88, my absolute favorite: ',
+                '88,/',
+            ]],
         ];
     }
 
