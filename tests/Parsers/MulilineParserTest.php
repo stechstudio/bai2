@@ -258,7 +258,7 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider headerInputProducer
      */
-    public function testPeekReturnsNextFieldWithoutConsumingIt($input): void
+    public function testPeekReturnsNextFieldWithoutConsumingIt(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
             $this->assertEquals('01', $parser->peek());
@@ -269,7 +269,7 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider headerInputProducer
      */
-    public function testPeekCanPeekIntoALaterField($input): void
+    public function testPeekCanPeekIntoALaterField(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
             $parser->drop(3);
@@ -282,7 +282,7 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider headerWithDefaultedPhysicalRecordLengthFieldProducer
      */
-    public function testPeekCanPeekIntoDefaultedField($input): void
+    public function testPeekCanPeekIntoDefaultedField(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
             $parser->drop(6);
@@ -295,7 +295,7 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider headerInputProducer
      */
-    public function testShiftReturnsNextFieldAndConsumesIt($input): void
+    public function testShiftReturnsNextFieldAndConsumesIt(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
             $this->assertEquals('01', $parser->shift());
@@ -306,7 +306,7 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider headerInputProducer
      */
-    public function testShiftCanExtractALaterField($input): void
+    public function testShiftCanExtractALaterField(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
             $parser->drop(3);
@@ -319,7 +319,7 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider headerWithDefaultedPhysicalRecordLengthFieldProducer
      */
-    public function testShiftCanExtractADefaultedField($input): void
+    public function testShiftCanExtractADefaultedField(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
             $parser->drop(6);
@@ -332,7 +332,7 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider headerInputProducer
      */
-    public function testDropReturnsNumFieldsRequestedAndConsumesThem($input): void
+    public function testDropReturnsNumFieldsRequestedAndConsumesThem(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
             $this->assertEquals(['01', 'SENDR1', 'RECVR1'], $parser->drop(3));
@@ -343,7 +343,7 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider headerWithDefaultedPhysicalRecordLengthFieldProducer
      */
-    public function testDropCanIncludeADefaultedField($input): void
+    public function testDropCanIncludeADefaultedField(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
             $this->assertEquals(
@@ -357,7 +357,7 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider transactionInputProducer
      */
-    public function testShiftTextReturnsTheRemainderOfBufferAsText($input): void
+    public function testShiftTextReturnsTheRemainderOfBufferAsText(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
             // consume and discard the non-text fields
@@ -376,7 +376,7 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider transactionWithDefaultedTextInputProducer
      */
-    public function testShiftOffDefaultedTextField($input): void
+    public function testShiftOffDefaultedTextField(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
             $parser->drop(21);
@@ -387,7 +387,7 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider headerInputProducer
      */
-    public function testThrowsIfPeekingPastEndOfLine($input): void
+    public function testThrowsIfPeekingPastEndOfLine(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
             $parser->drop(9);
@@ -401,7 +401,7 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider headerInputProducer
      */
-    public function testThrowsIfShiftingPastEndOfLine($input): void
+    public function testThrowsIfShiftingPastEndOfLine(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
             $parser->shift();
@@ -423,7 +423,7 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider headerInputProducer
      */
-    public function testThrowsIfDroppingMoreThanAvailableInBuffer($input): void
+    public function testThrowsIfDroppingMoreThanAvailableInBuffer(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
             $this->expectException(\Exception::class);
@@ -435,7 +435,7 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider transactionInputProducer
      */
-    public function testThrowsIfShiftingTextPastEndOfLine($input): void
+    public function testThrowsIfShiftingTextPastEndOfLine(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
             // consume and discard the non-text fields
@@ -454,7 +454,7 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider transactionInputProducer
      */
-    public function testThrowsIfAttemptingToPeekAfterReadingTextField($input): void
+    public function testThrowsIfAttemptingToPeekAfterReadingTextField(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
             $parser->shiftText();
@@ -468,7 +468,7 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider transactionInputProducer
      */
-    public function testThrowsIfAttemptingToShiftAfterReadingTextField($input): void
+    public function testThrowsIfAttemptingToShiftAfterReadingTextField(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
             $parser->shiftText();
@@ -482,7 +482,7 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider transactionInputProducer
      */
-    public function testThrowsIfAttemptingToDropAfterReadingTextField($input): void
+    public function testThrowsIfAttemptingToDropAfterReadingTextField(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
             $parser->shiftText();
@@ -496,7 +496,7 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider headerInputWithUnterminatedVersionFieldProducer
      */
-    public function testThrowsIfPeekingAtAnUnterminatedField($input): void
+    public function testThrowsIfPeekingAtAnUnterminatedField(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
             $parser->drop(8);
@@ -510,7 +510,7 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider headerInputWithUnterminatedVersionFieldProducer
      */
-    public function testThrowsIfShiftingAnUnterminatedField($input): void
+    public function testThrowsIfShiftingAnUnterminatedField(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
             $parser->drop(8);
@@ -524,7 +524,7 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider headerInputWithUnterminatedVersionFieldProducer
      */
-    public function testThrowsIfDroppingAnUnterminatedField($input): void
+    public function testThrowsIfDroppingAnUnterminatedField(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
             $this->expectException(\Exception::class);
