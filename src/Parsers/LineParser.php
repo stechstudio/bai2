@@ -12,6 +12,12 @@ class LineParser
         $this->buffer = new LineBuffer($line, $physicalRecordLength);
     }
 
+    public function setPhysicalRecordLength(?int $physicalRecordLength): self
+    {
+        $this->buffer->setPhysicalRecordLength($physicalRecordLength);
+        return $this;
+    }
+
     public function peek(): string
     {
         return $this->buffer->field();

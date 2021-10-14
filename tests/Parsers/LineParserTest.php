@@ -189,7 +189,7 @@ final class LineParserTest extends TestCase
     public function testSettingPhysicalRecordLengthCorrectlyHandlesPadding(): void
     {
         $parser = new LineParser(self::$continuationTextLine . '         ');
-        $parser->setLineLength(70);
+        $parser->setPhysicalRecordLength(70);
         $parser->shift();
         $this->assertEquals(
             ' and, as I was saying, I have been continued mid-sentence.',
