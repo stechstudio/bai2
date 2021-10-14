@@ -164,34 +164,37 @@ final class LineParserTest extends TestCase
         $this->assertTrue($parser->isEndOfLine());
     }
 
+    public function testConstructWithoutPhysicalRecordLengthCorrectlyHandlesPadding(): void
+    {
+        $parser = new LineParser(self::$continuationTextLine . '         ');
+        $parser->shift();
+        $this->assertEquals(
+            ' and, as I was saying, I have been continued mid-sentence.         ',
+            $parser->shiftText()
+        );
+        $this->assertTrue($parser->isEndOfLine());
+    }
+
     public function testConstructWithPhysicalRecordLengthCorrectlyHandlesPadding(): void
     {
-        $line = self::$headerLine . '          ';
-        $this->assertEquals(50, strlen($line));
-        $parser = new LineParser($line, 50);
-        $parser->drop(8);
-        $this->assertEquals('2', $parser->shift());
-        $this->assertTrue($parser->isEndOfLine());
-
-        $line = self::$headerLine . 'abcdefghij';
-        $this->assertEquals(50, strlen($line));
-        $parser = new LineParser($line, 50);
-        $parser->drop(8);
-        $this->assertEquals('2', $parser->shift());
-        $this->assertTrue($parser->isEndOfLine());
-
-        $line = self::$continuationTextLine . '         ';
-        $this->assertEquals(70, strlen($line));
-        $parser = new LineParser($line, null);
+        $parser = new LineParser(self::$continuationTextLine . '         ', 70);
         $parser->shift();
-        $this->assertEquals(' and, as I was saying, I have been continued mid-sentence.         ', $parser->shiftText());
+        $this->assertEquals(
+            ' and, as I was saying, I have been continued mid-sentence.',
+            $parser->shiftText()
+        );
         $this->assertTrue($parser->isEndOfLine());
+    }
 
-        $line = self::$continuationTextLine . '         ';
-        $this->assertEquals(70, strlen($line));
-        $parser = new LineParser($line, 70);
+    public function testSettingPhysicalRecordLengthCorrectlyHandlesPadding(): void
+    {
+        $parser = new LineParser(self::$continuationTextLine . '         ');
+        $parser->setLineLength(70);
         $parser->shift();
-        $this->assertEquals(' and, as I was saying, I have been continued mid-sentence.', $parser->shiftText());
+        $this->assertEquals(
+            ' and, as I was saying, I have been continued mid-sentence.',
+            $parser->shiftText()
+        );
         $this->assertTrue($parser->isEndOfLine());
     }
 
