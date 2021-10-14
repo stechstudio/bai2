@@ -23,8 +23,8 @@ final class MultilineParserTest extends TestCase
                 '88,210616/',
                 '88,1700/',
                 '88,01/',
-                '80,10/',
-                '80,80/',
+                '88,10/',
+                '88,80/',
                 '88,2/',
             ]],
         ];
@@ -69,8 +69,8 @@ final class MultilineParserTest extends TestCase
                 '88,210616/',
                 '88,1700/',
                 '88,01/',
-                '80,10/',
-                '80,80/',
+                '88,10/',
+                '88,80/',
                 '88,2',
             ]],
         ];
@@ -471,6 +471,15 @@ final class MultilineParserTest extends TestCase
             $this->expectException(\Exception::class);
             $this->expectExceptionMessage('Cannot access last (non-text) field on unterminated input line.');
             $parser->drop(9);
+        });
+    }
+
+    public function testThrowsIfAttemptingToCallContinueWithNonContinuationRecord(): void
+    {
+        $this->withParser('01,SENDR1,RECVR1/', function ($parser) {
+            $this->expectException(\Exception::class);
+            $this->expectExceptionMessage('Cannot call ::continue() on non-continuation input.');
+            $parser->continue('16,003,10000,D,3/');
         });
     }
 

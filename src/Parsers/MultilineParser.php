@@ -44,15 +44,16 @@ class MultilineParser
         return $text;
     }
 
-    // TODO(zmd): it would be bad for the user to call ::continue() on a line
-    //   which is not a continuation record. Also bad to call ::continue()
-    //   after calling ::shiftText()
+    // TODO(zmd): would it be bad to call ::continue() after calling
+    //   ::shiftText()?
     public function continue(string $continuationLine): self
     {
         $lineParser = new LineParser($continuationLine);
 
-        // immediately discard the '88' record type field
-        $lineParser->shift();
+        // immediately check for then discard the '88' record type field
+        if ($lineParser->shift() !== '88') {
+            throw new \Exception('Cannot call ::continue() on non-continuation input.');
+        }
 
         $this->lines[] = $lineParser;
         return $this;
