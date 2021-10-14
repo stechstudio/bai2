@@ -9,6 +9,8 @@ class MultilineParser
 
     protected array $lines = [];
 
+    protected bool $textTaken = false;
+
     public function __construct(string $firstLine)
     {
         $this->currentLine = new LineParser($firstLine);
@@ -35,6 +37,7 @@ class MultilineParser
 
     public function shiftText(): string
     {
+        $this->textTaken = true;
         $text = $this->currentOrNextLine()->shiftText();
 
         while ($this->currentOrNextLine()->hasMore()) {
@@ -44,10 +47,12 @@ class MultilineParser
         return $text;
     }
 
-    // TODO(zmd): would it be bad to call ::continue() after calling
-    //   ::shiftText()?
     public function continue(string $continuationLine): self
     {
+        if ($this->textTaken) {
+            throw new \Exception('Cannot call ::continue() after reading the text field.');
+        }
+
         $lineParser = new LineParser($continuationLine);
 
         // immediately check for then discard the '88' record type field

@@ -500,4 +500,37 @@ final class MultilineParserTest extends TestCase
         });
     }
 
+   /*
+    * Reading normal fields interlaced with ::continue() calls are OK; however,
+    * when you call a text field, which must always be at the end, it means
+    * you've finished reading in a record's raw lines and there is no good
+    * reason to continue past that. Let's close that cans of worms before
+    * they're opened (and make it harder to mess up usage at higher levels of
+    * the code).
+    */
+    public function testThrowsIfAttemptingToCallContinueAfterReadingTextField(): void
+    {
+        $transactionRecordLine = "16,003,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321/";
+        $this->withParser($transactionRecordLine, function ($parser) {
+            // Read regular fields before a continue? Go for it.
+            $parser->drop(13);
+
+            // Everything's hunky-dory so far...
+            $parser->continue('88,The following character is, of all the path separation characters ');
+            $parser->continue("88,I've ever used, my absolute favorite: ");
+            $parser->continue('88,/');
+
+            // ...and still good!
+            $this->assertEquals(
+                "The following character is, of all the path separation characters I've ever used, my absolute favorite: /",
+                $parser->shiftText()
+            );
+
+            // YOU SHALL NOT PASS!
+            $this->expectException(\Exception::class);
+            $this->expectExceptionMessage('Cannot call ::continue() after reading the text field.');
+            $parser->continue('88,Why would you even want to do this?');
+        });
+    }
+
 }
