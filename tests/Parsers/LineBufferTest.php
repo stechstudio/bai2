@@ -414,4 +414,13 @@ final class LineBufferTest extends TestCase
         $this->buffer->textField();
     }
 
+    public function testThrowsExceptionWhenTryingToReadContinuedTextOnceAtEndOfTheBuffer(): void
+    {
+        $this->buffer->eat()->eat()->eat();
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+        $this->buffer->continuedTextField();
+    }
+
 }

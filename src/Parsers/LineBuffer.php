@@ -104,6 +104,10 @@ class LineBuffer
     {
         // TODO(zmd): dedupe logic with ::textField() if possible
         // TODO(zmd): disallow reading past end of buffer (see ::textField())
+        if ($this->isEndOfLine()) {
+            throw new \Exception('Cannot access fields at the end of the buffer.');
+        }
+
         $this->textTaken = true;
         return $this->readTo($this->endOfLine + 1);
     }
