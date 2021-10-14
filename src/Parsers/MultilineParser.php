@@ -11,9 +11,9 @@ class MultilineParser
 
     protected bool $textTaken = false;
 
-    public function __construct(string $firstLine)
+    public function __construct(string $firstLine, ?int $physicalRecordLength = null)
     {
-        $this->currentLine = new LineParser($firstLine);
+        $this->currentLine = new LineParser($firstLine, $physicalRecordLength);
     }
 
     public function peek(): ?string
