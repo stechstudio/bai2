@@ -77,18 +77,14 @@ class LineBuffer
 
     public function field(): string
     {
-        if ($this->isEndOfLine()) {
-            throw new \Exception('Cannot access fields at the end of the buffer.');
-        }
+        $this->assertNotEndOfLine();
 
         return $this->readTo($this->findFieldEnd());
     }
 
     public function textField(): string
     {
-        if ($this->isEndOfLine()) {
-            throw new \Exception('Cannot access fields at the end of the buffer.');
-        }
+        $this->assertNotEndOfLine();
 
         $this->textTaken = true;
         $value = '';
@@ -102,11 +98,7 @@ class LineBuffer
 
     public function continuedTextField(): string
     {
-        // TODO(zmd): dedupe logic with ::textField() if possible
-        // TODO(zmd): disallow reading past end of buffer (see ::textField())
-        if ($this->isEndOfLine()) {
-            throw new \Exception('Cannot access fields at the end of the buffer.');
-        }
+        $this->assertNotEndOfLine();
 
         $this->textTaken = true;
         return $this->readTo($this->endOfLine + 1);
@@ -162,6 +154,13 @@ class LineBuffer
         }
 
         return $end;
+    }
+
+    protected function assertNotEndOfLine(): void
+    {
+        if ($this->isEndOfLine()) {
+            throw new \Exception('Cannot access fields at the end of the buffer.');
+        }
     }
 
 }
