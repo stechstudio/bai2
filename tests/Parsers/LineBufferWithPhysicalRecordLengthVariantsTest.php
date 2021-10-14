@@ -173,6 +173,28 @@ final class LineBufferWithPhysicalRecordLengthVariantsTest extends TestCase
     }
 
     /**
+     * @testWith ["foo,bar,baz/",         null, "bar,baz/"]
+     *           ["foo,bar,baz/   ",      null, "bar,baz/   "]
+     *           ["foo,bar,baz/        ", null, "bar,baz/        "]
+     *           ["foo,,/",               null, ",/"]
+     *           ["foo,,/         ",      null, ",/         "]
+     *           ["foo,,/              ", null, ",/              "]
+     *           ["foo,bar,baz/",           20, "bar,baz/"]
+     *           ["foo,bar,baz/   ",        20, "bar,baz/"]
+     *           ["foo,bar,baz/        ",   20, "bar,baz/"]
+     *           ["foo,,/",                 20, ",/"]
+     *           ["foo,,/         ",        20, ",/"]
+     *           ["foo,,/              ",   20, ",/"]
+     */
+    public function testCanAccessContinuedTextFieldWithCommasAndSlashes(...$bufferArgs): void
+    {
+        $this->withBuffer($bufferArgs, function ($buffer, $expected) {
+            $buffer->eat();
+            $this->assertEquals($expected, $buffer->continuedTextField());
+        });
+    }
+
+    /**
      * @testWith ["foo,bar,baz/",                 null]
      *           ["foo,bar,baz/\t\t\t\t",         null]
      *           ["foo,bar,baz/\t\t\t\t\t\t\t\t", null]
