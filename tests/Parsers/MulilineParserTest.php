@@ -164,6 +164,11 @@ final class MultilineParserTest extends TestCase
     {
         return [
             [[
+                '16,003,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321,The following chara',
+                "88,cter is, of all the path separation characters I've ever used, my absolute fa",
+                '88,vorite: /                                                                    '
+            ]],
+            [[
                 '16,003,10000,D/                                                                 ',
                 '88,3,1,1000,5,10000,30/                                                         ',
                 '88,25000,123456789,987654321,The following                                      ',
@@ -226,6 +231,31 @@ final class MultilineParserTest extends TestCase
                 '88, used,                                                                       ',
                 '88, my absolute favorite:                                                       ',
                 '88, /                                                                           ',
+            ]],
+            [[
+                '16/---------------------------------------------------------',
+                '88,003/+++++++++++++++++++++++++++++++++++++++++++++++++++++',
+                '88,10000/===================================================',
+                '88,D/)))))))))))))))))))))))))))))))))))))))))))))))))))))))',
+                '88,3/(((((((((((((((((((((((((((((((((((((((((((((((((((((((',
+                '88,1/]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]',
+                '88,1000/[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[',
+                '88,5/;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;',
+                '88,10000/:::::::::::::::::::::::::::::::::::::::::::::::::::',
+                '88,30/,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,',
+                '88,25000/...................................................',
+                '88,123456789////////////////////////////////////////////////',
+                '88,987654321/&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&',
+                '88,The                                                      ',
+                '88, following                                               ',
+                '88, character                                               ',
+                '88, is,                                                     ',
+                '88, of all the path separation                              ',
+                '88, characters                                              ',
+                "88, I've ever                                               ",
+                '88, used,                                                   ',
+                '88, my absolute favorite:                                   ',
+                '88, /                                                       ',
             ]],
         ];
     }
@@ -501,7 +531,23 @@ final class MultilineParserTest extends TestCase
         });
     }
 
-    // TODO(zmd): testConstructWithPhysicalRecordLengthCorrectlyHandlesPadding
+    /**
+     * @dataProvider transactionWithPaddedInputProducer
+     */
+    public function testConstructWithPhysicalRecordLengthCorrectlyHandlesPadding(string|array $input): void
+    {
+        $this->withPhysicalRecordLengthParser($input, 80, function ($parser) {
+            $this->assertEquals(
+                ['16', '003', '10000', 'D', '3', '1', '1000', '5', '10000', '30', '25000', '123456789', '987654321'],
+                $parser->drop(13)
+            );
+            $this->assertEquals(
+                'The following character is, of all the path separation '
+                    . "characters I've ever used, my absolute favorite: /",
+                $parser->shiftText()
+            );
+        });
+    }
 
     // TODO(zmd): testSettingPhysicalRecordLengthCorrectlyHandlesPadding
 
