@@ -7,9 +7,9 @@ class LineParser
 
     protected LineBuffer $buffer;
 
-    public function __construct(string $line)
+    public function __construct(string $line, ?int $physicalRecordLength = null)
     {
-        $this->buffer = new LineBuffer($line);
+        $this->buffer = new LineBuffer($line, $physicalRecordLength);
     }
 
     public function peek(): string

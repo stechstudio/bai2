@@ -306,5 +306,4 @@ final class LineParserTest extends TestCase
         $parser->setPhysicalRecordLength(10);
     }
 
-
 }
