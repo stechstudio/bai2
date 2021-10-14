@@ -291,4 +291,20 @@ final class LineParserTest extends TestCase
         $parser->drop(9);
     }
 
+    public function testThrowsWhenContructWithLineLongerThanPhysicalLength(): void
+    {
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
+        $parser = new LineParser(self::$headerLine, 10);
+    }
+
+    public function testThrowsWhenSetPhysicalRecordLengthExceedingOriginalLineLength(): void
+    {
+        $parser = new LineParser(self::$headerLine);
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
+        $parser->setPhysicalRecordLength(10);
+    }
+
+
 }
