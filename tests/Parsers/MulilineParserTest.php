@@ -140,6 +140,76 @@ final class MultilineParserTest extends TestCase
         ];
     }
 
+    public function transactionWithPaddedInputProducer(): array
+    {
+        return [
+            [[
+                '16,003,10000,D/                                                                 ',
+                '88,3,1,1000,5,10000,30/                                                         ',
+                '88,25000,123456789,987654321,The following                                      ',
+                '88, character is, of all the path separation                                    ',
+                "88, characters I've ever used, my absolute favorite: /                          ",
+            ]],
+            [[
+                '16,003,10000,D/-----------------------------------------------------------------',
+                '88,3,1,1000,5,10000,30/+++++++++++++++++++++++++++++++++++++++++++++++++++++++++',
+                '88,25000,123456789,987654321,The following                                      ',
+                '88, character is, of all the path separation                                    ',
+                "88, characters I've ever used, my absolute favorite: /                          ",
+            ]],
+            [[
+                '16/                                                                             ',
+                '88,003/                                                                         ',
+                '88,10000/                                                                       ',
+                '88,D/                                                                           ',
+                '88,3/                                                                           ',
+                '88,1/                                                                           ',
+                '88,1000/                                                                        ',
+                '88,5/                                                                           ',
+                '88,10000/                                                                       ',
+                '88,30/                                                                          ',
+                '88,25000/                                                                       ',
+                '88,123456789/                                                                   ',
+                '88,987654321/                                                                   ',
+                '88,The                                                                          ',
+                '88, following                                                                   ',
+                '88, character                                                                   ',
+                '88, is,                                                                         ',
+                '88, of all the path separation                                                  ',
+                '88, characters                                                                  ',
+                "88, I've ever                                                                   ",
+                '88, used,                                                                       ',
+                '88, my absolute favorite:                                                       ',
+                '88, /                                                                           ',
+            ]],
+            [[
+                '16/-----------------------------------------------------------------------------',
+                '88,003/+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++',
+                '88,10000/=======================================================================',
+                '88,D/)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))',
+                '88,3/(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((',
+                '88,1/]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]',
+                '88,1000/[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[',
+                '88,5/;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;',
+                '88,10000/:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::',
+                '88,30/,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,',
+                '88,25000/.......................................................................',
+                '88,123456789////////////////////////////////////////////////////////////////////',
+                '88,987654321/&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&',
+                '88,The                                                                          ',
+                '88, following                                                                   ',
+                '88, character                                                                   ',
+                '88, is,                                                                         ',
+                '88, of all the path separation                                                  ',
+                '88, characters                                                                  ',
+                "88, I've ever                                                                   ",
+                '88, used,                                                                       ',
+                '88, my absolute favorite:                                                       ',
+                '88, /                                                                           ',
+            ]],
+        ];
+    }
+
     public function transactionWithDefaultedTextInputProducer(): array
     {
         return [
@@ -185,8 +255,16 @@ final class MultilineParserTest extends TestCase
 
     private function withParser(string|array $input, callable $callable): void
     {
+        $this->withPhysicalRecordLengthParser($input, null, $callable);
+    }
+
+    private function withPhysicalRecordLengthParser(
+        string|array $input,
+        ?int $physicalRecordLength,
+        callable $callable
+    ): void {
         if (is_string($input)) {
-            $callable(new MultilineParser($input));
+            $callable(new MultilineParser($input, $physicalRecordLength));
         } else {
             $parser = new MultilineParser(array_shift($input));
             foreach ($input as $line) {
@@ -384,6 +462,12 @@ final class MultilineParserTest extends TestCase
         });
     }
 
+    // TODO(zmd): testConstructWithoutPhysicalRecordLengthCorrectlyHandlesPadding
+
+    // TODO(zmd): testConstructWithPhysicalRecordLengthCorrectlyHandlesPadding
+
+    // TODO(zmd): testSettingPhysicalRecordLengthCorrectlyHandlesPadding
+
     /**
      * @dataProvider headerInputProducer
      */
@@ -574,5 +658,9 @@ final class MultilineParserTest extends TestCase
             $parser->continue('88,Why would you even want to do this?');
         });
     }
+
+    // TODO(zmd): testThrowsWhenContructWithLineLongerThanPhysicalLength
+
+    // TODO(zmd): testThrowsWhenSetPhysicalRecordLengthExceedingOriginalLineLength
 
 }
