@@ -195,6 +195,22 @@ final class LineBufferWithPhysicalRecordLengthVariantsTest extends TestCase
     }
 
     /**
+     * @testWith ["foo,bar,/",         null, "/"]
+     *           ["foo,bar,/   ",      null, "/   "]
+     *           ["foo,bar,/        ", null, "/        "]
+     *           ["foo,bar,/",           20, "/"]
+     *           ["foo,bar,/   ",        20, "/"]
+     *           ["foo,bar,/        ",   20, "/"]
+     */
+    public function testTreatSlashesAsNothingSpecialUsingContinuedTextField(...$bufferArgs): void
+    {
+        $this->withBuffer($bufferArgs, function ($buffer, $expected) {
+            $buffer->eat()->eat();
+            $this->assertEquals($expected, $buffer->continuedTextField());
+        });
+    }
+
+    /**
      * @testWith ["foo,bar,baz/",                 null]
      *           ["foo,bar,baz/\t\t\t\t",         null]
      *           ["foo,bar,baz/\t\t\t\t\t\t\t\t", null]
@@ -234,6 +250,29 @@ final class LineBufferWithPhysicalRecordLengthVariantsTest extends TestCase
         $this->withBuffer($bufferArgs, function ($buffer, $expected) {
             $buffer->eat();
             $this->assertEquals($expected, $buffer->textField());
+
+            $buffer->eat();
+            $this->assertTrue($buffer->isEndOfLine());
+        });
+    }
+
+    /**
+     * @testWith ["foo,bar,baz/",                 null, "bar,baz/"]
+     *           ["foo,bar,baz/\t\t\t\t",         null, "bar,baz/\t\t\t\t"]
+     *           ["foo,bar,baz/\t\t\t\t\t\t\t\t", null, "bar,baz/\t\t\t\t\t\t\t\t"]
+     *           ["foo,bar,baz/blah",             null, "bar,baz/blah"]
+     *           ["foo,bar,baz/blahblah",         null, "bar,baz/blahblah"]
+     *           ["foo,bar,baz/",                   20, "bar,baz/"]
+     *           ["foo,bar,baz/\t\t\t\t",           20, "bar,baz/"]
+     *           ["foo,bar,baz/\t\t\t\t\t\t\t\t",   20, "bar,baz/"]
+     *           ["foo,bar,baz/blah",               20, "bar,baz/blah"]
+     *           ["foo,bar,baz/blahblah",           20, "bar,baz/blahblah"]
+     */
+    public function testContinuedTextFieldAccessHandlesOtherFormsOfPadding(...$bufferArgs): void
+    {
+        $this->withBuffer($bufferArgs, function ($buffer, $expected) {
+            $buffer->eat();
+            $this->assertEquals($expected, $buffer->continuedTextField());
 
             $buffer->eat();
             $this->assertTrue($buffer->isEndOfLine());
@@ -289,6 +328,30 @@ final class LineBufferWithPhysicalRecordLengthVariantsTest extends TestCase
             $this->expectException(\Exception::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $buffer->textField();
+        });
+    }
+
+    /**
+     * @dataProvider threeEatableFieldsProducer
+     */
+    public function testThrowsWhenAccessingContinuedTextFieldPastEndOfInput(...$bufferArgs): void
+    {
+        $this->withBuffer($bufferArgs, function ($buffer) {
+            $buffer->eat()->eat()->eat();
+
+            $this->expectException(\Exception::class);
+            $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+            $buffer->continuedTextField();
+        });
+
+        $this->withBuffer($bufferArgs, function ($buffer) {
+            $buffer->eat();
+            $buffer->continuedTextField();
+            $buffer->eat();
+
+            $this->expectException(\Exception::class);
+            $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+            $buffer->continuedTextField();
         });
     }
 
