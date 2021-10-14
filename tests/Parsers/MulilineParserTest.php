@@ -452,6 +452,48 @@ final class MultilineParserTest extends TestCase
     }
 
     /**
+     * @dataProvider transactionInputProducer
+     */
+    public function testThrowsIfAttemptingToPeekAfterReadingTextField($input): void
+    {
+        $this->withParser($input, function ($parser) {
+            $parser->shiftText();
+
+            $this->expectException(\Exception::class);
+            $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+            $parser->peek();
+        });
+    }
+
+    /**
+     * @dataProvider transactionInputProducer
+     */
+    public function testThrowsIfAttemptingToShiftAfterReadingTextField($input): void
+    {
+        $this->withParser($input, function ($parser) {
+            $parser->shiftText();
+
+            $this->expectException(\Exception::class);
+            $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+            $parser->shift();
+        });
+    }
+
+    /**
+     * @dataProvider transactionInputProducer
+     */
+    public function testThrowsIfAttemptingToDropAfterReadingTextField($input): void
+    {
+        $this->withParser($input, function ($parser) {
+            $parser->shiftText();
+
+            $this->expectException(\Exception::class);
+            $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+            $parser->drop(2);
+        });
+    }
+
+    /**
      * @dataProvider headerInputWithUnterminatedVersionFieldProducer
      */
     public function testThrowsIfPeekingAtAnUnterminatedField($input): void
