@@ -245,6 +245,14 @@ final class LineBufferTest extends TestCase
         );
     }
 
+    public function testCanGetContinuedTextFieldWhichIsJustASlash(): void
+    {
+        $this->buffer = new LineBuffer('88,/');
+
+        $field = $this->buffer->eat()->continuedTextField();
+        $this->assertEquals('/', $field);
+    }
+
     public function testCanGetContinuedTextFieldMultipleTimes(): void
     {
         $this->buffer = new LineBuffer('88,/,,/,//,,/,/because murphy/');
