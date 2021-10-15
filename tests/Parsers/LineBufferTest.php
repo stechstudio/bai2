@@ -14,6 +14,15 @@ final class LineBufferTest extends TestCase
         $this->buffer = new LineBuffer('foo,bar,baz/');
     }
 
+    public function longInputProducer(): array
+    {
+        return [
+            ["foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz/"],
+            ["foo,bar,baz/                                                                        "],
+            ["foo,bar,baz/                                                                     "],
+        ];
+    }
+
     public function testConstructWithoutPhysicalRecordLengthSpecified(): void
     {
         $this->assertNull($this->buffer->getPhysicalRecordLength());
@@ -66,8 +75,7 @@ final class LineBufferTest extends TestCase
     }
 
     /**
-     * @testWith ["foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz/"]
-     *           ["foo,bar,baz/                                                                        "]
+     * @dataProvider longInputProducer
      */
     public function testThrowsWhenContructWithLineLongerThanPhsyicalLength(string $input): void
     {
@@ -77,8 +85,7 @@ final class LineBufferTest extends TestCase
     }
 
     /**
-     * @testWith ["foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz,foo,bar,baz/"]
-     *           ["foo,bar,baz/                                                                        "]
+     * @dataProvider longInputProducer
      */
     public function testThrowsWhenSetPhysicalRecordLengthExceedingOriginalLineLength(string $input): void
     {
