@@ -216,11 +216,15 @@ final class LineBufferWithPhysicalRecordLengthVariantsTest extends TestCase
      *           ["foo,bar,baz/\t\t\t\t\t\t\t\t", null]
      *           ["foo,bar,baz/blah",             null]
      *           ["foo,bar,baz/blahblah",         null]
+     *           ["foo,bar,baz/,,,,",             null]
+     *           ["foo,bar,baz/,,,,,,,,",         null]
      *           ["foo,bar,baz/",                   20]
      *           ["foo,bar,baz/\t\t\t\t",           20]
      *           ["foo,bar,baz/\t\t\t\t\t\t\t\t",   20]
      *           ["foo,bar,baz/blah",               20]
      *           ["foo,bar,baz/blahblah",           20]
+     *           ["foo,bar,baz/,,,,",               20]
+     *           ["foo,bar,baz/,,,,,,,,",           20]
      */
     public function testFieldAccessHandlesOtherFormsOfPadding(...$bufferArgs): void
     {
@@ -239,11 +243,15 @@ final class LineBufferWithPhysicalRecordLengthVariantsTest extends TestCase
      *           ["foo,bar,baz/\t\t\t\t\t\t\t\t", null, "bar,baz/\t\t\t\t\t\t\t\t"]
      *           ["foo,bar,baz/blah",             null, "bar,baz/blah"]
      *           ["foo,bar,baz/blahblah",         null, "bar,baz/blahblah"]
+     *           ["foo,bar,baz/,,,,",             null, "bar,baz/,,,,"]
+     *           ["foo,bar,baz/,,,,,,,,",         null, "bar,baz/,,,,,,,,"]
      *           ["foo,bar,baz/",                   20, "bar,baz/"]
      *           ["foo,bar,baz/\t\t\t\t",           20, "bar,baz/"]
      *           ["foo,bar,baz/\t\t\t\t\t\t\t\t",   20, "bar,baz/"]
      *           ["foo,bar,baz/blah",               20, "bar,baz/blah"]
      *           ["foo,bar,baz/blahblah",           20, "bar,baz/blahblah"]
+     *           ["foo,bar,baz/,,,,",               20, "bar,baz/,,,,"]
+     *           ["foo,bar,baz/,,,,,,,,",           20, "bar,baz/,,,,,,,,"]
      */
     public function testTextFieldAccessHandlesOtherFormsOfPadding(...$bufferArgs): void
     {
@@ -262,11 +270,15 @@ final class LineBufferWithPhysicalRecordLengthVariantsTest extends TestCase
      *           ["foo,bar,baz/\t\t\t\t\t\t\t\t", null, "bar,baz/\t\t\t\t\t\t\t\t"]
      *           ["foo,bar,baz/blah",             null, "bar,baz/blah"]
      *           ["foo,bar,baz/blahblah",         null, "bar,baz/blahblah"]
+     *           ["foo,bar,baz/,,,,",             null, "bar,baz/,,,,"]
+     *           ["foo,bar,baz/,,,,,,,,",         null, "bar,baz/,,,,,,,,"]
      *           ["foo,bar,baz/",                   20, "bar,baz/"]
      *           ["foo,bar,baz/\t\t\t\t",           20, "bar,baz/"]
      *           ["foo,bar,baz/\t\t\t\t\t\t\t\t",   20, "bar,baz/"]
      *           ["foo,bar,baz/blah",               20, "bar,baz/blah"]
      *           ["foo,bar,baz/blahblah",           20, "bar,baz/blahblah"]
+     *           ["foo,bar,baz/,,,,",               20, "bar,baz/,,,,"]
+     *           ["foo,bar,baz/,,,,,,,,",           20, "bar,baz/,,,,,,,,"]
      */
     public function testContinuedTextFieldAccessHandlesOtherFormsOfPadding(...$bufferArgs): void
     {
