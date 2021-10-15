@@ -129,14 +129,34 @@ class LineBuffer
         return substr($this->line, $index, 1);
     }
 
-    protected function seek(string $needle): ?int {
-        $found = strpos($this->line, $needle, $this->cursor);
+    protected function seek(string ...$needles): ?int
+    {
+        $found = preg_match(
+            $this->regexNeedle($needles),
+            $this->line,
+            $matches,
+            PREG_OFFSET_CAPTURE, $this->cursor
+        );
 
-        if ($found === false) {
+        if ($found) {
+            return $matches[0][1];
+        } else {
             return null;
         }
 
         return $found;
+    }
+
+    protected function regexNeedle(array $needles): string
+    {
+        $quoted = array_map(
+            fn ($needle) => preg_quote($needle),
+            $needles
+        );
+
+        $needle = '(' . implode('|', $quoted) . ')';
+
+        return $needle;
     }
 
     protected function readTo(int $endIndex = null): string
@@ -147,7 +167,7 @@ class LineBuffer
 
     protected function findFieldEnd(): int
     {
-        $end = $this->seek(',') ?? $this->seek('/');
+        $end = $this->seek(',', '/');
 
         if (is_null($end)) {
             throw new \Exception('Cannot access last (non-text) field on unterminated input line.');
