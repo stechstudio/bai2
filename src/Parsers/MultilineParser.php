@@ -11,8 +11,10 @@ class MultilineParser
 
     protected bool $textTaken = false;
 
-    public function __construct(string $firstLine, ?int $physicalRecordLength = null)
-    {
+    public function __construct(
+        string $firstLine,
+        protected ?int $physicalRecordLength = null
+    ) {
         $this->currentLine = new LineParser($firstLine, $physicalRecordLength);
     }
 
@@ -53,7 +55,7 @@ class MultilineParser
             throw new \Exception('Cannot call ::continue() after reading the text field.');
         }
 
-        $lineParser = new LineParser($continuationLine);
+        $lineParser = new LineParser($continuationLine, $this->physicalRecordLength);
 
         // immediately check for then discard the '88' record type field
         if ($lineParser->shift() !== '88') {
