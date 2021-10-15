@@ -15,7 +15,16 @@ class MultilineParser
         string $firstLine,
         protected ?int $physicalRecordLength = null
     ) {
-        $this->currentLine = new LineParser($firstLine, $physicalRecordLength);
+        $this->currentLine = new LineParser($firstLine, $this->physicalRecordLength);
+    }
+
+    public function setPhysicalRecordLength(?int $physicalRecordLength): void
+    {
+        $this->physicalRecordLength = $physicalRecordLength;
+
+        foreach ($this->lines as $line) {
+            $line->setPhysicalRecordLength($this->physicalRecordLength);
+        }
     }
 
     public function peek(): ?string
