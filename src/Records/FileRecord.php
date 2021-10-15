@@ -47,59 +47,75 @@ class FileRecord extends AbstractEnvelopeRecord
         }
     }
 
+    protected function parseAllLines(): self
+    {
+        return $this;
+    }
+
     public function getSenderIdentification(): string
     {
-        return $this->senderIdentification;
+        return $this->senderIdentification ??
+            $this->parseAllLines()->senderIdentification;
     }
 
     public function getReceiverIdentification(): string
     {
-        return $this->receiverIdentification;
+        return $this->receiverIdentification ??
+            $this->parseAllLines()->receiverIdentification ;
     }
 
     public function getFileCreationDate(): string
     {
-        return $this->fileCreationDate;
+        return $this->fileCreationDate ??
+            $this->parseAllLines()->fileCreationDate ;
     }
 
     public function getFileCreationTime(): string
     {
-        return $this->fileCreationTime;
+        return $this->fileCreationTime ??
+            $this->parseAllLines()->fileCreationTime ;
     }
 
     public function getFileIdentificationNumber(): string
     {
-        return $this->fileIdentificationNumber;
+        return $this->fileIdentificationNumber ??
+            $this->parseAllLines()->fileIdentificationNumber ;
     }
 
     public function getPhysicalRecordLength(): ?int
     {
-        return $this->physicalRecordLength;
+        return $this->physicalRecordLength ??
+            $this->parseAllLines()->physicalRecordLength ;
     }
 
     public function getBlockSize(): ?int
     {
-        return $this->blockSize;
+        return $this->blockSize ??
+            $this->parseAllLines()->blockSize ;
     }
 
     public function getVersionNumber(): string
     {
-        return $this->versionNumber;
+        return $this->versionNumber ??
+            $this->parseAllLines()->versionNumber ;
     }
 
     public function getFileControlTotal(): int
     {
-        return $this->fileControlTotal;
+        return $this->fileControlTotal ??
+            $this->parseAllLines()->fileControlTotal;
     }
 
     public function getNumberOfGroups(): int
     {
-        return $this->numberOfGroups;
+        return $this->numberOfGroups ??
+            $this->parseAllLines()->numberOfGroups;
     }
 
     public function getNumberOfRecords(): int
     {
-        return $this->numberOfRecords;
+        return $this->numberOfRecords ??
+            $this->parseAllLines()->numberOfRecords;
     }
 
     public function groups(): array

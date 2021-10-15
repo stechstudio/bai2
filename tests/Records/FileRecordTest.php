@@ -127,8 +127,6 @@ final class FileRecordTest extends TestCase
 
     public function testParseLineCanHandleAPartialHeaderRecord()
     {
-        $this->markTestSkipped('revisit once we have generalized parser');
-
         $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$partialHeaderLine);
 
@@ -141,8 +139,6 @@ final class FileRecordTest extends TestCase
     //   (b/c this test logically depends on output from previous)
     public function testParseLineCanHandleAPartialHeaderContinuationRecord()
     {
-        $this->markTestSkipped('revisit once we have generalized parser');
-
         $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$partialHeaderLine);
         $fileRecord->parseLine(self::$partialHeaderContinuationLine);
