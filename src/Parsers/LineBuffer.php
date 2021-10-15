@@ -135,7 +135,8 @@ class LineBuffer
             $this->regexNeedle($needles),
             $this->line,
             $matches,
-            PREG_OFFSET_CAPTURE, $this->cursor
+            PREG_OFFSET_CAPTURE,
+            $this->cursor
         );
 
         if ($found) {
