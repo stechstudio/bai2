@@ -168,10 +168,6 @@ class FileRecord extends AbstractEnvelopeRecord
         $blockSize = $this->normalizeEmptyString($blockSize);
         $versionNumber = rtrim($versionNumber, '/');
 
-        // TODO(zmd): clean this up, we're going to want to deal with
-        //   serializing to array in a different way
-        $this->records[] = $line;
-
         $this->senderIdentification = $senderIdentification;
         $this->receiverIdentification = $receiverIdentification;
         $this->fileCreationDate = $fileCreationDate;
@@ -186,11 +182,16 @@ class FileRecord extends AbstractEnvelopeRecord
 
     protected function parseContinuation(string $line): void
     {
-        // TODO(zmd): parse? hahaha, yah right!
-        $this->records[] = $line;
+        // TODO(zmd): error handling if $headerTrailer and/or $trailerParser
+        //   never get initialized?
+        if ($this->trailerParser) {
+            $this->pushTrailerLine($line);
+        } else {
+            $this->pushHeaderLine($line);
+        }
     }
 
-    protected function parseTrailer(): void
+    protected function parseTrailer(): self
     {
         // TODO(zmd): error handling if $trailerParser was never initialized?
         [
@@ -201,15 +202,13 @@ class FileRecord extends AbstractEnvelopeRecord
         ] = $this->trailerParser->drop(4);
         $numberOfRecords = rtrim($numberOfRecords, '/');
 
-        // TODO(zmd): clean this up, we're going to want to deal with
-        //   serializing to array in a different way
-        $this->records[] = $line;
-
         $this->fileControlTotal = $fileControlTotal;
         $this->numberOfGroups = $numberOfGroups;
         $this->numberOfRecords = $numberOfRecords;
 
         $this->setFinalized(true);
+
+        return $this;
     }
 
     private function normalizeEmptyString(string $s): ?string
