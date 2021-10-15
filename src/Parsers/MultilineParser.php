@@ -22,6 +22,8 @@ class MultilineParser
     {
         $this->physicalRecordLength = $physicalRecordLength;
 
+        $this->currentLine->setPhysicalRecordLength($this->physicalRecordLength);
+
         foreach ($this->lines as $line) {
             $line->setPhysicalRecordLength($this->physicalRecordLength);
         }
