@@ -585,6 +585,30 @@ final class MultilineParserTest extends TestCase
         });
     }
 
+    public function testSettingPhysicalRecordLengthInBetweenContinuesCorrectlyHandlesPadding(): void
+    {
+        $firstLine = '16,003,10000,D/-----------------------------------------------------------------';
+        $this->withParser($firstLine, function ($parser) {
+            $parser->continue('88,3,1,1000,5,10000,30/+++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
+            $parser->continue('88,25000,123456789,987654321,The following                                      ');
+
+            $parser->setPhysicalRecordLength(80);
+
+            $parser->continue('88, character is, of all the path separation                                    ');
+            $parser->continue("88, characters I've ever used, my absolute favorite: /                          ");
+
+            $this->assertEquals(
+                ['16', '003', '10000', 'D', '3', '1', '1000', '5', '10000', '30', '25000', '123456789', '987654321'],
+                $parser->drop(13)
+            );
+            $this->assertEquals(
+                'The following character is, of all the path separation '
+                    . "characters I've ever used, my absolute favorite: /",
+                $parser->shiftText()
+            );
+        });
+    }
+
     /**
      * @dataProvider headerInputProducer
      */
