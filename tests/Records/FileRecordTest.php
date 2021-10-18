@@ -141,4 +141,15 @@ final class FileRecordTest extends TestCase
         $this->assertEquals('2', $fileRecord->getVersionNumber());
     }
 
+    public function testParseLineCanHandleAPartialTrailerContinuationRecord()
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine(self::$partialTrailerLine);
+        $fileRecord->parseLine(self::$partialTrailerContinuationLine);
+
+        $this->assertEquals('1337', $fileRecord->getFileControlTotal());
+        $this->assertEquals('1', $fileRecord->getNumberOfGroups());
+        $this->assertEquals('42', $fileRecord->getNumberOfRecords());
+    }
+
 }
