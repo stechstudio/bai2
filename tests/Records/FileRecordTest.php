@@ -21,7 +21,7 @@ final class FileRecordTest extends TestCase
 
     private static string $partialTrailerContinuationLine = '88,1,42/';
 
-    public function testParseLineSetsCorrectSenderIdentification()
+    public function testParseLineSetsCorrectSenderIdentification(): void
     {
         $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLine);
@@ -29,7 +29,7 @@ final class FileRecordTest extends TestCase
         $this->assertEquals('SENDR1', $fileRecord->getSenderIdentification());
     }
 
-    public function testParseLineSetsCorrectReceiverIdentification()
+    public function testParseLineSetsCorrectReceiverIdentification(): void
     {
         $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLine);
@@ -37,7 +37,7 @@ final class FileRecordTest extends TestCase
         $this->assertEquals('RECVR1', $fileRecord->getReceiverIdentification());
     }
 
-    public function testParseLineSetsCorrectFileCreationDate()
+    public function testParseLineSetsCorrectFileCreationDate(): void
     {
         $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLine);
@@ -45,7 +45,7 @@ final class FileRecordTest extends TestCase
         $this->assertEquals('210616', $fileRecord->getFileCreationDate());
     }
 
-    public function testParseLineSetsCorrectFileCreationTime()
+    public function testParseLineSetsCorrectFileCreationTime(): void
     {
         $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLine);
@@ -53,7 +53,7 @@ final class FileRecordTest extends TestCase
         $this->assertEquals('1700', $fileRecord->getFileCreationTime());
     }
 
-    public function testParseLineSetsCorrectFileIdentificationNumber()
+    public function testParseLineSetsCorrectFileIdentificationNumber(): void
     {
         $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLine);
@@ -61,7 +61,7 @@ final class FileRecordTest extends TestCase
         $this->assertEquals('01', $fileRecord->getFileIdentificationNumber());
     }
 
-    public function testParseLineSetsCorrectPhysicalRecordLength()
+    public function testParseLineSetsCorrectPhysicalRecordLength(): void
     {
         $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLine);
@@ -69,7 +69,7 @@ final class FileRecordTest extends TestCase
         $this->assertEquals(80, $fileRecord->getPhysicalRecordLength());
     }
 
-    public function testParseLineSetsCorrectBlockSize()
+    public function testParseLineSetsCorrectBlockSize(): void
     {
         $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLine);
@@ -77,7 +77,7 @@ final class FileRecordTest extends TestCase
         $this->assertEquals(10, $fileRecord->getBlockSize());
     }
 
-    public function testParseLineSetsCorrectVersionNumber()
+    public function testParseLineSetsCorrectVersionNumber(): void
     {
         $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLine);
@@ -85,7 +85,7 @@ final class FileRecordTest extends TestCase
         $this->assertEquals('2', $fileRecord->getVersionNumber());
     }
 
-    public function testParseLineAllowsDefaultedPhysicalRecordLength()
+    public function testParseLineAllowsDefaultedPhysicalRecordLength(): void
     {
         $headerLine = '01,SENDR1,RECVR1,210616,1700,01,,10,2/';
         $fileRecord = new FileRecord();
@@ -94,7 +94,7 @@ final class FileRecordTest extends TestCase
         $this->assertNull($fileRecord->getPhysicalRecordLength());
     }
 
-    public function testParseLineAllowsDefaultedBlockSize()
+    public function testParseLineAllowsDefaultedBlockSize(): void
     {
         $headerLine = '01,SENDR1,RECVR1,210616,1700,01,80,,2/';
         $fileRecord = new FileRecord();
@@ -103,7 +103,7 @@ final class FileRecordTest extends TestCase
         $this->assertNull($fileRecord->getBlockSize());
     }
 
-    public function testParseLineSetsCorrectFileControlTotal()
+    public function testParseLineSetsCorrectFileControlTotal(): void
     {
         $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$trailerLine);
@@ -111,7 +111,7 @@ final class FileRecordTest extends TestCase
         $this->assertEquals(1337, $fileRecord->getFileControlTotal());
     }
 
-    public function testParseLineSetsCorrectNumberOfGroups()
+    public function testParseLineSetsCorrectNumberOfGroups(): void
     {
         $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$trailerLine);
@@ -119,7 +119,7 @@ final class FileRecordTest extends TestCase
         $this->assertEquals(1, $fileRecord->getNumberOfGroups());
     }
 
-    public function testParseLineSetsCorrectNumberOfRecords()
+    public function testParseLineSetsCorrectNumberOfRecords(): void
     {
         $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$trailerLine);
@@ -127,7 +127,7 @@ final class FileRecordTest extends TestCase
         $this->assertEquals(42, $fileRecord->getNumberOfRecords());
     }
 
-    public function testParseLineCanHandleAPartialHeaderContinuationRecord()
+    public function testParseLineCanHandleAPartialHeaderContinuationRecord(): void
     {
         $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$partialHeaderLine);
@@ -143,7 +143,7 @@ final class FileRecordTest extends TestCase
         $this->assertEquals('2', $fileRecord->getVersionNumber());
     }
 
-    public function testParseLineCanHandleAPartialTrailerContinuationRecord()
+    public function testParseLineCanHandleAPartialTrailerContinuationRecord(): void
     {
         $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$partialTrailerLine);
@@ -154,7 +154,7 @@ final class FileRecordTest extends TestCase
         $this->assertEquals('42', $fileRecord->getNumberOfRecords());
     }
 
-    public function testAccessingDefaultedField()
+    public function testAccessingDefaultedField(): void
     {
         $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLineWithDefaultedBlockSize);
@@ -162,7 +162,7 @@ final class FileRecordTest extends TestCase
         $this->assertEquals('', $fileRecord->getBlockSize());
     }
 
-    public function testAccessingDefaultedFieldAfterAccessingPreviousField()
+    public function testAccessingDefaultedFieldAfterAccessingPreviousField(): void
     {
         $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLineWithDefaultedBlockSize);
@@ -171,7 +171,7 @@ final class FileRecordTest extends TestCase
         $this->assertEquals('', $fileRecord->getBlockSize());
     }
 
-    public function testAccessingFullRecord()
+    public function testAccessingFullRecord(): void
     {
         $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLine);
@@ -191,8 +191,7 @@ final class FileRecordTest extends TestCase
         $this->assertEquals('42', $fileRecord->getNumberOfRecords());
     }
 
-/*
-    public function testAccessingFullRecordWithDefaultedField()
+    public function testAccessingFullRecordWithDefaultedField(): void
     {
         $fileRecord = new FileRecord();
         $fileRecord->parseLine(self::$headerLineWithDefaultedBlockSize);
@@ -211,6 +210,5 @@ final class FileRecordTest extends TestCase
         $this->assertEquals('1', $fileRecord->getNumberOfGroups());
         $this->assertEquals('42', $fileRecord->getNumberOfRecords());
     }
-*/
 
 }
