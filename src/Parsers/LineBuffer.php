@@ -2,6 +2,8 @@
 
 namespace STS\Bai2\Parsers;
 
+use STS\Bai2\Exceptions\LineBufferPhysicalRecordLengthException;
+
 class LineBuffer
 {
 
@@ -36,7 +38,7 @@ class LineBuffer
         //   is a one-way operation, and all this logic ensures higher level
         //   logic can not attempt to violate this one-way-ness).
         if (!is_null($this->physicalRecordLength)) {
-            throw new \Exception('The physical record length may be set only once.');
+            throw new LineBufferPhysicalRecordLengthException('The physical record length may be set only once.');
         } else if (!is_null($physicalRecordLength)) {
             $this->physicalRecordLength = $physicalRecordLength;
             $this->validatePhysicalRecordLength()->trimLine();
@@ -49,7 +51,7 @@ class LineBuffer
     {
         if (!is_null($this->physicalRecordLength)) {
             if (strlen($this->line) > $this->physicalRecordLength) {
-                throw new \Exception('Input line length exceeds requested physical record length.');
+                throw new LineBufferPhysicalRecordLengthException('Input line length exceeds requested physical record length.');
             }
         }
 
