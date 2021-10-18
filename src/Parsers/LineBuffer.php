@@ -64,10 +64,10 @@ class LineBuffer
 
     public function eat(): self
     {
-        if ($this->textTaken) {
-            $this->cursor = $this->endOfLine;
-        } else if ($this->isEndOfLine()) {
+        if ($this->isEndOfLine()) {
             throw new \Exception('Cannot advance beyond the end of the buffer.');
+        } else if ($this->textTaken) {
+            $this->cursor = $this->endOfLine;
         } else {
             $this->cursor = $this->findFieldEnd() + 1;
         }
