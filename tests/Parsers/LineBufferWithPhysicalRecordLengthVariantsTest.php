@@ -346,7 +346,7 @@ final class LineBufferWithPhysicalRecordLengthVariantsTest extends TestCase
     /**
      * @dataProvider threeEatableFieldsProducer
      */
-    public function testThrowsWhenAccessingContinuedTextFieldPastEndOfInput(...$bufferArgs): void
+    public function testThrowsWhenAccessingContinuedTextFieldPastEndOfInputFromEarlierEats(...$bufferArgs): void
     {
         $this->withBuffer($bufferArgs, function ($buffer) {
             $buffer->eat()->eat()->eat();
@@ -355,7 +355,13 @@ final class LineBufferWithPhysicalRecordLengthVariantsTest extends TestCase
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $buffer->continuedTextField();
         });
+    }
 
+    /**
+     * @dataProvider threeEatableFieldsProducer
+     */
+    public function testThrowsWhenAccessingContinuedTextFieldPastEndOfInputFromEarlierContinuedText(...$bufferArgs): void
+    {
         $this->withBuffer($bufferArgs, function ($buffer) {
             $buffer->eat();
             $buffer->continuedTextField();
