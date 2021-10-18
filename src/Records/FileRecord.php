@@ -9,29 +9,11 @@ use STS\Bai2\Parsers\MultilineParser;
 class FileRecord extends AbstractEnvelopeRecord
 {
 
-    protected string $senderIdentification;
-
-    protected string $receiverIdentification;
-
-    protected string $fileCreationDate;
-
-    protected string $fileCreationTime;
-
-    protected string $fileIdentificationNumber;
-
-    protected ?int $physicalRecordLength = null;
-
-    protected ?int $blockSize = null;
-
-    protected string $versionNumber = '2';
-
-    protected int $fileControlTotal;
-
-    protected int $numberOfGroups;
-
-    protected int $numberOfRecords;
+    protected ?array $headerFields = null;
 
     protected ?MultilineParser $headerParser = null;
+
+    protected ?array $trailerFields = null;
 
     protected ?MultilineParser $trailerParser = null;
 
@@ -73,68 +55,60 @@ class FileRecord extends AbstractEnvelopeRecord
 
     public function getSenderIdentification(): string
     {
-        return $this->senderIdentification ??
-            $this->parseHeader()->senderIdentification;
+        return $this->headerFields()[1];
     }
 
     public function getReceiverIdentification(): string
     {
-        return $this->receiverIdentification ??
-            $this->parseHeader()->receiverIdentification ;
+        return $this->headerFields()[2];
     }
 
     public function getFileCreationDate(): string
     {
-        return $this->fileCreationDate ??
-            $this->parseHeader()->fileCreationDate ;
+        return $this->headerFields()[3];
     }
 
     public function getFileCreationTime(): string
     {
-        return $this->fileCreationTime ??
-            $this->parseHeader()->fileCreationTime ;
+        return $this->headerFields()[4];
     }
 
     public function getFileIdentificationNumber(): string
     {
-        return $this->fileIdentificationNumber ??
-            $this->parseHeader()->fileIdentificationNumber ;
+        return $this->headerFields()[5];
     }
 
     public function getPhysicalRecordLength(): ?int
     {
-        return $this->physicalRecordLength ??
-            $this->parseHeader()->physicalRecordLength ;
+        return $this->normalizeEmptyString($this->headerFields()[6]);
     }
 
     public function getBlockSize(): ?int
     {
-        return $this->blockSize ??
-            $this->parseHeader()->blockSize ;
+        return $this->normalizeEmptyString($this->headerFields()[7]);
     }
 
     public function getVersionNumber(): string
     {
-        return $this->versionNumber ??
-            $this->parseHeader()->versionNumber ;
+        return $this->headerFields()[8];
     }
 
     public function getFileControlTotal(): int
     {
-        return $this->fileControlTotal ??
-            $this->parseTrailer()->fileControlTotal;
+        // TODO(zmd): validate field present (this is not optional)
+        return (int) $this->trailerFields()[1];
     }
 
     public function getNumberOfGroups(): int
     {
-        return $this->numberOfGroups ??
-            $this->parseTrailer()->numberOfGroups;
+        // TODO(zmd): validate field present (this is not optional)
+        return (int) $this->trailerFields()[2];
     }
 
     public function getNumberOfRecords(): int
     {
-        return $this->numberOfRecords ??
-            $this->parseTrailer()->numberOfRecords;
+        // TODO(zmd): validate field present? (this is not optional?)
+        return (int) $this->trailerFields()[3];
     }
 
     public function groups(): array
@@ -149,10 +123,10 @@ class FileRecord extends AbstractEnvelopeRecord
         $this->records[] = $this->currentChild;
     }
 
-    protected function parseHeader(): self
+    protected function headerFields(): array
     {
         // TODO(zmd): error handling if $headerParser was never initialized?
-        [
+        return $this->headerFields ??= [
             $_recordCode,
             $senderIdentification,
             $receiverIdentification,
@@ -163,21 +137,6 @@ class FileRecord extends AbstractEnvelopeRecord
             $blockSize,
             $versionNumber
         ] = $this->headerParser->drop(9);
-
-        $physicalRecordLength = $this->normalizeEmptyString($physicalRecordLength);
-        $blockSize = $this->normalizeEmptyString($blockSize);
-        $versionNumber = rtrim($versionNumber, '/');
-
-        $this->senderIdentification = $senderIdentification;
-        $this->receiverIdentification = $receiverIdentification;
-        $this->fileCreationDate = $fileCreationDate;
-        $this->fileCreationTime = $fileCreationTime;
-        $this->fileIdentificationNumber = $fileIdentificationNumber;
-        $this->physicalRecordLength = $physicalRecordLength;
-        $this->blockSize = $blockSize;
-        $this->versionNumber = $versionNumber;
-
-        return $this;
     }
 
     protected function parseContinuation(string $line): void
@@ -191,24 +150,15 @@ class FileRecord extends AbstractEnvelopeRecord
         }
     }
 
-    protected function parseTrailer(): self
+    protected function trailerFields(): array
     {
         // TODO(zmd): error handling if $trailerParser was never initialized?
-        [
+        return $this->trailerFields ??= [
             $_recordCode,
             $fileControlTotal,
             $numberOfGroups,
             $numberOfRecords
         ] = $this->trailerParser->drop(4);
-        $numberOfRecords = rtrim($numberOfRecords, '/');
-
-        $this->fileControlTotal = $fileControlTotal;
-        $this->numberOfGroups = $numberOfGroups;
-        $this->numberOfRecords = $numberOfRecords;
-
-        $this->setFinalized(true);
-
-        return $this;
     }
 
     private function normalizeEmptyString(string $s): ?string
