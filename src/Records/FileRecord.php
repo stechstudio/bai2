@@ -4,30 +4,27 @@ namespace STS\Bai2\Records;
 
 use STS\Bai2\Bai2;
 
-use STS\Bai2\Parsers\MultilineParser;
+use STS\Bai2\Parsers\FileHeaderParser;
+use STS\Bai2\Parsers\FileTrailerParser;
 
 class FileRecord extends AbstractEnvelopeRecord
 {
 
-    protected ?array $headerFields = null;
+    protected ?FileHeaderParser $headerParser = null;
 
-    protected ?MultilineParser $headerParser = null;
-
-    protected ?array $trailerFields = null;
-
-    protected ?MultilineParser $trailerParser = null;
+    protected ?FileTrailerParser $trailerParser = null;
 
     public function parseLine(string $line): void
     {
         switch (Bai2::recordTypeCode($line)) {
             case '01':
-                $this->pushHeaderLine($line);
+                ($this->headerParser ??= new FileHeaderParser())->push($line);
                 break;
             case '88':
                 $this->parseOrDelegateContinuation($line);
                 break;
             case '99':
-                $this->pushTrailerLine($line);
+                ($this->trailerParser ??= new FileTrailerParser())->push($line);
                 break;
             default:
                 $this->delegateToChild($line);
@@ -35,80 +32,59 @@ class FileRecord extends AbstractEnvelopeRecord
         }
     }
 
-    protected function pushHeaderLine(string $line): void
-    {
-        if (!$this->headerParser) {
-            $this->headerParser = new MultilineParser($line);
-        } else {
-            $this->headerParser->continue($line);
-        }
-    }
-
-    protected function pushTrailerLine(string $line): void
-    {
-        if (!$this->trailerParser) {
-            $this->trailerParser = new MultilineParser($line);
-        } else {
-            $this->trailerParser->continue($line);
-        }
-    }
-
     public function getSenderIdentification(): string
     {
-        return $this->headerFields()[1];
+        return $this->extantHeaderParser()->offsetGet('senderIdentification');
     }
 
     public function getReceiverIdentification(): string
     {
-        return $this->headerFields()[2];
+        return $this->extantHeaderParser()->offsetGet('receiverIdentification');
     }
 
     public function getFileCreationDate(): string
     {
-        return $this->headerFields()[3];
+        return $this->extantHeaderParser()->offsetGet('fileCreationDate');
     }
 
     public function getFileCreationTime(): string
     {
-        return $this->headerFields()[4];
+        return $this->extantHeaderParser()->offsetGet('fiileCreationTime');
     }
 
     public function getFileIdentificationNumber(): string
     {
-        return $this->headerFields()[5];
+        return $this->extantHeaderParser()->offsetGet('fileIdentificationNumber');
     }
 
     public function getPhysicalRecordLength(): ?int
     {
-        return $this->normalizeEmptyString($this->headerFields()[6]);
+        return $this->extantHeaderParser()->offsetGet('physicalRecordLength');
     }
 
     public function getBlockSize(): ?int
     {
-        return $this->normalizeEmptyString($this->headerFields()[7]);
+        return $this->extantHeaderParser()->offsetGet('blockSize');
     }
 
     public function getVersionNumber(): string
     {
-        return $this->headerFields()[8];
+        return $this->extantHeaderParser()->offsetGet('versionNumber');
     }
 
     public function getFileControlTotal(): int
     {
-        // TODO(zmd): validate field present (this is not optional)
-        return (int) $this->trailerFields()[1];
+        return $this->extantTrailerParser()->offsetGet('fileControlTotal');
     }
 
     public function getNumberOfGroups(): int
     {
-        // TODO(zmd): validate field present (this is not optional)
-        return (int) $this->trailerFields()[2];
+        return $this->extantTrailerParser()->offsetGet('numberOfGroups');
     }
 
     public function getNumberOfRecords(): int
     {
-        // TODO(zmd): validate field present? (this is not optional?)
-        return (int) $this->trailerFields()[3];
+        return $this->extantTrailerParser()->offsetGet('numberOfRecords');
     }
 
     public function groups(): array
@@ -117,26 +93,28 @@ class FileRecord extends AbstractEnvelopeRecord
         return [];
     }
 
+    protected function extantHeaderParser(): FileHeaderParser
+    {
+        if ($this->fileHeader) {
+            return $this->fileHeader;
+        }
+
+        throw new ExtantAssertionException('Tried to read File Header fields before File Header lines processed.');
+    }
+
+    protected function extantTrailerParser(): FileTrailerParser
+    {
+        if ($this->fileTrailer) {
+            return $this->fileTrailer;
+        }
+
+        throw new ExtantAssertionException('Tried to read File Trailer fields before File Trailer lines processed.');
+    }
+
     protected function newChild(): void
     {
         $this->currentChild = new GroupRecord();
         $this->records[] = $this->currentChild;
-    }
-
-    protected function headerFields(): array
-    {
-        // TODO(zmd): error handling if $headerParser was never initialized?
-        return $this->headerFields ??= [
-            $_recordCode,
-            $senderIdentification,
-            $receiverIdentification,
-            $fileCreationDate,
-            $fileCreationTime,
-            $fileIdentificationNumber,
-            $physicalRecordLength,
-            $blockSize,
-            $versionNumber
-        ] = $this->headerParser->drop(9);
     }
 
     protected function parseContinuation(string $line): void
@@ -144,26 +122,10 @@ class FileRecord extends AbstractEnvelopeRecord
         // TODO(zmd): error handling if $headerTrailer and/or $trailerParser
         //   never get initialized?
         if ($this->trailerParser) {
-            $this->pushTrailerLine($line);
+            $this->trailerParser->push($line);
         } else {
-            $this->pushHeaderLine($line);
+            $this->headerParser->push($line);
         }
-    }
-
-    protected function trailerFields(): array
-    {
-        // TODO(zmd): error handling if $trailerParser was never initialized?
-        return $this->trailerFields ??= [
-            $_recordCode,
-            $fileControlTotal,
-            $numberOfGroups,
-            $numberOfRecords
-        ] = $this->trailerParser->drop(4);
-    }
-
-    private function normalizeEmptyString(string $s): ?string
-    {
-        return $s === '' ? null : $s;
     }
 
 }
