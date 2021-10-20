@@ -2,6 +2,8 @@
 
 namespace STS\Bai2\Parsers;
 
+use STS\Bai2\Exceptions\InvalidUseException;
+
 class MultilineParser
 {
 
@@ -63,14 +65,14 @@ class MultilineParser
     public function continue(string $continuationLine): self
     {
         if ($this->textTaken) {
-            throw new \Exception('Cannot call ::continue() after reading the text field.');
+            throw new InvalidUseException('Cannot call ::continue() after reading the text field.');
         }
 
         $lineParser = new LineParser($continuationLine, $this->physicalRecordLength);
 
         // immediately check for then discard the '88' record type field
         if ($lineParser->shift() !== '88') {
-            throw new \Exception('Cannot call ::continue() on non-continuation input.');
+            throw new InvalidUseException('Cannot call ::continue() on non-continuation input.');
         }
 
         $this->lines[] = $lineParser;

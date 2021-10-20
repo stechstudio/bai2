@@ -4,7 +4,7 @@ namespace STS\Bai2\Parsers;
 
 use PHPUnit\Framework\TestCase;
 
-use STS\Bai2\Exceptions\LineBufferReadException;
+use STS\Bai2\Exceptions\ParseException;
 
 final class LineBufferWithPhysicalRecordLengthVariantsTest extends TestCase
 {
@@ -301,7 +301,7 @@ final class LineBufferWithPhysicalRecordLengthVariantsTest extends TestCase
         $this->withBuffer($bufferArgs, function ($buffer) {
             $buffer->eat()->eat()->eat();
 
-            $this->expectException(LineBufferReadException::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot advance beyond the end of the buffer.');
             $buffer->eat();
         });
@@ -315,7 +315,7 @@ final class LineBufferWithPhysicalRecordLengthVariantsTest extends TestCase
         $this->withBuffer($bufferArgs, function ($buffer) {
             $buffer->eat()->eat()->eat();
 
-            $this->expectException(LineBufferReadException::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $buffer->field();
         });
@@ -329,7 +329,7 @@ final class LineBufferWithPhysicalRecordLengthVariantsTest extends TestCase
         $this->withBuffer($bufferArgs, function ($buffer) {
             $buffer->eat()->eat()->eat();
 
-            $this->expectException(LineBufferReadException::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $buffer->textField();
         });
@@ -339,7 +339,7 @@ final class LineBufferWithPhysicalRecordLengthVariantsTest extends TestCase
             $buffer->textField();
             $buffer->eat();
 
-            $this->expectException(LineBufferReadException::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $buffer->textField();
         });
@@ -353,7 +353,7 @@ final class LineBufferWithPhysicalRecordLengthVariantsTest extends TestCase
         $this->withBuffer($bufferArgs, function ($buffer) {
             $buffer->eat()->eat()->eat();
 
-            $this->expectException(LineBufferReadException::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $buffer->continuedTextField();
         });
@@ -369,7 +369,7 @@ final class LineBufferWithPhysicalRecordLengthVariantsTest extends TestCase
             $buffer->continuedTextField();
             $buffer->eat();
 
-            $this->expectException(LineBufferReadException::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $buffer->continuedTextField();
         });

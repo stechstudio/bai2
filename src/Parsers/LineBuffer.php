@@ -2,8 +2,9 @@
 
 namespace STS\Bai2\Parsers;
 
-use STS\Bai2\Exceptions\LineBufferLengthException;
-use STS\Bai2\Exceptions\LineBufferReadException;
+use STS\Bai2\Exceptions\InvalidUseException;
+use STS\Bai2\Exceptions\MalformedInputException;
+use STS\Bai2\Exceptions\ParseException;
 
 class LineBuffer
 {
@@ -39,7 +40,7 @@ class LineBuffer
         //   is a one-way operation, and all this logic ensures higher level
         //   logic can not attempt to violate this one-way-ness).
         if (!is_null($this->physicalRecordLength)) {
-            throw new LineBufferLengthException('The physical record length may be set only once.');
+            throw new InvalidUseException('The physical record length may be set only once.');
         } else if (!is_null($physicalRecordLength)) {
             $this->physicalRecordLength = $physicalRecordLength;
             $this->validatePhysicalRecordLength()->trimLine();
@@ -52,7 +53,7 @@ class LineBuffer
     {
         if (!is_null($this->physicalRecordLength)) {
             if (strlen($this->line) > $this->physicalRecordLength) {
-                throw new LineBufferLengthException('Input line length exceeds requested physical record length.');
+                throw new MalformedInputException('Input line length exceeds requested physical record length.');
             }
         }
 
@@ -68,7 +69,7 @@ class LineBuffer
     public function eat(): self
     {
         if ($this->isEndOfLine()) {
-            throw new LineBufferReadException('Cannot advance beyond the end of the buffer.');
+            throw new ParseException('Cannot advance beyond the end of the buffer.');
         } else if ($this->textTaken) {
             $this->cursor = $this->endOfLine;
         } else {
@@ -174,7 +175,7 @@ class LineBuffer
         $end = $this->seek(',', '/');
 
         if (is_null($end)) {
-            throw new LineBufferReadException('Cannot access last (non-text) field on unterminated input line.');
+            throw new ParseException('Cannot access last (non-text) field on unterminated input line.');
         }
 
         return $end;
@@ -183,7 +184,7 @@ class LineBuffer
     protected function assertNotEndOfLine(): void
     {
         if ($this->isEndOfLine()) {
-            throw new LineBufferReadException('Cannot access fields at the end of the buffer.');
+            throw new ParseException('Cannot access fields at the end of the buffer.');
         }
     }
 

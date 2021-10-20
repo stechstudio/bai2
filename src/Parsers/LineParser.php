@@ -2,10 +2,6 @@
 
 namespace STS\Bai2\Parsers;
 
-use STS\Bai2\Exceptions\LineBufferLengthException;
-use STS\Bai2\Exceptions\LineBufferReadException;
-use STS\Bai2\Exceptions\LineParserInputException;
-
 class LineParser
 {
 
@@ -13,27 +9,17 @@ class LineParser
 
     public function __construct(string $line, ?int $physicalRecordLength = null)
     {
-        try {
-            $this->buffer = new LineBuffer($line, $physicalRecordLength);
-        } catch (LineBufferLengthException $e) {
-            throw new LineParserInputException('Input line length exceeds requested physical record length.');
-        }
+        $this->buffer = new LineBuffer($line, $physicalRecordLength);
     }
 
     public function setPhysicalRecordLength(?int $physicalRecordLength): self
     {
-        try {
-            $this->buffer->setPhysicalRecordLength($physicalRecordLength);
-        } catch (LineBufferLengthException $e) {
-            throw new LineParserInputException('Input line length exceeds requested physical record length.');
-        }
-
+        $this->buffer->setPhysicalRecordLength($physicalRecordLength);
         return $this;
     }
 
     public function peek(): string
     {
-        // TODO(zmd): ::field() !!=> LineBufferReadException
         return $this->buffer->field();
     }
 
@@ -48,27 +34,21 @@ class LineParser
 
     public function shift(): string
     {
-        // TODO(zmd): ::field() !!=> LineBufferReadException
         $field = $this->buffer->field();
-        // TODO(zmd): ::eat() !!=> LineBufferReadException
         $this->buffer->eat();
         return $field;
     }
 
     public function shiftText(): string
     {
-        // TODO(zmd): ::textField() !!=> LineBufferReadException
         $field = $this->buffer->textField();
-        // TODO(zmd): ::eat() !!=> LineBufferReadException
         $this->buffer->eat();
         return $field;
     }
 
     public function shiftContinuedText(): string
     {
-        // TODO(zmd): ::continuedTextField() !!=> LineBufferReadException
         $field = $this->buffer->continuedTextField();
-        // TODO(zmd): ::eat() !!=> LineBufferReadException
         $this->buffer->eat();
         return $field;
     }
