@@ -3,7 +3,7 @@
 namespace STS\Bai2\Parsers;
 
 use STS\Bai2\Exceptions\LineBufferLengthException;
-use STS\Bai2\Exceptions\LineBufferOverReadException;
+use STS\Bai2\Exceptions\LineBufferReadException;
 
 class LineBuffer
 {
@@ -68,7 +68,7 @@ class LineBuffer
     public function eat(): self
     {
         if ($this->isEndOfLine()) {
-            throw new LineBufferOverReadException('Cannot advance beyond the end of the buffer.');
+            throw new LineBufferReadException('Cannot advance beyond the end of the buffer.');
         } else if ($this->textTaken) {
             $this->cursor = $this->endOfLine;
         } else {
@@ -174,7 +174,7 @@ class LineBuffer
         $end = $this->seek(',', '/');
 
         if (is_null($end)) {
-            throw new LineBufferOverReadException('Cannot access last (non-text) field on unterminated input line.');
+            throw new LineBufferReadException('Cannot access last (non-text) field on unterminated input line.');
         }
 
         return $end;
@@ -183,7 +183,7 @@ class LineBuffer
     protected function assertNotEndOfLine(): void
     {
         if ($this->isEndOfLine()) {
-            throw new LineBufferOverReadException('Cannot access fields at the end of the buffer.');
+            throw new LineBufferReadException('Cannot access fields at the end of the buffer.');
         }
     }
 

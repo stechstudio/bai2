@@ -5,7 +5,7 @@ namespace STS\Bai2\Parsers;
 use PHPUnit\Framework\TestCase;
 
 use STS\Bai2\Exceptions\LineBufferLengthException;
-use STS\Bai2\Exceptions\LineBufferOverReadException;
+use STS\Bai2\Exceptions\LineBufferReadException;
 
 final class LineBufferTest extends TestCase
 {
@@ -396,7 +396,7 @@ final class LineBufferTest extends TestCase
     {
         $this->buffer = new LineBuffer('foo,bar,baz quux');
 
-        $this->expectException(LineBufferOverReadException::class);
+        $this->expectException(LineBufferReadException::class);
         $this->expectExceptionMessage('Cannot access last (non-text) field on unterminated input line.');
         $field = $this->buffer->eat()->eat()->field();
     }
@@ -405,7 +405,7 @@ final class LineBufferTest extends TestCase
     {
         $this->buffer = new LineBuffer('foo');
 
-        $this->expectException(LineBufferOverReadException::class);
+        $this->expectException(LineBufferReadException::class);
         $this->expectExceptionMessage('Cannot access last (non-text) field on unterminated input line.');
         $field = $this->buffer->field();
     }
@@ -426,7 +426,7 @@ final class LineBufferTest extends TestCase
     {
         $this->buffer->eat()->eat()->eat();
 
-        $this->expectException(LineBufferOverReadException::class);
+        $this->expectException(LineBufferReadException::class);
         $this->expectExceptionMessage('Cannot advance beyond the end of the buffer.');
         $this->buffer->eat();
     }
@@ -435,7 +435,7 @@ final class LineBufferTest extends TestCase
     {
         $this->buffer->eat()->eat()->eat();
 
-        $this->expectException(LineBufferOverReadException::class);
+        $this->expectException(LineBufferReadException::class);
         $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
         $this->buffer->field();
     }
@@ -444,7 +444,7 @@ final class LineBufferTest extends TestCase
     {
         $this->buffer->eat()->eat()->eat();
 
-        $this->expectException(LineBufferOverReadException::class);
+        $this->expectException(LineBufferReadException::class);
         $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
         $this->buffer->textField();
     }
@@ -453,7 +453,7 @@ final class LineBufferTest extends TestCase
     {
         $this->buffer->eat()->eat()->eat();
 
-        $this->expectException(LineBufferOverReadException::class);
+        $this->expectException(LineBufferReadException::class);
         $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
         $this->buffer->continuedTextField();
     }
