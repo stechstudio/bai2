@@ -9,17 +9,20 @@ class LineParser
 
     public function __construct(string $line, ?int $physicalRecordLength = null)
     {
+        // TODO(zmd): ::__construct() !!=> LineBufferLengthError
         $this->buffer = new LineBuffer($line, $physicalRecordLength);
     }
 
     public function setPhysicalRecordLength(?int $physicalRecordLength): self
     {
+        // TODO(zmd): ::setPhysicalRecordLength() !!=> LineBufferLengthError
         $this->buffer->setPhysicalRecordLength($physicalRecordLength);
         return $this;
     }
 
     public function peek(): string
     {
+        // TODO(zmd): ::field() !!=> LineBufferReadException
         return $this->buffer->field();
     }
 
@@ -34,21 +37,27 @@ class LineParser
 
     public function shift(): string
     {
+        // TODO(zmd): ::field() !!=> LineBufferReadException
         $field = $this->buffer->field();
+        // TODO(zmd): ::eat() !!=> LineBufferReadException
         $this->buffer->eat();
         return $field;
     }
 
     public function shiftText(): string
     {
+        // TODO(zmd): ::textField() !!=> LineBufferReadException
         $field = $this->buffer->textField();
+        // TODO(zmd): ::eat() !!=> LineBufferReadException
         $this->buffer->eat();
         return $field;
     }
 
     public function shiftContinuedText(): string
     {
+        // TODO(zmd): ::continuedTextField() !!=> LineBufferReadException
         $field = $this->buffer->continuedTextField();
+        // TODO(zmd): ::eat() !!=> LineBufferReadException
         $this->buffer->eat();
         return $field;
     }
