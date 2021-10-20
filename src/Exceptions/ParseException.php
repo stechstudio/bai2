@@ -3,7 +3,7 @@
 namespace STS\Bai2\Exceptions;
 
 /**
- * Exception attempting to parse and access a record's field.
+ * Failed attempt to parse or access a record's field in the way requested.
  */
 class ParseException extends \Exception
 {
