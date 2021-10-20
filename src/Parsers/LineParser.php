@@ -2,6 +2,10 @@
 
 namespace STS\Bai2\Parsers;
 
+use STS\Bai2\Exceptions\LineBufferLengthException;
+use STS\Bai2\Exceptions\LineBufferReadException;
+use STS\Bai2\Exceptions\LineParserInputException;
+
 class LineParser
 {
 
@@ -9,14 +13,21 @@ class LineParser
 
     public function __construct(string $line, ?int $physicalRecordLength = null)
     {
-        // TODO(zmd): ::__construct() !!=> LineBufferLengthError
-        $this->buffer = new LineBuffer($line, $physicalRecordLength);
+        try {
+            $this->buffer = new LineBuffer($line, $physicalRecordLength);
+        } catch (LineBufferLengthException $e) {
+            throw new LineParserInputException('Input line length exceeds requested physical record length.');
+        }
     }
 
     public function setPhysicalRecordLength(?int $physicalRecordLength): self
     {
-        // TODO(zmd): ::setPhysicalRecordLength() !!=> LineBufferLengthError
-        $this->buffer->setPhysicalRecordLength($physicalRecordLength);
+        try {
+            $this->buffer->setPhysicalRecordLength($physicalRecordLength);
+        } catch (LineBufferLengthException $e) {
+            throw new LineParserInputException('Input line length exceeds requested physical record length.');
+        }
+
         return $this;
     }
 

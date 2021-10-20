@@ -4,6 +4,8 @@ namespace STS\Bai2\Parsers;
 
 use PHPUnit\Framework\TestCase;
 
+use STS\Bai2\Exceptions\LineParserInputException;
+
 final class LineParserTest extends TestCase
 {
 
@@ -293,7 +295,7 @@ final class LineParserTest extends TestCase
 
     public function testThrowsWhenContructWithLineLongerThanPhysicalLength(): void
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(LineParserInputException::class);
         $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
         $parser = new LineParser(self::$headerLine, 10);
         $parser = new LineParser(
@@ -305,7 +307,7 @@ final class LineParserTest extends TestCase
     public function testThrowsWhenSetPhysicalRecordLengthExceedingOriginalLineLength(): void
     {
         $parser = new LineParser("88, characters I've ever used, my absolute favorite: /                           ");
-        $this->expectException(\Exception::class);
+        $this->expectException(LineParserInputException::class);
         $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
         $parser->setPhysicalRecordLength(80);
     }
