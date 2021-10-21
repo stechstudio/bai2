@@ -3,9 +3,10 @@
 namespace STS\Bai2\Exceptions;
 
 /**
- * Indicates that a Bai2 component was used in a clearly incorrect manner.
+ * Thrown any time a Bai2 component should definitely exist but didn't
+ * (indicating likely error in usage).
  */
-class ExtantAssertionException extends \LogicException
+class ExtantAssertionException extends InvalidUseException
 {
 
 }
