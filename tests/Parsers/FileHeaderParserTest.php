@@ -51,7 +51,7 @@ final class FileHeaderParserTest extends TestCase
     public function testRecordCodeValid(): void
     {
         $parser = new FileHeaderParser();
-        $parser->push('01,SENDR1,RECVR1,210616,1700,01,80,10,2/');
+        $parser->push(self::$headerLine);
         $this->assertEquals('01', $parser->offsetGet('recordCode'));
     }
 
@@ -73,6 +73,34 @@ final class FileHeaderParserTest extends TestCase
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Record Code" must be "01".');
         $parser->offsetGet('recordCode');
+    }
+
+    public function testSenderIdentificationValid(): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push(self::$headerLine);
+
+        $this->assertEquals('SENDR1', $parser->offsetGet('senderIdentification'));
+    }
+
+    public function testSenderIdentificationMissing(): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push('01,,RECVR1,210616,1700,01,80,10,2/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Sender Identification" cannot be omitted.');
+        $parser->offsetGet('senderIdentification');
+    }
+
+    public function testSenderIdentificationInvalidType(): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push('01,!@#$%,RECVR1,210616,1700,01,80,10,2/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Sender Identification" must be alpha-numeric.');
+        $parser->offsetGet('senderIdentification');
     }
 
 }

@@ -57,6 +57,7 @@ class FileHeaderParser
     {
         return match ($key) {
             'recordCode' => $this->parseRecordCode($value),
+            'senderIdentification' => $this->parseSenderIdentification($value),
 
             // TODO(zmd): temporarily non-exhaustive match, remove this once
             //   all validations in place:
@@ -73,6 +74,24 @@ class FileHeaderParser
         } else if ($value !== '01') {
             throw new InvalidTypeException(
                 'Invalid field type: "Record Code" must be "01".'
+            );
+        }
+
+        return $value;
+    }
+
+    private function parseSenderIdentification(string $value): string
+    {
+        if ($value === '') {
+            throw new InvalidTypeException(
+                'Invalid field type: "Sender Identification" cannot be omitted.'
+            );
+        // TODO(zmd): is there something like :alnum:?
+        // TODO(zmd): this will also ensure non-empty, we can collapse this
+        //   conditional tree, and we must do so.
+        } else if (preg_match('/[a-zA-Z0-9_-]+/', $value) !== 1) {
+            throw new InvalidTypeException(
+                'Invalid field type: "Sender Identification" must be alpha-numeric.'
             );
         }
 
