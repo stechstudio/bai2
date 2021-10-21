@@ -11,6 +11,18 @@ class FileHeaderParser
 
     private MultilineParser $parser;
 
+    private static array $fields = [
+        'recordCode',
+        'senderIdentification',
+        'receiverIdentification',
+        'fileCreationDate',
+        'fileCreationTime',
+        'fileIdentificationNumber',
+        'physicalRecordLength',
+        'blockSize',
+        'versionNumber',
+    ];
+
     public function push(string $line): self
     {
         if (!isset($this->parser)) {
@@ -30,17 +42,13 @@ class FileHeaderParser
 
     private static function index(string $key): int
     {
-        return match ($key) {
-            'recordCode' => 0,
-            'senderIdentification' => 1,
-            'receiverIdentification' => 2,
-            'fileCreationDate' => 3,
-            'fileCreationTime' => 4,
-            'fileIdentificationNumber' => 5,
-            'physicalRecordLength' => 6,
-            'blockSize' => 7,
-            'versionNumber' => 8,
-        };
+        $index = array_search($key, self::$fields);
+        if ($index === false) {
+            // TODO(zmd): define and use package-specific exception
+            throw new \RuntimeException('Unknown field.');
+        }
+
+        return $index;
     }
 
 }
