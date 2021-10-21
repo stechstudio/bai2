@@ -49,7 +49,7 @@ class FileRecord extends AbstractEnvelopeRecord
 
     public function getFileCreationTime(): string
     {
-        return $this->extantHeaderParser()->offsetGet('fiileCreationTime');
+        return $this->extantHeaderParser()->offsetGet('fileCreationTime');
     }
 
     public function getFileIdentificationNumber(): string
@@ -95,8 +95,8 @@ class FileRecord extends AbstractEnvelopeRecord
 
     protected function extantHeaderParser(): FileHeaderParser
     {
-        if ($this->fileHeader) {
-            return $this->fileHeader;
+        if ($this->headerParser) {
+            return $this->headerParser;
         }
 
         throw new ExtantAssertionException('Tried to read File Header fields before File Header lines processed.');
@@ -104,8 +104,8 @@ class FileRecord extends AbstractEnvelopeRecord
 
     protected function extantTrailerParser(): FileTrailerParser
     {
-        if ($this->fileTrailer) {
-            return $this->fileTrailer;
+        if ($this->trailerParser) {
+            return $this->trailerParser;
         }
 
         throw new ExtantAssertionException('Tried to read File Trailer fields before File Trailer lines processed.');
