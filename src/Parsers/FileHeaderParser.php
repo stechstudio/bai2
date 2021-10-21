@@ -58,6 +58,7 @@ class FileHeaderParser
         return match ($key) {
             'recordCode' => $this->parseRecordCode($value),
             'senderIdentification' => $this->parseSenderIdentification($value),
+            'receiverIdentification' => $this->parseReceiverIdentification($value),
 
             // TODO(zmd): temporarily non-exhaustive match, remove this once
             //   all validations in place:
@@ -80,6 +81,7 @@ class FileHeaderParser
         return $value;
     }
 
+    // TODO(zmd): de-dupe and abstractify?
     private function parseSenderIdentification(string $value): string
     {
         if (preg_match('/^[[:alnum:]]+$/', $value) === 1) {
@@ -92,6 +94,22 @@ class FileHeaderParser
 
         throw new InvalidTypeException(
             'Invalid field type: "Sender Identification" must be alpha-numeric.'
+        );
+    }
+
+    // TODO(zmd): de-dupe and abstractify?
+    private function parseReceiverIdentification(string $value): string
+    {
+        if (preg_match('/^[[:alnum:]]+$/', $value) === 1) {
+            return $value;
+        } else if ($value === '') {
+            throw new InvalidTypeException(
+                'Invalid field type: "Receiver Identification" cannot be omitted.'
+            );
+        }
+
+        throw new InvalidTypeException(
+            'Invalid field type: "Receiver Identification" must be alpha-numeric.'
         );
     }
 

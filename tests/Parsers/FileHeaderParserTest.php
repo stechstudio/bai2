@@ -120,4 +120,49 @@ final class FileHeaderParserTest extends TestCase
         $parser->offsetGet('senderIdentification');
     }
 
+    /**
+     * @testWith ["01,SENDR1,RECVR1,210616,1700,01,80,10,2/", "RECVR1"]
+     *           ["01,SENDR1,1RECVR,210616,1700,01,80,10,2/", "1RECVR"]
+     *           ["01,SENDR1,1recvr,210616,1700,01,80,10,2/", "1recvr"]
+     *           ["01,SENDR1,recvr1,210616,1700,01,80,10,2/", "recvr1"]
+     *           ["01,SENDR1,012345,210616,1700,01,80,10,2/", "012345"]
+     *           ["01,SENDR1,42thisIsAVeryLongButStillCompletelyValidIdentifier1337,210616,1700,01,80,10,2/", "42thisIsAVeryLongButStillCompletelyValidIdentifier1337"]
+     */
+    public function testReceiverIdentificationValid(string $line, string $expected): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push($line);
+
+        $this->assertEquals($expected, $parser->offsetGet('receiverIdentification'));
+    }
+
+    public function testReceiverIdentificationMissing(): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push('01,SENDR1,,210616,1700,01,80,10,2/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Receiver Identification" cannot be omitted.');
+        $parser->offsetGet('receiverIdentification');
+    }
+
+    /**
+     * @testWith ["01,SENDR1,!@#$%,210616,1700,01,80,10,2/"]
+     *           ["01,SENDR1,RECVR 1,210616,1700,01,80,10,2/"]
+     *           ["01,SENDR1, RECVR1,210616,1700,01,80,10,2/"]
+     *           ["01,SENDR1,RECVR1 ,210616,1700,01,80,10,2/"]
+     *           ["01,SENDR1, ,210616,1700,01,80,10,2/"]
+     *           ["01,SENDR1,RECVR_1,210616,1700,01,80,10,2/"]
+     *           ["01,SENDR1,RECVR-1,210616,1700,01,80,10,2/"]
+     */
+    public function testReceiverIdentificationInvalidType(string $line): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Receiver Identification" must be alpha-numeric.');
+        $parser->offsetGet('receiverIdentification');
+    }
+
 }
