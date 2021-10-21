@@ -2,6 +2,8 @@
 
 namespace STS\Bai2\Records;
 
+use STS\Bai2\Exceptions\ExtantAssertionException;
+
 abstract class AbstractEnvelopeRecord extends AbstractRecord
 {
 
@@ -22,7 +24,7 @@ abstract class AbstractEnvelopeRecord extends AbstractRecord
             return $this->currentChild;
         }
 
-        throw new \Exception('$currentChild was unexpectedly null or finalized');
+        throw new ExtantAssertionException('$currentChild was unexpectedly null or finalized');
     }
 
     protected function parseOrDelegateContinuation(string $line): void

@@ -18,18 +18,31 @@ class Bai2
 
     public static function parseFromFile(string $pathname): FileRecord
     {
-        $file = fopen($pathname, 'r');
-        return self::parseFromResource($file);
+        if ($file = fopen($pathname, 'r')) {
+            return self::parseFromResource($file);
+        }
+
+        throw new \RuntimeException('Error: unable to open given file for read with fopen().');
     }
 
     public static function parseFromResource($fileStream): FileRecord
     {
         $fileRecord = new FileRecord();
-        while ($line = trim(fgets($fileStream))) {
-            $fileRecord->parseLine($line);
-        }
 
-        fclose($fileStream);
+        try {
+            while ($line = fgets($fileStream)) {
+                // trim off \r and any other lingering whitespace
+                if ($line = trim($line)) {
+                    $fileRecord->parseLine($line);
+                }
+            }
+
+            if (!feof($fileStream)) {
+                throw new \RuntimeException('Error: unable to finish reading input file with fgets().');
+            }
+        } finally {
+            fclose($fileStream);
+        }
 
         return $fileRecord;
     }

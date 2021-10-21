@@ -4,6 +4,9 @@ namespace STS\Bai2\Parsers;
 
 use PHPUnit\Framework\TestCase;
 
+use STS\Bai2\Exceptions\MalformedInputException;
+use STS\Bai2\Exceptions\ParseException;
+
 final class LineParserTest extends TestCase
 {
 
@@ -203,7 +206,7 @@ final class LineParserTest extends TestCase
         $parser = new LineParser(self::$headerLine);
         $parser->drop(9);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(ParseException::class);
         $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
         $parser->peek();
     }
@@ -221,7 +224,7 @@ final class LineParserTest extends TestCase
         $parser->shift();
         $parser->shift();
 
-        $this->expectException(\Exception::class);
+        $this->expectException(ParseException::class);
         $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
         $parser->shift();
     }
@@ -230,7 +233,7 @@ final class LineParserTest extends TestCase
     {
         $parser = new LineParser(self::$headerLine);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(ParseException::class);
         $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
         $parser->drop(10);
     }
@@ -246,7 +249,7 @@ final class LineParserTest extends TestCase
         $parser->shiftText();
 
         // make it go boom!
-        $this->expectException(\Exception::class);
+        $this->expectException(ParseException::class);
         $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
         $parser->shiftText();
     }
@@ -257,7 +260,7 @@ final class LineParserTest extends TestCase
         $parser->drop(1);
         $parser->shiftContinuedText();
 
-        $this->expectException(\Exception::class);
+        $this->expectException(ParseException::class);
         $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
         $parser->shiftContinuedText();
     }
@@ -267,7 +270,7 @@ final class LineParserTest extends TestCase
         $parser = new LineParser(self::$headerInputWithUnterminatedVersionFieldProducer);
         $parser->drop(8);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(ParseException::class);
         $this->expectExceptionMessage('Cannot access last (non-text) field on unterminated input line.');
         $parser->peek();
     }
@@ -277,7 +280,7 @@ final class LineParserTest extends TestCase
         $parser = new LineParser(self::$headerInputWithUnterminatedVersionFieldProducer);
         $parser->drop(8);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(ParseException::class);
         $this->expectExceptionMessage('Cannot access last (non-text) field on unterminated input line.');
         $parser->shift();
     }
@@ -286,14 +289,14 @@ final class LineParserTest extends TestCase
     {
         $parser = new LineParser(self::$headerInputWithUnterminatedVersionFieldProducer);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(ParseException::class);
         $this->expectExceptionMessage('Cannot access last (non-text) field on unterminated input line.');
         $parser->drop(9);
     }
 
     public function testThrowsWhenContructWithLineLongerThanPhysicalLength(): void
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
         $parser = new LineParser(self::$headerLine, 10);
         $parser = new LineParser(
@@ -305,7 +308,7 @@ final class LineParserTest extends TestCase
     public function testThrowsWhenSetPhysicalRecordLengthExceedingOriginalLineLength(): void
     {
         $parser = new LineParser("88, characters I've ever used, my absolute favorite: /                           ");
-        $this->expectException(\Exception::class);
+        $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
         $parser->setPhysicalRecordLength(80);
     }

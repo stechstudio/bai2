@@ -4,6 +4,10 @@ namespace STS\Bai2\Parsers;
 
 use PHPUnit\Framework\TestCase;
 
+use STS\Bai2\Exceptions\InvalidUseException;
+use STS\Bai2\Exceptions\MalformedInputException;
+use STS\Bai2\Exceptions\ParseException;
+
 final class LineBufferTest extends TestCase
 {
 
@@ -79,7 +83,7 @@ final class LineBufferTest extends TestCase
      */
     public function testThrowsWhenContructWithLineLongerThanPhsyicalLength(string $input): void
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
         $this->buffer = new LineBuffer($input, 80);
     }
@@ -91,7 +95,7 @@ final class LineBufferTest extends TestCase
     {
         $this->buffer = new LineBuffer($input);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
         $this->buffer->setPhysicalRecordLength(80);
     }
@@ -100,7 +104,7 @@ final class LineBufferTest extends TestCase
     {
         $this->buffer = new LineBuffer('foo,bar,baz/', 80);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(InvalidUseException::class);
         $this->expectExceptionMessage('The physical record length may be set only once.');
         $this->buffer->setPhysicalRecordLength(null);
     }
@@ -109,7 +113,7 @@ final class LineBufferTest extends TestCase
     {
         $this->buffer = new LineBuffer('foo,bar,baz/', 80);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(InvalidUseException::class);
         $this->expectExceptionMessage('The physical record length may be set only once.');
         $this->buffer->setPhysicalRecordLength(100);
     }
@@ -119,7 +123,7 @@ final class LineBufferTest extends TestCase
         $this->buffer = new LineBuffer('foo,bar,baz/');
         $this->buffer->setPhysicalRecordLength(80);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(InvalidUseException::class);
         $this->expectExceptionMessage('The physical record length may be set only once.');
         $this->buffer->setPhysicalRecordLength(null);
     }
@@ -129,7 +133,7 @@ final class LineBufferTest extends TestCase
         $this->buffer = new LineBuffer('foo,bar,baz/');
         $this->buffer->setPhysicalRecordLength(80);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(InvalidUseException::class);
         $this->expectExceptionMessage('The physical record length may be set only once.');
         $this->buffer->setPhysicalRecordLength(79);
     }
@@ -393,7 +397,7 @@ final class LineBufferTest extends TestCase
     {
         $this->buffer = new LineBuffer('foo,bar,baz quux');
 
-        $this->expectException(\Exception::class);
+        $this->expectException(ParseException::class);
         $this->expectExceptionMessage('Cannot access last (non-text) field on unterminated input line.');
         $field = $this->buffer->eat()->eat()->field();
     }
@@ -402,7 +406,7 @@ final class LineBufferTest extends TestCase
     {
         $this->buffer = new LineBuffer('foo');
 
-        $this->expectException(\Exception::class);
+        $this->expectException(ParseException::class);
         $this->expectExceptionMessage('Cannot access last (non-text) field on unterminated input line.');
         $field = $this->buffer->field();
     }
@@ -423,7 +427,7 @@ final class LineBufferTest extends TestCase
     {
         $this->buffer->eat()->eat()->eat();
 
-        $this->expectException(\Exception::class);
+        $this->expectException(ParseException::class);
         $this->expectExceptionMessage('Cannot advance beyond the end of the buffer.');
         $this->buffer->eat();
     }
@@ -432,7 +436,7 @@ final class LineBufferTest extends TestCase
     {
         $this->buffer->eat()->eat()->eat();
 
-        $this->expectException(\Exception::class);
+        $this->expectException(ParseException::class);
         $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
         $this->buffer->field();
     }
@@ -441,7 +445,7 @@ final class LineBufferTest extends TestCase
     {
         $this->buffer->eat()->eat()->eat();
 
-        $this->expectException(\Exception::class);
+        $this->expectException(ParseException::class);
         $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
         $this->buffer->textField();
     }
@@ -450,7 +454,7 @@ final class LineBufferTest extends TestCase
     {
         $this->buffer->eat()->eat()->eat();
 
-        $this->expectException(\Exception::class);
+        $this->expectException(ParseException::class);
         $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
         $this->buffer->continuedTextField();
     }
