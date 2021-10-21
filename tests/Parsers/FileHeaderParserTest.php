@@ -4,6 +4,8 @@ namespace STS\Bai2\Parsers;
 
 use PHPUnit\Framework\TestCase;
 
+use STS\Bai2\Exceptions\InvalidTypeException;
+
 final class FileHeaderParserTest extends TestCase
 {
 
@@ -44,6 +46,31 @@ final class FileHeaderParserTest extends TestCase
         $this->assertEquals(80, $parser->offsetGet('physicalRecordLength'));
         $this->assertEquals(10, $parser->offsetGet('blockSize'));
         $this->assertEquals('2', $parser->offsetGet('versionNumber'));
+    }
+
+    public function testRecordCodeValid(): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push('01,SENDR1,RECVR1,210616,1700,01,80,10,2/');
+        $this->assertEquals('01', $parser->offsetGet('recordCode'));
+    }
+
+    public function testRecordCodeMissing(): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push(',SENDR1,RECVR1,210616,1700,01,80,10,2/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Record Code" cannot be omitted.');
+    }
+
+    public function testRecordCodeInvalidType(): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push('ZZ,SENDR1,RECVR1,210616,1700,01,80,10,2/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Record Code" must be "01".');
     }
 
 }
