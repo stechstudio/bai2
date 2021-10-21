@@ -75,12 +75,20 @@ final class FileHeaderParserTest extends TestCase
         $parser->offsetGet('recordCode');
     }
 
-    public function testSenderIdentificationValid(): void
+    /**
+     * @testWith ["01,SENDR1,RECVR1,210616,1700,01,80,10,2/", "SENDR1"]
+     *           ["01,1SENDR,RECVR1,210616,1700,01,80,10,2/", "1SENDR"]
+     *           ["01,1sendr,RECVR1,210616,1700,01,80,10,2/", "1sendr"]
+     *           ["01,sendr1,RECVR1,210616,1700,01,80,10,2/", "sendr1"]
+     *           ["01,012345,RECVR1,210616,1700,01,80,10,2/", "012345"]
+     *           ["01,42thisIsAVeryLongButStillCompletelyValidIdentifier1337,RECVR1,210616,1700,01,80,10,2/", "42thisIsAVeryLongButStillCompletelyValidIdentifier1337"]
+     */
+    public function testSenderIdentificationValid(string $line, string $expected): void
     {
         $parser = new FileHeaderParser();
-        $parser->push(self::$headerLine);
+        $parser->push($line);
 
-        $this->assertEquals('SENDR1', $parser->offsetGet('senderIdentification'));
+        $this->assertEquals($expected, $parser->offsetGet('senderIdentification'));
     }
 
     public function testSenderIdentificationMissing(): void
@@ -93,10 +101,19 @@ final class FileHeaderParserTest extends TestCase
         $parser->offsetGet('senderIdentification');
     }
 
-    public function testSenderIdentificationInvalidType(): void
+    /**
+     * @testWith ["01,!@#$%,RECVR1,210616,1700,01,80,10,2/"]
+     *           ["01,SENDR 1,RECVR1,210616,1700,01,80,10,2/"]
+     *           ["01, SENDR1,RECVR1,210616,1700,01,80,10,2/"]
+     *           ["01,SENDR1 ,RECVR1,210616,1700,01,80,10,2/"]
+     *           ["01, ,RECVR1,210616,1700,01,80,10,2/"]
+     *           ["01,SENDR_1,RECVR1,210616,1700,01,80,10,2/"]
+     *           ["01,SENDR-1,RECVR1,210616,1700,01,80,10,2/"]
+     */
+    public function testSenderIdentificationInvalidType(string $line): void
     {
         $parser = new FileHeaderParser();
-        $parser->push('01,!@#$%,RECVR1,210616,1700,01,80,10,2/');
+        $parser->push($line);
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Sender Identification" must be alpha-numeric.');
