@@ -62,6 +62,7 @@ final class FileHeaderParserTest extends TestCase
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Record Code" cannot be omitted.');
+        $parser->offsetGet('recordCode');
     }
 
     public function testRecordCodeInvalidType(): void
@@ -71,6 +72,7 @@ final class FileHeaderParserTest extends TestCase
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Record Code" must be "01".');
+        $parser->offsetGet('recordCode');
     }
 
 }
