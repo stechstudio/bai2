@@ -62,7 +62,7 @@ class FileHeaderParser
 
             'senderIdentification' =>
                 $this->validate($value, 'Sender Identification')
-                     ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric'),
+                     ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric')
                      ->string(),
 
             'receiverIdentification' =>
