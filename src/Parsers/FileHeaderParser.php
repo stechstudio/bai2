@@ -96,10 +96,15 @@ class FileHeaderParser
                      ->int(default: null),
 
             'versionNumber' =>
-                $this->validate($value)
+                $this->validate($value, 'Version Number')
                      ->is('2', 'must be "2" (this library only supports v2 of the BAI format)')
                      ->string(),
         };
+    }
+
+    protected function validate(string $value, string $longName): FieldParser
+    {
+        return new FieldParser($value, $longName);
     }
 
 }
