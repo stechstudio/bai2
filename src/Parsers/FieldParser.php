@@ -26,4 +26,19 @@ class FieldParser
         return (string) $this->value;
     }
 
+    public function int(...$options): ?int
+    {
+        if ($this->value === '') {
+            if (array_key_exists('default', $options)) {
+                return $options['default'];
+            } else {
+                throw new InvalidTypeException(
+                    'Invalid field type: "' . $this->fullName .'" cannot be omitted.'
+                );
+            }
+        }
+
+        return (string) $this->value;
+    }
+
 }

@@ -22,7 +22,7 @@ class FileHeaderParser
         return $this;
     }
 
-    public function offsetGet(string $key): string|int|float|null
+    public function offsetGet(string $key): string|int|null
     {
         return $this->parseField($key, $this->parse()[$this->index($key)]);
     }
@@ -51,7 +51,7 @@ class FileHeaderParser
         }
     }
 
-    private function parseField(string $key, string $value): string|int|float|null
+    private function parseField(string $key, string $value): string|int|null
     {
         return match ($key) {
             'recordCode' =>
