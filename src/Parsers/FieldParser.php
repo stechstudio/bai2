@@ -7,7 +7,7 @@ use STS\Bai2\Exceptions\InvalidTypeException;
 class FieldParser
 {
 
-    protected array $constraints = [];
+    protected $constraint = null;
 
     public function __construct(protected string $value, protected $fullName)
     {
@@ -15,7 +15,7 @@ class FieldParser
 
     public function is(string $constraint, string $violationMessage): void
     {
-        $this->constraints[] = function () use ($constraint, $violationMessage) {
+        $this->constraint = function () use ($constraint, $violationMessage) {
             if ($this->value !== $constraint) {
                 throw new InvalidTypeException(
                     'Invalid field type: "' . $this->fullName . '" ' . $violationMessage . '.'
@@ -30,8 +30,8 @@ class FieldParser
             return $this->getDefaultOrElse($options);
         }
 
-        foreach ($this->constraints as $constraint) {
-            $constraint();
+        if ($this->constraint) {
+            ($this->constraint)();
         }
 
         return (string) $this->value;
@@ -43,8 +43,8 @@ class FieldParser
             return $this->getDefaultOrElse($options);
         }
 
-        foreach ($this->constraints as $constraint) {
-            $constraint();
+        if ($this->constraint) {
+            ($this->constraint)();
         }
 
         return (string) $this->value;
