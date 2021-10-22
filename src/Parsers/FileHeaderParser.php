@@ -62,6 +62,7 @@ class FileHeaderParser
             'fileCreationDate' => $this->parseFileCreationDate($value),
             'fileCreationTime' => $this->parseFileCreationTime($value),
             'fileIdentificationNumber' => $this->parseFileIdentificationNumber($value),
+            'physicalRecordLength' => $this->parsePhysicalRecordLength($value),
 
             // TODO(zmd): temporarily non-exhaustive match, remove this once
             //   all validations in place:
@@ -156,6 +157,19 @@ class FileHeaderParser
 
         throw new InvalidTypeException(
             'Invalid field type: "File Identification Number" must be composed of 1 or more numerals.'
+        );
+    }
+
+    private function parsePhysicalRecordLength(string $value): ?int
+    {
+        if (preg_match('/^\d+$/', $value) === 1) {
+            return (int) $value;
+        } else if ($value === '') {
+            return null;
+        }
+
+        throw new InvalidTypeException(
+            'Invalid field type: "Physical Record Length", if provided, must be composed of 1 or more numerals.'
         );
     }
 

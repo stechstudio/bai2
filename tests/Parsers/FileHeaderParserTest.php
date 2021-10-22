@@ -293,8 +293,36 @@ final class FileHeaderParserTest extends TestCase
         $parser->offsetGet('fileIdentificationNumber');
     }
 
-    // TODO(zmd): testPhysicalRecordLengthValid(string $line, string $expected): void
-    // TODO(zmd): testPhysicalRecordLengthInvalidType(string $line): void
+    /**
+     * @testWith ["01,SENDR1,RECVR1,210616,1700,01,80,10,2/", 80]
+     *           ["01,SENDR1,RECVR1,210616,0000,01,50,10,2/", 50]
+     *           ["01,SENDR1,RECVR1,210616,2400,01,5000,10,2/", 5000]
+     *           ["01,SENDR1,RECVR1,210616,2400,01,1,10,2/", 1]
+     *           ["01,SENDR1,RECVR1,210616,2400,01,0,10,2/", 0]
+     *           ["01,SENDR1,RECVR1,210616,9999,01,,10,2/", null]
+     */
+    public function testPhysicalRecordLengthValid(string $line, ?int $expected): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push($line);
+
+        $this->assertEquals($expected, $parser->offsetGet('physicalRecordLength'));
+    }
+
+    /**
+     * @testWith ["01,SENDR1,RECVR1,210616,1700,01,eighty,10,2/"]
+     *           ["01,SENDR1,RECVR1,210616,1700,01,40*2,10,2/"]
+     */
+    public function testPhysicalRecordLengthInvalidType(string $line): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Physical Record Length", if provided, must be composed of 1 or more numerals.');
+        $parser->offsetGet('physicalRecordLength');
+    }
+
 
     // TODO(zmd): testBlockSizeValid(string $line, string $expected): void
     // TODO(zmd): testBlockSizeInvalidType(string $line): void
