@@ -17,9 +17,7 @@ class FieldParser
     {
         $this->constraint = function () use ($constraint, $violationMessage) {
             if ($this->value !== $constraint) {
-                throw new InvalidTypeException(
-                    'Invalid field type: "' . $this->fullName . '" ' . $violationMessage . '.'
-                );
+                $this->throw(" {$violationMessage}.");
             }
         };
     }
@@ -55,10 +53,15 @@ class FieldParser
         if (array_key_exists('default', $options)) {
             return $options['default'];
         } else {
-            throw new InvalidTypeException(
-                'Invalid field type: "' . $this->fullName .'" cannot be omitted.'
-            );
+            $this->throw(' cannot be omitted.');
         }
+    }
+
+    protected function throw(string $message): void
+    {
+        throw new InvalidTypeException(
+            "Invalid field type: \"{$this->fullName}\"{$message}"
+        );
     }
 
 }
