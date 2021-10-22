@@ -25,11 +25,15 @@ class FileHeaderParser
 
     public function offsetGet(string $key): string|int|float|null
     {
-        $this->rawFields ??= $this->parser->drop(9);
-        return $this->parseField($key, $this->rawFields[self::index($key)]);
+        return $this->parseField($key, $this->parse()[$this->index($key)]);
     }
 
-    private static function index(string $key): int
+    private function parse(): array
+    {
+        return $this->rawFields ??= $this->parser->drop(9);
+    }
+
+    private function index(string $key): int
     {
         try {
             return match ($key) {
