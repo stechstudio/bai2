@@ -299,6 +299,7 @@ final class FileHeaderParserTest extends TestCase
      *           ["01,SENDR1,RECVR1,210616,2400,01,5000,10,2/", 5000]
      *           ["01,SENDR1,RECVR1,210616,2400,01,1,10,2/", 1]
      *           ["01,SENDR1,RECVR1,210616,2400,01,0,10,2/", 0]
+     *           ["01,SENDR1,RECVR1,210616,2400,01,010,10,2/", 10]
      *           ["01,SENDR1,RECVR1,210616,9999,01,,10,2/", null]
      */
     public function testPhysicalRecordLengthValid(string $line, ?int $expected): void
@@ -323,9 +324,36 @@ final class FileHeaderParserTest extends TestCase
         $parser->offsetGet('physicalRecordLength');
     }
 
+    /**
+     * @testWith ["01,SENDR1,RECVR1,210616,1700,01,80,10,2/", 10]
+     *           ["01,SENDR1,RECVR1,210616,0000,01,80,100,2/", 100]
+     *           ["01,SENDR1,RECVR1,210616,2400,01,80,99999,2/", 99999]
+     *           ["01,SENDR1,RECVR1,210616,2400,01,80,1,2/", 1]
+     *           ["01,SENDR1,RECVR1,210616,2400,01,80,0,2/", 0]
+     *           ["01,SENDR1,RECVR1,210616,2400,01,80,010,2/", 10]
+     *           ["01,SENDR1,RECVR1,210616,9999,01,80,,2/", null]
+     */
+    public function testBlockSizeValid(string $line, ?int $expected): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push($line);
 
-    // TODO(zmd): testBlockSizeValid(string $line, string $expected): void
-    // TODO(zmd): testBlockSizeInvalidType(string $line): void
+        $this->assertEquals($expected, $parser->offsetGet('blockSize'));
+    }
+
+    /**
+     * @testWith ["01,SENDR1,RECVR1,210616,1700,01,80,ten,2/"]
+     *           ["01,SENDR1,RECVR1,210616,1700,01,80,2*5,2/"]
+     */
+    public function testBlockSizeInvalidType(string $line): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Block Size", if provided, must be composed of 1 or more numerals.');
+        $parser->offsetGet('blockSize');
+    }
 
     // TODO(zmd): testVersionNumberValid(string $line, string $expected): void
     // TODO(zmd): testVersionNumberMissing(): void
