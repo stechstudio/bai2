@@ -3,6 +3,7 @@
 namespace STS\Bai2\Parsers;
 
 use STS\Bai2\Exceptions\InvalidTypeException;
+use STS\Bai2\Exceptions\InvalidFieldNameException;
 
 class FileHeaderParser
 {
@@ -10,18 +11,6 @@ class FileHeaderParser
     private ?array $rawFields;
 
     private MultilineParser $parser;
-
-    private static array $fields = [
-        'recordCode',
-        'senderIdentification',
-        'receiverIdentification',
-        'fileCreationDate',
-        'fileCreationTime',
-        'fileIdentificationNumber',
-        'physicalRecordLength',
-        'blockSize',
-        'versionNumber',
-    ];
 
     public function push(string $line): self
     {
@@ -42,21 +31,25 @@ class FileHeaderParser
 
     private static function index(string $key): int
     {
-        // TODO(zmd): I'm not sure I like using this better than just using
-        //   match...
-        $index = array_search($key, self::$fields);
-        if ($index === false) {
-            // TODO(zmd): define and use package-specific exception
-            throw new \RuntimeException('Unknown field.');
+        try {
+            return match ($key) {
+                'recordCode' => 0,
+                'senderIdentification' => 1,
+                'receiverIdentification' => 2,
+                'fileCreationDate' => 3,
+                'fileCreationTime' => 4,
+                'fileIdentificationNumber' => 5,
+                'physicalRecordLength' => 6,
+                'blockSize' => 7,
+                'versionNumber' => 8,
+            };
+        } catch (UnhandledMatchError) {
+            throw new InvalidFieldNameException("File Header does not have a \"{$key}\" field.");
         }
-
-        return $index;
     }
 
     private function parseField(string $key, string $value): string|int|float|null
     {
-        // TODO(zmd): intercept and re-throw non-matched error with parse error
-        //   of some kind (internal parser error?)
         return match ($key) {
             'recordCode' => $this->parseRecordCode($value),
             'senderIdentification' => $this->parseSenderIdentification($value),
