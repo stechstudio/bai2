@@ -14,13 +14,7 @@ class FieldParser
     public function string(...$options): ?string
     {
         if ($this->value === '') {
-            if (array_key_exists('default', $options)) {
-                return $options['default'];
-            } else {
-                throw new InvalidTypeException(
-                    'Invalid field type: "' . $this->fullName .'" cannot be omitted.'
-                );
-            }
+            return $this->getDefaultOrElse($options);
         }
 
         return (string) $this->value;
@@ -29,16 +23,21 @@ class FieldParser
     public function int(...$options): ?int
     {
         if ($this->value === '') {
-            if (array_key_exists('default', $options)) {
-                return $options['default'];
-            } else {
-                throw new InvalidTypeException(
-                    'Invalid field type: "' . $this->fullName .'" cannot be omitted.'
-                );
-            }
+            return $this->getDefaultOrElse($options);
         }
 
         return (string) $this->value;
+    }
+
+    protected function getDefaultOrElse(array $options): string|int|null
+    {
+        if (array_key_exists('default', $options)) {
+            return $options['default'];
+        } else {
+            throw new InvalidTypeException(
+                'Invalid field type: "' . $this->fullName .'" cannot be omitted.'
+            );
+        }
     }
 
 }
