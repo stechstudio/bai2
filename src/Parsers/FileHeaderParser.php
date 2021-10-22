@@ -60,6 +60,7 @@ class FileHeaderParser
             'senderIdentification' => $this->parseSenderIdentification($value),
             'receiverIdentification' => $this->parseReceiverIdentification($value),
             'fileCreationDate' => $this->parseFileCreationDate($value),
+            'fileCreationTime' => $this->parseFileCreationTime($value),
 
             // TODO(zmd): temporarily non-exhaustive match, remove this once
             //   all validations in place:
@@ -82,7 +83,6 @@ class FileHeaderParser
         return $value;
     }
 
-    // TODO(zmd): de-dupe and abstractify?
     private function parseSenderIdentification(string $value): string
     {
         if (preg_match('/^[[:alnum:]]+$/', $value) === 1) {
@@ -98,7 +98,6 @@ class FileHeaderParser
         );
     }
 
-    // TODO(zmd): de-dupe and abstractify?
     private function parseReceiverIdentification(string $value): string
     {
         if (preg_match('/^[[:alnum:]]+$/', $value) === 1) {
@@ -126,6 +125,21 @@ class FileHeaderParser
 
         throw new InvalidTypeException(
             'Invalid field type: "File Creation Date" must be composed of exactly 6 numerals.'
+        );
+    }
+
+    private function parseFileCreationTime(string $value): string
+    {
+        if (preg_match('/^\d{4}$/', $value) === 1) {
+            return $value;
+        } else if ($value === '') {
+            throw new InvalidTypeException(
+                'Invalid field type: "File Creation Time" cannot be omitted.'
+            );
+        }
+
+        throw new InvalidTypeException(
+            'Invalid field type: "File Creation Time" must be composed of exactly 4 numerals.'
         );
     }
 

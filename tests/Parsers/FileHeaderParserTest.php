@@ -208,9 +208,47 @@ final class FileHeaderParserTest extends TestCase
         $parser->offsetGet('fileCreationDate');
     }
 
-    // TODO(zmd): testFileCreationTimeValid(string $line, string $expected): void
-    // TODO(zmd): testFileCreationTimeMissing(): void
-    // TODO(zmd): testFileCreationTimeInvalidType(string $line): void
+    /**
+     * @testWith ["01,SENDR1,RECVR1,210616,1700,01,80,10,2/", "1700"]
+     *           ["01,SENDR1,RECVR1,210616,0000,01,80,10,2/", "0000"]
+     *           ["01,SENDR1,RECVR1,210616,2400,01,80,10,2/", "2400"]
+     *           ["01,SENDR1,RECVR1,210616,9999,01,80,10,2/", "9999"]
+     */
+    public function testFileCreationTimeValid(string $line, string $expected): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push($line);
+
+        $this->assertEquals($expected, $parser->offsetGet('fileCreationTime'));
+    }
+
+    public function testFileCreationTimeMissing(): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push('01,SENDR1,RECVR1,210616,,01,80,10,2/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "File Creation Time" cannot be omitted.');
+        $parser->offsetGet('fileCreationTime');
+    }
+
+    /**
+     * @testWith ["01,SENDR1,RECVR1,210616,01700,01,80,10,2/"]
+     *           ["01,SENDR1,RECVR1,210616,170000,01,80,10,2/"]
+     *           ["01,SENDR1,RECVR1,210616,170,01,80,10,2/"]
+     *           ["01,SENDR1,RECVR1,210616,late,01,80,10,2/"]
+     *           ["01,SENDR1,RECVR1,210616,17:00,01,80,10,2/"]
+     */
+    public function testFileCreationTimeInvalidType(string $line): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "File Creation Time" must be composed of exactly 4 numerals.');
+        $parser->offsetGet('fileCreationTime');
+    }
+
 
     // TODO(zmd): testFileIdentificationNumberValid(string $line, string $expected): void
     // TODO(zmd): testFileIdentificationNumberMissing(): void
