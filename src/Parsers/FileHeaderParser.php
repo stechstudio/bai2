@@ -43,7 +43,7 @@ class FileHeaderParser
                 'blockSize' => 7,
                 'versionNumber' => 8,
             };
-        } catch (UnhandledMatchError) {
+        } catch (\UnhandledMatchError) {
             throw new InvalidFieldNameException("File Header does not have a \"{$key}\" field.");
         }
     }

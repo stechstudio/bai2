@@ -5,6 +5,7 @@ namespace STS\Bai2\Parsers;
 use PHPUnit\Framework\TestCase;
 
 use STS\Bai2\Exceptions\InvalidTypeException;
+use STS\Bai2\Exceptions\InvalidFieldNameException;
 
 final class FileHeaderParserTest extends TestCase
 {
@@ -380,6 +381,16 @@ final class FileHeaderParserTest extends TestCase
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Version Number" must be "2" (this library only supports v2 of the BAI format).');
         $parser->offsetGet('versionNumber');
+    }
+
+    public function testAccessUnknownField(): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push(self::$headerLine);
+
+        $this->expectException(InvalidFieldNameException::class);
+        $this->expectExceptionMessage('File Header does not have a "fooBar" field.');
+        $parser->offsetGet('fooBar');
     }
 
 }
