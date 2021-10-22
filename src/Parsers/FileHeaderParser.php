@@ -55,6 +55,8 @@ class FileHeaderParser
 
     private function parseField(string $key, string $value): string|int|float|null
     {
+        // TODO(zmd): intercept and re-throw non-matched error with parse error
+        //   of some kind (internal parser error?)
         return match ($key) {
             'recordCode' => $this->parseRecordCode($value),
             'senderIdentification' => $this->parseSenderIdentification($value),
@@ -64,10 +66,7 @@ class FileHeaderParser
             'fileIdentificationNumber' => $this->parseFileIdentificationNumber($value),
             'physicalRecordLength' => $this->parsePhysicalRecordLength($value),
             'blockSize' => $this->parseBlockSize($value),
-
-            // TODO(zmd): temporarily non-exhaustive match, remove this once
-            //   all validations in place:
-            default => $value,
+            'versionNumber' => $this->parseVersionNumber($value),
         };
     }
 
@@ -185,6 +184,21 @@ class FileHeaderParser
         throw new InvalidTypeException(
             'Invalid field type: "Block Size", if provided, must be composed of 1 or more numerals.'
         );
+    }
+
+    private function parseVersionNumber(string $value): string
+    {
+        if ($value === '') {
+            throw new InvalidTypeException(
+                'Invalid field type: "Version Number" cannot be omitted.'
+            );
+        } else if ($value !== '2') {
+            throw new InvalidTypeException(
+                'Invalid field type: "Version Number" must be "2" (this library only supports v2 of the BAI format).'
+            );
+        }
+
+        return $value;
     }
 
 }

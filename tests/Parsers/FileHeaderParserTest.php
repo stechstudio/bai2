@@ -355,8 +355,31 @@ final class FileHeaderParserTest extends TestCase
         $parser->offsetGet('blockSize');
     }
 
-    // TODO(zmd): testVersionNumberValid(string $line, string $expected): void
-    // TODO(zmd): testVersionNumberMissing(): void
-    // TODO(zmd): testVersionNumberInvalidType(string $line): void
+    public function testVersionNumberValid(): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push(self::$headerLine);
+        $this->assertEquals('2', $parser->offsetGet('versionNumber'));
+    }
+
+    public function testVersionNumberMissing(): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push('01,SENDR1,RECVR1,210616,1700,01,80,10,/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Version Number" cannot be omitted.');
+        $parser->offsetGet('versionNumber');
+    }
+
+    public function testVersionNumberInvalidType(): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push('01,SENDR1,RECVR1,210616,1700,01,80,10,F/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Version Number" must be "2" (this library only supports v2 of the BAI format).');
+        $parser->offsetGet('versionNumber');
+    }
 
 }
