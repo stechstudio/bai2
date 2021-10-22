@@ -78,4 +78,74 @@ final class FieldParserTest extends TestCase
         $this->assertNull($parser->int(default: null));
     }
 
+    public function testStringWithSatisfiedIsConstraint(): void
+    {
+        $parser = new FieldParser('apples', 'Fruit Basket');
+        $parser->is('apples', 'must be apples yo');
+
+        $this->assertEquals('apples', $parser->string());
+    }
+
+    public function testStringWithViolatedIsConstraint(): void
+    {
+        $parser = new FieldParser('oranges', 'Fruit Basket');
+        $parser->is('apples', 'must be apples yo');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Fruit Basket" must be apples yo.');
+        $parser->string();
+    }
+
+    public function testIntWithSatisfiedIsConstraint(): void
+    {
+        $parser = new FieldParser('42', 'Meaning of Life');
+        $parser->is('42', 'must have meaning yo');
+
+        $this->assertEquals(42, $parser->int());
+    }
+
+    public function testIntWithViolatedIsConstraint(): void
+    {
+        $parser = new FieldParser('1337', 'Meaning of Life');
+        $parser->is('42', 'must have meaning yo');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Meaning of Life" must have meaning yo.');
+        $parser->int();
+    }
+
+    // TODO(zmd): ::is() is lower prescendence than implicit required constraint
+
+    // TODO(zmd): ::is() adjusts exception message if field defaulted (not required)
+
+    /* TODO(zmd): ::is() is fluent
+    public function testFluentIsConstraint(): void
+    {
+        $this->assertEquals(
+            'apples',
+            new FieldParser('apples', 'Fruit Basket')
+                ->is('apples', 'must be apples yo')
+                ->string()
+        );
+    }
+    */
+
+    // ---
+
+    // TODO(zmd): ::match() is lower prescendence than implicit required constraint
+
+    // TODO(zmd): ::match() adjusts exception message if field defaulted (not required)
+
+    // TODO(zmd): ::match() is fluent
+
+    // ---
+
+    // TODO(zmd): ::is() throws if an is-constraint is already set
+
+    // TODO(zmd): ::is() throws if a match-constraint is already set
+
+    // TODO(zmd): ::match() throws if a match-constraint is already set
+
+    // TODO(zmd): ::match() throws if an is-constraint is already set
+
 }
