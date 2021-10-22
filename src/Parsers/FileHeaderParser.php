@@ -2,7 +2,6 @@
 
 namespace STS\Bai2\Parsers;
 
-use STS\Bai2\Exceptions\InvalidTypeException;
 use STS\Bai2\Exceptions\InvalidFieldNameException;
 
 class FileHeaderParser
