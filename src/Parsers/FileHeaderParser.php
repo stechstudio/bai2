@@ -116,7 +116,7 @@ class FileHeaderParser
 
     private function parseFileCreationDate(string $value): string
     {
-        if (preg_match('/^\d{6,6}$/', $value) === 1) {
+        if (preg_match('/^\d{6}$/', $value) === 1) {
             return $value;
         } else if ($value === '') {
             throw new InvalidTypeException(
