@@ -55,147 +55,51 @@ class FileHeaderParser
     private function parseField(string $key, string $value): string|int|float|null
     {
         return match ($key) {
-            'recordCode' => $this->parseRecordCode($value),
-            'senderIdentification' => $this->parseSenderIdentification($value),
-            'receiverIdentification' => $this->parseReceiverIdentification($value),
-            'fileCreationDate' => $this->parseFileCreationDate($value),
-            'fileCreationTime' => $this->parseFileCreationTime($value),
-            'fileIdentificationNumber' => $this->parseFileIdentificationNumber($value),
-            'physicalRecordLength' => $this->parsePhysicalRecordLength($value),
-            'blockSize' => $this->parseBlockSize($value),
-            'versionNumber' => $this->parseVersionNumber($value),
+            'recordCode' =>
+                $this->validate($value, 'Record Code')
+                     ->is('01', 'must be "01"')
+                     ->string(),
+
+            'senderIdentification' =>
+                $this->validate($value, 'Sender Identification')
+                     ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric'),
+                     ->string(),
+
+            'receiverIdentification' =>
+                $this->validate($value, 'Receiver Identification')
+                     ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric')
+                     ->string(),
+
+            'fileCreationDate' =>
+                $this->validate($value, 'File Creation Date')
+                     ->match('/^\d{6}$/', 'must be composed of exactly 6 numerals')
+                     ->string(),
+
+            'fileCreationTime' =>
+                $this->validate($value, 'File Creation Time')
+                     ->match('/^\d{4}$/', 'must be composed of exactly 4 numerals')
+                     ->string(),
+
+            'fileIdentificationNumber' =>
+                $this->validate($value, 'File Identification Number')
+                     ->match('/^\d+$/', 'must be composed of 1 or more numerals')
+                     ->int(),
+
+            'physicalRecordLength' =>
+                $this->validate($value, 'Physical Record Length')
+                     ->match('/^\d+$/', 'must be composed of 1 or more numerals')
+                     ->int(default: null),
+
+            'blockSize' =>
+                $this->validate($value, 'Block Size')
+                     ->match('/^\d+$/', 'must be composed of 1 or more numerals')
+                     ->int(default: null),
+
+            'versionNumber' =>
+                $this->validate($value)
+                     ->is('2', 'must be "2" (this library only supports v2 of the BAI format)')
+                     ->string(),
         };
-    }
-
-    private function parseRecordCode(string $value): string
-    {
-        if ($value === '') {
-            throw new InvalidTypeException(
-                'Invalid field type: "Record Code" cannot be omitted.'
-            );
-        } else if ($value !== '01') {
-            throw new InvalidTypeException(
-                'Invalid field type: "Record Code" must be "01".'
-            );
-        }
-
-        return $value;
-    }
-
-    private function parseSenderIdentification(string $value): string
-    {
-        if (preg_match('/^[[:alnum:]]+$/', $value) === 1) {
-            return $value;
-        } else if ($value === '') {
-            throw new InvalidTypeException(
-                'Invalid field type: "Sender Identification" cannot be omitted.'
-            );
-        }
-
-        throw new InvalidTypeException(
-            'Invalid field type: "Sender Identification" must be alpha-numeric.'
-        );
-    }
-
-    private function parseReceiverIdentification(string $value): string
-    {
-        if (preg_match('/^[[:alnum:]]+$/', $value) === 1) {
-            return $value;
-        } else if ($value === '') {
-            throw new InvalidTypeException(
-                'Invalid field type: "Receiver Identification" cannot be omitted.'
-            );
-        }
-
-        throw new InvalidTypeException(
-            'Invalid field type: "Receiver Identification" must be alpha-numeric.'
-        );
-    }
-
-    private function parseFileCreationDate(string $value): string
-    {
-        if (preg_match('/^\d{6}$/', $value) === 1) {
-            return $value;
-        } else if ($value === '') {
-            throw new InvalidTypeException(
-                'Invalid field type: "File Creation Date" cannot be omitted.'
-            );
-        }
-
-        throw new InvalidTypeException(
-            'Invalid field type: "File Creation Date" must be composed of exactly 6 numerals.'
-        );
-    }
-
-    private function parseFileCreationTime(string $value): string
-    {
-        if (preg_match('/^\d{4}$/', $value) === 1) {
-            return $value;
-        } else if ($value === '') {
-            throw new InvalidTypeException(
-                'Invalid field type: "File Creation Time" cannot be omitted.'
-            );
-        }
-
-        throw new InvalidTypeException(
-            'Invalid field type: "File Creation Time" must be composed of exactly 4 numerals.'
-        );
-    }
-
-    private function parseFileIdentificationNumber(string $value): string
-    {
-        if (preg_match('/^\d+$/', $value) === 1) {
-            return $value;
-        } else if ($value === '') {
-            throw new InvalidTypeException(
-                'Invalid field type: "File Identification Number" cannot be omitted.'
-            );
-        }
-
-        throw new InvalidTypeException(
-            'Invalid field type: "File Identification Number" must be composed of 1 or more numerals.'
-        );
-    }
-
-    private function parsePhysicalRecordLength(string $value): ?int
-    {
-        if (preg_match('/^\d+$/', $value) === 1) {
-            return (int) $value;
-        } else if ($value === '') {
-            return null;
-        }
-
-        throw new InvalidTypeException(
-            'Invalid field type: "Physical Record Length", if provided, must be composed of 1 or more numerals.'
-        );
-    }
-
-    private function parseBlockSize(string $value): ?int
-    {
-        if (preg_match('/^\d+$/', $value) === 1) {
-            return (int) $value;
-        } else if ($value === '') {
-            return null;
-        }
-
-        throw new InvalidTypeException(
-            'Invalid field type: "Block Size", if provided, must be composed of 1 or more numerals.'
-        );
-    }
-
-    private function parseVersionNumber(string $value): string
-    {
-        if ($value === '') {
-            throw new InvalidTypeException(
-                'Invalid field type: "Version Number" cannot be omitted.'
-            );
-        } else if ($value !== '2') {
-            throw new InvalidTypeException(
-                'Invalid field type: "Version Number" must be "2" (this library only supports v2 of the BAI format).'
-            );
-        }
-
-        return $value;
     }
 
 }
