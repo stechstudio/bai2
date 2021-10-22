@@ -59,6 +59,7 @@ class FileHeaderParser
             'recordCode' => $this->parseRecordCode($value),
             'senderIdentification' => $this->parseSenderIdentification($value),
             'receiverIdentification' => $this->parseReceiverIdentification($value),
+            'fileCreationDate' => $this->parseFileCreationDate($value),
 
             // TODO(zmd): temporarily non-exhaustive match, remove this once
             //   all validations in place:
@@ -110,6 +111,21 @@ class FileHeaderParser
 
         throw new InvalidTypeException(
             'Invalid field type: "Receiver Identification" must be alpha-numeric.'
+        );
+    }
+
+    private function parseFileCreationDate(string $value): string
+    {
+        if (preg_match('/^\d{6,6}$/', $value) === 1) {
+            return $value;
+        } else if ($value === '') {
+            throw new InvalidTypeException(
+                'Invalid field type: "File Creation Date" cannot be omitted.'
+            );
+        }
+
+        throw new InvalidTypeException(
+            'Invalid field type: "File Creation Date" must be composed of exactly 6 numerals.'
         );
     }
 

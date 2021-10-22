@@ -165,4 +165,65 @@ final class FileHeaderParserTest extends TestCase
         $parser->offsetGet('receiverIdentification');
     }
 
+    /**
+     * @testWith ["01,SENDR1,RECVR1,210616,1700,01,80,10,2/", "210616"]
+     *           ["01,SENDR1,RECVR1,210909,1700,01,80,10,2/", "210909"]
+     */
+    public function testFileCreationDateValid(string $line, string $expected): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push($line);
+
+        $this->assertEquals($expected, $parser->offsetGet('fileCreationDate'));
+    }
+
+    public function testFileCreationDateMissing(): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push('01,SENDR1,RECVR1,,1700,01,80,10,2/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "File Creation Date" cannot be omitted.');
+        $parser->offsetGet('fileCreationDate');
+    }
+
+    /**
+     * @testWith ["01,SENDR1,RECVR1, 210616,1700,01,80,10,2/"]
+     *           ["01,SENDR1,RECVR1,210909 ,1700,01,80,10,2/"]
+     *           ["01,SENDR1,RECVR1, 210909 ,1700,01,80,10,2/"]
+     *           ["01,SENDR1,RECVR1,NODATE,1700,01,80,10,2/"]
+     *           ["01,SENDR1,RECVR1,      ,1700,01,80,10,2/"]
+     *           ["01,SENDR1,RECVR1,16-June 2021,1700,01,80,10,2/"]
+     *           ["01,SENDR1,RECVR1,9-9-2021,1700,01,80,10,2/"]
+     *           ["01,SENDR1,RECVR1,20210616,1700,01,80,10,2/"]
+     *           ["01,SENDR1,RECVR1,2109,1700,01,80,10,2/"]
+     */
+    public function testFileCreationDateInvalidType(string $line): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "File Creation Date" must be composed of exactly 6 numerals.');
+        $parser->offsetGet('fileCreationDate');
+    }
+
+    // TODO(zmd): testFileCreationTimeValid(string $line, string $expected): void
+    // TODO(zmd): testFileCreationTimeMissing(): void
+    // TODO(zmd): testFileCreationTimeInvalidType(string $line): void
+
+    // TODO(zmd): testFileIdentificationNumberValid(string $line, string $expected): void
+    // TODO(zmd): testFileIdentificationNumberMissing(): void
+    // TODO(zmd): testFileIdentificationNumberInvalidType(string $line): void
+
+    // TODO(zmd): testPhysicalRecordLengthValid(string $line, string $expected): void
+    // TODO(zmd): testPhysicalRecordLengthInvalidType(string $line): void
+
+    // TODO(zmd): testBlockSizeValid(string $line, string $expected): void
+    // TODO(zmd): testBlockSizeInvalidType(string $line): void
+
+    // TODO(zmd): testVersionNumberValid(string $line, string $expected): void
+    // TODO(zmd): testVersionNumberMissing(): void
+    // TODO(zmd): testVersionNumberInvalidType(string $line): void
+
 }
