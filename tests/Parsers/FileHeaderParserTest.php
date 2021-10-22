@@ -249,10 +249,49 @@ final class FileHeaderParserTest extends TestCase
         $parser->offsetGet('fileCreationTime');
     }
 
+    /**
+     * @testWith ["01,SENDR1,RECVR1,210616,1700,01,80,10,2/", "01"]
+     *           ["01,SENDR1,RECVR1,210616,0000,10,80,10,2/", "10"]
+     *           ["01,SENDR1,RECVR1,210616,2400,00,80,10,2/", "00"]
+     *           ["01,SENDR1,RECVR1,210616,2400,9,80,10,2/", "9"]
+     *           ["01,SENDR1,RECVR1,210616,2400,00000005,80,10,2/", "00000005"]
+     *           ["01,SENDR1,RECVR1,210616,9999,1019020202,80,10,2/", "1019020202"]
+     */
+    public function testFileIdentificationNumberValid(string $line, string $expected): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push($line);
 
-    // TODO(zmd): testFileIdentificationNumberValid(string $line, string $expected): void
-    // TODO(zmd): testFileIdentificationNumberMissing(): void
-    // TODO(zmd): testFileIdentificationNumberInvalidType(string $line): void
+        $this->assertEquals($expected, $parser->offsetGet('fileIdentificationNumber'));
+    }
+
+    public function testFileIdentificationNumberMissing(): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push('01,SENDR1,RECVR1,210616,1700,,80,10,2/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "File Identification Number" cannot be omitted.');
+        $parser->offsetGet('fileIdentificationNumber');
+    }
+
+    /**
+     * @testWith ["01,SENDR1,RECVR1,210616,1700,a,80,10,2/"]
+     *           ["01,SENDR1,RECVR1,210616,1700,abc123,80,10,2/"]
+     *           ["01,SENDR1,RECVR1,210616,1700,123abc,80,10,2/"]
+     *           ["01,SENDR1,RECVR1,210616,1700,one,80,10,2/"]
+     *           ["01,SENDR1,RECVR1,210616,0000,10-4,80,10,2/", "10"]
+     *           ["01,SENDR1,RECVR1,210616,2400,6*7,80,10,2/", "00"]
+     */
+    public function testFileIdentificationNumberInvalidType(string $line): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "File Identification Number" must be composed of 1 or more numerals.');
+        $parser->offsetGet('fileIdentificationNumber');
+    }
 
     // TODO(zmd): testPhysicalRecordLengthValid(string $line, string $expected): void
     // TODO(zmd): testPhysicalRecordLengthInvalidType(string $line): void

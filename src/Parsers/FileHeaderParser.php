@@ -61,6 +61,7 @@ class FileHeaderParser
             'receiverIdentification' => $this->parseReceiverIdentification($value),
             'fileCreationDate' => $this->parseFileCreationDate($value),
             'fileCreationTime' => $this->parseFileCreationTime($value),
+            'fileIdentificationNumber' => $this->parseFileIdentificationNumber($value),
 
             // TODO(zmd): temporarily non-exhaustive match, remove this once
             //   all validations in place:
@@ -140,6 +141,21 @@ class FileHeaderParser
 
         throw new InvalidTypeException(
             'Invalid field type: "File Creation Time" must be composed of exactly 4 numerals.'
+        );
+    }
+
+    private function parseFileIdentificationNumber(string $value): string
+    {
+        if (preg_match('/^\d+$/', $value) === 1) {
+            return $value;
+        } else if ($value === '') {
+            throw new InvalidTypeException(
+                'Invalid field type: "File Identification Number" cannot be omitted.'
+            );
+        }
+
+        throw new InvalidTypeException(
+            'Invalid field type: "File Identification Number" must be composed of 1 or more numerals.'
         );
     }
 
