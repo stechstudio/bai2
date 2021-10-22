@@ -280,8 +280,8 @@ final class FileHeaderParserTest extends TestCase
      *           ["01,SENDR1,RECVR1,210616,1700,abc123,80,10,2/"]
      *           ["01,SENDR1,RECVR1,210616,1700,123abc,80,10,2/"]
      *           ["01,SENDR1,RECVR1,210616,1700,one,80,10,2/"]
-     *           ["01,SENDR1,RECVR1,210616,0000,10-4,80,10,2/", "10"]
-     *           ["01,SENDR1,RECVR1,210616,2400,6*7,80,10,2/", "00"]
+     *           ["01,SENDR1,RECVR1,210616,0000,10-4,80,10,2/"]
+     *           ["01,SENDR1,RECVR1,210616,2400,6*7,80,10,2/"]
      */
     public function testFileIdentificationNumberInvalidType(string $line): void
     {
