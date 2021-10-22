@@ -45,7 +45,7 @@ class FieldParser
             ($this->constraint)();
         }
 
-        return (string) $this->value;
+        return (int) $this->value;
     }
 
     protected function getDefaultOrElse(array $options): string|int|null
