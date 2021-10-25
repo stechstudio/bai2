@@ -34,21 +34,18 @@ class FileHeaderParser
 
     private function index(string $key): int
     {
-        try {
-            return match ($key) {
-                'recordCode' => 0,
-                'senderIdentification' => 1,
-                'receiverIdentification' => 2,
-                'fileCreationDate' => 3,
-                'fileCreationTime' => 4,
-                'fileIdentificationNumber' => 5,
-                'physicalRecordLength' => 6,
-                'blockSize' => 7,
-                'versionNumber' => 8,
-            };
-        } catch (\UnhandledMatchError) {
-            throw new InvalidFieldNameException("File Header does not have a \"{$key}\" field.");
-        }
+        return match ($key) {
+            'recordCode' => 0,
+            'senderIdentification' => 1,
+            'receiverIdentification' => 2,
+            'fileCreationDate' => 3,
+            'fileCreationTime' => 4,
+            'fileIdentificationNumber' => 5,
+            'physicalRecordLength' => 6,
+            'blockSize' => 7,
+            'versionNumber' => 8,
+            default => throw new InvalidFieldNameException("File Header does not have a \"{$key}\" field."),
+        };
     }
 
     private function parseField(string $key, string $value): string|int|null
