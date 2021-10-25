@@ -195,6 +195,16 @@ final class FieldParserTest extends TestCase
         $parser->int();
     }
 
+    public function testMatchHasLowerPrescedenceThanImplicitRequiredConstraint(): void
+    {
+        $parser = new FieldParser('', 'Appetizers');
+        $parser->match('/^app/', 'must be app');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Appetizers" cannot be omitted.');
+        $parser->string();
+    }
+
     public function testViolatedMatchConstraintMessageAdjustsInViewOfRequiredConstraint(): void
     {
         $parser = new FieldParser('barbecue', 'Appetizers');
@@ -204,8 +214,6 @@ final class FieldParserTest extends TestCase
         $this->expectExceptionMessage('Invalid field type: "Appetizers", if provided, must be app.');
         $parser->string(default: 'appliance');
     }
-
-    // TODO(zmd): ::match() is lower prescendence than implicit required constraint
 
     // TODO(zmd): ::match() is fluent
 
