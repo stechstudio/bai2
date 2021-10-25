@@ -124,7 +124,15 @@ final class FieldParserTest extends TestCase
         $parser->string();
     }
 
-    // TODO(zmd): ::is() adjusts exception message if field defaulted (not required)
+    public function testViolatedIsConstraintMessageAdjustsInViewOfRequiredConstraint(): void
+    {
+        $parser = new FieldParser('1337', 'Meaning of Life');
+        $parser->is('42', 'must have meaning yo');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Meaning of Life", if provided, must have meaning yo.');
+        $parser->int(default: null);
+    }
 
     /* TODO(zmd): ::is() is fluent
     public function testFluentIsConstraint(): void

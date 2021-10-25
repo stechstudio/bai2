@@ -15,9 +15,13 @@ class FieldParser
 
     public function is(string $constraint, string $violationMessage): void
     {
-        $this->constraint = function () use ($constraint, $violationMessage) {
+        $this->constraint = function (bool $isRequired) use ($constraint, $violationMessage) {
             if ($this->value !== $constraint) {
-                $this->throw(" {$violationMessage}.");
+                if ($isRequired) {
+                    $this->throw(" {$violationMessage}.");
+                } else {
+                    $this->throw(", if provided, {$violationMessage}.");
+                }
             }
         };
     }
@@ -27,7 +31,7 @@ class FieldParser
         if ($this->value === '') {
             return $this->getDefaultOrElse($options);
         } else if ($this->constraint) {
-            ($this->constraint)();
+            ($this->constraint)(isRequired: !$this->hasDefault($options));
         }
 
         return (string) $this->value;
@@ -37,10 +41,8 @@ class FieldParser
     {
         if ($this->value === '') {
             return $this->getDefaultOrElse($options);
-        }
-
-        if ($this->constraint) {
-            ($this->constraint)();
+        } else if ($this->constraint) {
+            ($this->constraint)(isRequired: !$this->hasDefault($options));
         }
 
         return (int) $this->value;
@@ -48,11 +50,16 @@ class FieldParser
 
     protected function getDefaultOrElse(array $options): string|int|null
     {
-        if (array_key_exists('default', $options)) {
+        if ($this->hasDefault($options)) {
             return $options['default'];
         } else {
             $this->throw(' cannot be omitted.');
         }
+    }
+
+    protected function hasDefault(array $options): bool
+    {
+        return array_key_exists('default', $options);
     }
 
     protected function throw(string $message): void
