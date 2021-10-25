@@ -9,7 +9,7 @@ class FileHeaderParser
 
     protected MultilineParser $parser;
 
-    private ?array $rawFields;
+    private array $rawFields = [];
 
     public function push(string $line): self
     {
@@ -24,7 +24,14 @@ class FileHeaderParser
 
     public function offsetGet(string $key): string|int|null
     {
-        return $this->parseField($key, $this->parse()[$this->index($key)]);
+        if (array_key_exists($key, $this->parse())) {
+            //$this->parse()[$key]
+            return $this->parseField($key, $this->parse()[$key]);
+        } else {
+            throw new InvalidFieldNameException(
+                "File Header does not have a \"{$key}\" field."
+            );
+        }
     }
 
     protected function validate(string $value, string $longName): FieldParser
@@ -32,25 +39,23 @@ class FileHeaderParser
         return new FieldParser($value, $longName);
     }
 
+    // ------------------------------------------------------------------------
+
     private function parse(): array
     {
-        return $this->rawFields ??= $this->parser->drop(9);
-    }
+        if (empty($this->rawFields)) {
+            $this->rawFields['recordCode'] = $this->parser->shift();
+            $this->rawFields['senderIdentification'] = $this->parser->shift();
+            $this->rawFields['receiverIdentification'] = $this->parser->shift();
+            $this->rawFields['fileCreationDate'] = $this->parser->shift();
+            $this->rawFields['fileCreationTime'] = $this->parser->shift();
+            $this->rawFields['fileIdentificationNumber'] = $this->parser->shift();
+            $this->rawFields['physicalRecordLength'] = $this->parser->shift();
+            $this->rawFields['blockSize'] = $this->parser->shift();
+            $this->rawFields['versionNumber'] = $this->parser->shift();
+        }
 
-    private function index(string $key): int
-    {
-        return match ($key) {
-            'recordCode' => 0,
-            'senderIdentification' => 1,
-            'receiverIdentification' => 2,
-            'fileCreationDate' => 3,
-            'fileCreationTime' => 4,
-            'fileIdentificationNumber' => 5,
-            'physicalRecordLength' => 6,
-            'blockSize' => 7,
-            'versionNumber' => 8,
-            default => throw new InvalidFieldNameException("File Header does not have a \"{$key}\" field."),
-        };
+        return $this->rawFields;
     }
 
     private function parseField(string $key, string $value): string|int|null
