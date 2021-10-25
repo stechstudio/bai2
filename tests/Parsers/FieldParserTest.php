@@ -145,22 +145,10 @@ final class FieldParserTest extends TestCase
         );
     }
 
-    // ---
-
     // TODO(zmd): ::match() is lower prescendence than implicit required constraint
 
     // TODO(zmd): ::match() adjusts exception message if field defaulted (not required)
 
     // TODO(zmd): ::match() is fluent
-
-    // ---
-
-    // TODO(zmd): ::is() throws if an is-constraint is already set
-
-    // TODO(zmd): ::is() throws if a match-constraint is already set
-
-    // TODO(zmd): ::match() throws if a match-constraint is already set
-
-    // TODO(zmd): ::match() throws if an is-constraint is already set
 
 }
