@@ -26,9 +26,7 @@ class FieldParser
     {
         if ($this->value === '') {
             return $this->getDefaultOrElse($options);
-        }
-
-        if ($this->constraint) {
+        } else if ($this->constraint) {
             ($this->constraint)();
         }
 

@@ -114,7 +114,15 @@ final class FieldParserTest extends TestCase
         $parser->int();
     }
 
-    // TODO(zmd): ::is() is lower prescendence than implicit required constraint
+    public function testIsHasLowerPrescedenceThanImplicitRequiredConstraint(): void
+    {
+        $parser = new FieldParser('', 'Foo Bar');
+        $parser->is('42', 'must have meaning yo');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Foo Bar" cannot be omitted.');
+        $parser->string();
+    }
 
     // TODO(zmd): ::is() adjusts exception message if field defaulted (not required)
 
