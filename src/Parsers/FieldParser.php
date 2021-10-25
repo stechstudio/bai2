@@ -30,16 +30,15 @@ class FieldParser
 
     public function string(...$options): ?string
     {
-        if ($this->value === '') {
-            return $this->getDefaultOrElse($options);
-        } else if ($this->constraint) {
-            ($this->constraint)(isRequired: !$this->hasDefault($options));
-        }
-
-        return (string) $this->value;
+        return $this->parseValue($options, fn () => (string) $this->value);
     }
 
     public function int(...$options): ?int
+    {
+        return $this->parseValue($options, fn () => (int) $this->value);
+    }
+
+    protected function parseValue(array $options, callable $caster): ?string
     {
         if ($this->value === '') {
             return $this->getDefaultOrElse($options);
@@ -47,7 +46,7 @@ class FieldParser
             ($this->constraint)(isRequired: !$this->hasDefault($options));
         }
 
-        return (int) $this->value;
+        return $caster();
     }
 
     protected function getDefaultOrElse(array $options): string|int|null
