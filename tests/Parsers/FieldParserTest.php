@@ -131,7 +131,7 @@ final class FieldParserTest extends TestCase
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Meaning of Life", if provided, must have meaning yo.');
-        $parser->int(default: null);
+        $parser->string(default: null);
     }
 
     public function testFluentIsConstraint(): void
@@ -168,6 +168,31 @@ final class FieldParserTest extends TestCase
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Appetizers" must be app.');
         $parser->string();
+    }
+
+    /**
+     * @testWith ["42300", 42300]
+     *           ["421337", 421337]
+     */
+    public function testIntWithSatisfiedMatchConstraint(string $input, int $expected): void
+    {
+        $parser = new FieldParser($input, 'Meaningful Number');
+        $parser->match('/^42/', 'must begin with meaning');
+        $this->assertEquals($expected, $parser->int());
+    }
+
+    /**
+     * @testWith ["300"]
+     *           ["1337"]
+     */
+    public function testIntWithViolatedMatchConstraint(string $input): void
+    {
+        $parser = new FieldParser($input, 'Meaningful Number');
+        $parser->match('/^42/', 'must begin with meaning');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Meaningful Number" must begin with meaning.');
+        $parser->int();
     }
 
     // TODO(zmd): ::match() is lower prescendence than implicit required constraint
