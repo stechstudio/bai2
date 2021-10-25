@@ -13,7 +13,7 @@ class FieldParser
     {
     }
 
-    public function is(string $constraint, string $violationMessage): void
+    public function is(string $constraint, string $violationMessage): self
     {
         $this->constraint = function (bool $isRequired) use ($constraint, $violationMessage) {
             if ($this->value !== $constraint) {
@@ -24,6 +24,8 @@ class FieldParser
                 }
             }
         };
+
+        return $this;
     }
 
     public function string(...$options): ?string

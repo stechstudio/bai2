@@ -134,17 +134,16 @@ final class FieldParserTest extends TestCase
         $parser->int(default: null);
     }
 
-    /* TODO(zmd): ::is() is fluent
     public function testFluentIsConstraint(): void
     {
+        $parser = new FieldParser('apples', 'Fruit Basket');
         $this->assertEquals(
             'apples',
-            new FieldParser('apples', 'Fruit Basket')
+            $parser
                 ->is('apples', 'must be apples yo')
                 ->string()
         );
     }
-    */
 
     // ---
 
