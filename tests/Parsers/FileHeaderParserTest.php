@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 use STS\Bai2\Exceptions\InvalidTypeException;
 use STS\Bai2\Exceptions\InvalidFieldNameException;
+use STS\Bai2\Exceptions\MalformedInputException;
 
 final class FileHeaderParserTest extends TestCase
 {
@@ -47,6 +48,22 @@ final class FileHeaderParserTest extends TestCase
         $this->assertEquals(80, $parser->offsetGet('physicalRecordLength'));
         $this->assertEquals(10, $parser->offsetGet('blockSize'));
         $this->assertEquals('2', $parser->offsetGet('versionNumber'));
+    }
+
+    public function testPhysicalRecordLengthEnforced(): void
+    {
+        $headerLinePartialTooLong = '01,SENDR1,RECVR1/                                                                ';
+        $parser = new FileHeaderParser();
+        $parser->push($headerLinePartialTooLong);
+
+        // the continued line contains the physicalRecordLength field, which
+        // specifies a length shorter than our initial header line; that's a no
+        // go!
+        $parser->push(self::$headerLinePartialContinued);
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
+        $parser->offsetGet('recordCode');
     }
 
     public function testRecordCodeValid(): void
