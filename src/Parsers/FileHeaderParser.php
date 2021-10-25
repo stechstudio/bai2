@@ -33,9 +33,28 @@ class FileHeaderParser
         }
     }
 
-    protected function parse(string $value, string $longName): FieldParser
+    protected function parse(string $value, string $key): FieldParser
     {
-        return new FieldParser($value, $longName);
+        return new FieldParser($value, $this->keyToFullName($key));
+    }
+
+    protected function keyToFullName(string $key): string
+    {
+        // "fooBarBaz" -> ['F', 'oo', 'B', 'ar', 'B', 'az']
+        $components = preg_split(
+            '/([A-Z])/',
+            ucfirst($key),
+            flags: PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY
+        );
+
+        // ['F', 'oo', 'B', 'ar', 'B', 'az'] -> [['F', 'oo'], ['B', 'ar'], ['B', 'az']]
+        $chunked = array_chunk($components, 2);
+
+        // [['F', 'oo'], ['B', 'ar'], ['B', 'az']] -> ['Foo', 'Bar', 'Baz']
+        $words = array_map(fn ($chunk) => implode('', $chunk), $chunked);
+
+        // ['Foo', 'Bar', 'Baz'] -> 'Foo Bar Baz'
+        return implode(' ', $words);
     }
 
     // ------------------------------------------------------------------------
@@ -44,47 +63,47 @@ class FileHeaderParser
     {
         if (empty($this->parsed)) {
             $this->parsed['recordCode'] =
-                $this->parse($this->parser->shift(), 'Record Code')
+                $this->parse($this->parser->shift(), 'recordCode')
                      ->is('01', 'must be "01"')
                      ->string();
 
             $this->parsed['senderIdentification'] =
-                $this->parse($this->parser->shift(), 'Sender Identification')
+                $this->parse($this->parser->shift(), 'senderIdentification')
                      ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric')
                      ->string();
 
             $this->parsed['receiverIdentification'] =
-                $this->parse($this->parser->shift(), 'Receiver Identification')
+                $this->parse($this->parser->shift(), 'receiverIdentification')
                      ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric')
                      ->string();
 
             $this->parsed['fileCreationDate'] =
-                $this->parse($this->parser->shift(), 'File Creation Date')
+                $this->parse($this->parser->shift(), 'fileCreationDate')
                      ->match('/^\d{6}$/', 'must be composed of exactly 6 numerals')
                      ->string();
 
             $this->parsed['fileCreationTime'] =
-                $this->parse($this->parser->shift(), 'File Creation Time')
+                $this->parse($this->parser->shift(), 'fileCreationTime')
                      ->match('/^\d{4}$/', 'must be composed of exactly 4 numerals')
                      ->string();
 
             $this->parsed['fileIdentificationNumber'] =
-                $this->parse($this->parser->shift(), 'File Identification Number')
+                $this->parse($this->parser->shift(), 'fileIdentificationNumber')
                      ->match('/^\d+$/', 'must be composed of 1 or more numerals')
                      ->int();
 
             $this->parsed['physicalRecordLength'] =
-                $this->parse($this->parser->shift(), 'Physical Record Length')
+                $this->parse($this->parser->shift(), 'physicalRecordLength')
                      ->match('/^\d+$/', 'must be composed of 1 or more numerals')
                      ->int(default: null);
 
             $this->parsed['blockSize'] =
-                $this->parse($this->parser->shift(), 'Block Size')
+                $this->parse($this->parser->shift(), 'blockSize')
                      ->match('/^\d+$/', 'must be composed of 1 or more numerals')
                      ->int(default: null);
 
             $this->parsed['versionNumber'] =
-                $this->parse($this->parser->shift(), 'Version Number')
+                $this->parse($this->parser->shift(), 'versionNumber')
                      ->is('2', 'must be "2" (this library only supports v2 of the BAI format)')
                      ->string();
         }
