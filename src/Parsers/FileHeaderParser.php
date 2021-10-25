@@ -7,9 +7,9 @@ use STS\Bai2\Exceptions\InvalidFieldNameException;
 class FileHeaderParser
 {
 
-    private ?array $rawFields;
+    protected MultilineParser $parser;
 
-    private MultilineParser $parser;
+    private ?array $rawFields;
 
     public function push(string $line): self
     {
@@ -25,6 +25,11 @@ class FileHeaderParser
     public function offsetGet(string $key): string|int|null
     {
         return $this->parseField($key, $this->parse()[$this->index($key)]);
+    }
+
+    protected function validate(string $value, string $longName): FieldParser
+    {
+        return new FieldParser($value, $longName);
     }
 
     private function parse(): array
@@ -96,11 +101,6 @@ class FileHeaderParser
                      ->is('2', 'must be "2" (this library only supports v2 of the BAI format)')
                      ->string(),
         };
-    }
-
-    protected function validate(string $value, string $longName): FieldParser
-    {
-        return new FieldParser($value, $longName);
     }
 
 }
