@@ -28,6 +28,21 @@ class FieldParser
         return $this;
     }
 
+    public function match(string $constraint, string $violationMessage): self
+    {
+        $this->constraint = function (bool $isRequired) use ($constraint, $violationMessage) {
+            if (preg_match($constraint, $this->value) !== 1) {
+                if ($isRequired) {
+                    $this->throw(" {$violationMessage}.");
+                } else {
+                    $this->throw(", if provided, {$violationMessage}.");
+                }
+            }
+        };
+
+        return $this;
+    }
+
     public function string(...$options): ?string
     {
         return $this->parseValue($options, fn () => (string) $this->value);
