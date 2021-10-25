@@ -215,6 +215,15 @@ final class FieldParserTest extends TestCase
         $parser->string(default: 'appliance');
     }
 
-    // TODO(zmd): ::match() is fluent
+    public function testFluentMatchConstraint(): void
+    {
+        $parser = new FieldParser('apples', 'Appetizers');
+        $this->assertEquals(
+            'apples',
+            $parser
+                ->match('/^app/', 'must be app')
+                ->string()
+        );
+    }
 
 }
