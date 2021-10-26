@@ -97,6 +97,7 @@ class FileHeaderParser
                 $this->parse($this->parser->shift(), 'Physical Record Length')
                      ->match('/^\d+$/', 'must be composed of 1 or more numerals')
                      ->int(default: null);
+            $this->parser->setPhysicalRecordLength($this->parsed['physicalRecordLength']);
 
             $this->parsed['blockSize'] =
                 $this->parse($this->parser->shift(), 'Block Size')

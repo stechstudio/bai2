@@ -99,7 +99,7 @@ final class FileHeaderParserTest extends TestCase
      *           ["01,1sendr,RECVR1,210616,1700,01,80,10,2/", "1sendr"]
      *           ["01,sendr1,RECVR1,210616,1700,01,80,10,2/", "sendr1"]
      *           ["01,012345,RECVR1,210616,1700,01,80,10,2/", "012345"]
-     *           ["01,42thisIsAVeryLongButStillCompletelyValidIdentifier1337,RECVR1,210616,1700,01,80,10,2/", "42thisIsAVeryLongButStillCompletelyValidIdentifier1337"]
+     *           ["01,42thisIsAVeryLongButStillCompletelyValidIdentifier1337,RECVR1,210616,1700,01,,10,2/", "42thisIsAVeryLongButStillCompletelyValidIdentifier1337"]
      */
     public function testSenderIdentificationValid(string $line, string $expected): void
     {
@@ -144,7 +144,7 @@ final class FileHeaderParserTest extends TestCase
      *           ["01,SENDR1,1recvr,210616,1700,01,80,10,2/", "1recvr"]
      *           ["01,SENDR1,recvr1,210616,1700,01,80,10,2/", "recvr1"]
      *           ["01,SENDR1,012345,210616,1700,01,80,10,2/", "012345"]
-     *           ["01,SENDR1,42thisIsAVeryLongButStillCompletelyValidIdentifier1337,210616,1700,01,80,10,2/", "42thisIsAVeryLongButStillCompletelyValidIdentifier1337"]
+     *           ["01,SENDR1,42thisIsAVeryLongButStillCompletelyValidIdentifier1337,210616,1700,01,,10,2/", "42thisIsAVeryLongButStillCompletelyValidIdentifier1337"]
      */
     public function testReceiverIdentificationValid(string $line, string $expected): void
     {
@@ -315,9 +315,7 @@ final class FileHeaderParserTest extends TestCase
      * @testWith ["01,SENDR1,RECVR1,210616,1700,01,80,10,2/", 80]
      *           ["01,SENDR1,RECVR1,210616,0000,01,50,10,2/", 50]
      *           ["01,SENDR1,RECVR1,210616,2400,01,5000,10,2/", 5000]
-     *           ["01,SENDR1,RECVR1,210616,2400,01,1,10,2/", 1]
-     *           ["01,SENDR1,RECVR1,210616,2400,01,0,10,2/", 0]
-     *           ["01,SENDR1,RECVR1,210616,2400,01,010,10,2/", 10]
+     *           ["01,SENDR1,RECVR1,210616,2400,01,080,10,2/", 80]
      *           ["01,SENDR1,RECVR1,210616,9999,01,,10,2/", null]
      */
     public function testPhysicalRecordLengthValid(string $line, ?int $expected): void
