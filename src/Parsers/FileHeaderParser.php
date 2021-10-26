@@ -16,6 +16,58 @@ class FileHeaderParser
 
     protected static string $recordCode = '01';
 
+    public function push(string $line): self
+    {
+        if (!isset($this->parser)) {
+            $this->pushRecord($line);
+        } else {
+            $this->pushContinuation($line);
+        }
+
+        return $this;
+    }
+
+    public function offsetGet(string $key): string|int|null
+    {
+        // TODO(zmd): throw if we try to parse but no parser was set (meaning,
+        //   no lines were first pushed)
+        if (array_key_exists($key, $this->parseAll()->parsed)) {
+            return $this->parsed[$key];
+        } else {
+            throw new InvalidFieldNameException(
+                "{$this->readableParserName()} does not have a \"{$key}\" field."
+            );
+        }
+    }
+
+    protected function pushRecord(string $line): void
+    {
+        $this->parser = new MultilineParser($line);
+
+        try {
+            if ($this->parser->peek() != self::$recordCode) {
+                  throw new InvalidRecordException(
+                      "Encountered an invalid or malformed {$this->readableParserName()} record."
+                  );
+            }
+        } catch (ParseException) {
+            throw new InvalidRecordException (
+                "Encountered an invalid or malformed {$this->readableParserName()} record."
+            );
+        }
+    }
+
+    protected function pushContinuation(string $line): void
+    {
+        try {
+            $this->parser->continue($line);
+        } catch (ParseException | InvalidUseException) {
+            throw new InvalidRecordException(
+                "Encountered an invalid or malformed {$this->readableParserName()} continuation."
+            );
+        }
+    }
+
     protected function readableParserName(): string
     {
         $nameComponents = explode('\\', self::class);
@@ -38,67 +90,13 @@ class FileHeaderParser
         return implode(' ', $words);
     }
 
-    public function push(string $line): self
-    {
-        if (!isset($this->parser)) {
-            $this->parser = new MultilineParser($line);
-            $this->validateRecordLine();
-        } else {
-            try {
-                $this->parser->continue($line);
-            } catch (ParseException | InvalidUseException) {
-                throw $this->invalidContinuationException();
-            }
-        }
-
-        return $this;
-    }
-
-    public function offsetGet(string $key): string|int|null
-    {
-        if (array_key_exists($key, $this->parseAll()->parsed)) {
-            return $this->parsed[$key];
-        } else {
-            throw new InvalidFieldNameException(
-                "{$this->readableParserName()} does not have a \"{$key}\" field."
-            );
-        }
-    }
-
     protected function parse(string $value, string $longName): FieldParser
     {
         return new FieldParser($value, $longName);
     }
 
-    protected function validateRecordLine(): void
-    {
-        try {
-            if ($this->parser->peek() != self::$recordCode) {
-                  throw $this->invalidRecordException();
-            }
-        } catch (ParseException) {
-            throw $this->invalidRecordException();
-        }
-    }
-
-    protected function invalidRecordException(): InvalidRecordException
-    {
-        return new InvalidRecordException(
-            "Encountered an invalid or malformed {$this->readableParserName()} record."
-        );
-    }
-
-    protected function invalidContinuationException(): InvalidRecordException
-    {
-        return new InvalidRecordException(
-            "Encountered an invalid or malformed {$this->readableParserName()} continuation."
-        );
-    }
-
     private function parseAll(): self
     {
-        // TODO(zmd): throw if we try to parse but no parser was set (meaning,
-        //   no lines were first pushed)
         if (empty($this->parsed)) {
             // NOTE: the recordCode was pre-validated by this point
             $this->parsed['recordCode'] = $this->parser->shift();
