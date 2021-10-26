@@ -52,6 +52,16 @@ final class FileHeaderParserTest extends TestCase
 
     public function testPhysicalRecordLengthEnforced(): void
     {
+        $parser = new FileHeaderParser();
+        $parser->push('01,SENDR1,RECVR1,210616,1700,01,30,10,2/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
+        $parser->offsetGet('recordCode');
+    }
+
+    public function testPhysicalRecordLengthEnforcedRetrospectively(): void
+    {
         $headerLinePartialTooLong = '01,SENDR1,RECVR1/                                                                ';
         $parser = new FileHeaderParser();
         $parser->push($headerLinePartialTooLong);
