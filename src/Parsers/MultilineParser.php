@@ -7,7 +7,7 @@ use STS\Bai2\Exceptions\InvalidUseException;
 class MultilineParser
 {
 
-    protected LineParser $currentLine;
+    protected int $currentLine = 0;
 
     protected array $lines = [];
 
@@ -17,14 +17,12 @@ class MultilineParser
         string $firstLine,
         protected ?int $physicalRecordLength = null
     ) {
-        $this->currentLine = new LineParser($firstLine, $this->physicalRecordLength);
+        $this->lines[] = new LineParser($firstLine, $this->physicalRecordLength);
     }
 
     public function setPhysicalRecordLength(?int $physicalRecordLength): void
     {
         $this->physicalRecordLength = $physicalRecordLength;
-
-        $this->currentLine->setPhysicalRecordLength($this->physicalRecordLength);
 
         foreach ($this->lines as $line) {
             $line->setPhysicalRecordLength($this->physicalRecordLength);
@@ -81,16 +79,22 @@ class MultilineParser
 
     protected function currentOrNextLine(): LineParser
     {
-        if ($this->currentLine->isEndOfLine()) {
+        if ($this->currentLine()->isEndOfLine()) {
             $this->nextLine();
         }
 
-        return $this->currentLine;
+        return $this->currentLine();
+    }
+
+    protected function currentLine(): LineParser
+    {
+        return $this->lines[$this->currentLine];
     }
 
     protected function nextLine(): void
     {
-        if ($nextLine = array_shift($this->lines)) {
+        $nextLine = $this->currentLine + 1;
+        if (array_key_exists($nextLine, $this->lines)) {
             $this->currentLine = $nextLine;
         }
     }
