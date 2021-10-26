@@ -7,7 +7,7 @@ use STS\Bai2\Exceptions\InvalidRecordException;
 use STS\Bai2\Exceptions\InvalidUseException;
 use STS\Bai2\Exceptions\ParseException;
 
-class FileHeaderParser
+class FileHeaderParser implements \ArrayAccess
 {
 
     private MultilineParser $parser;
@@ -25,20 +25,30 @@ class FileHeaderParser
         return $this;
     }
 
-    public function offsetGet(string $key): string|int|null
+    public function offsetGet(mixed $offset): string|int|null
     {
-        if ($this->offsetExists($key)) {
-            return $this->parsed[$key];
+        if ($this->offsetExists($offset)) {
+            return $this->parsed[$offset];
         } else {
             throw new InvalidFieldNameException(
-                "{$this->readableParserName()} does not have a \"{$key}\" field."
+                "{$this->readableParserName()} does not have a \"{$offset}\" field."
             );
         }
     }
 
-    public function offsetExists(string $key): bool
+    public function offsetExists(mixed $offset): bool
     {
-        return array_key_exists($key, $this->parseAllOnce()->parsed);
+        return array_key_exists($offset, $this->parseAllOnce()->parsed);
+    }
+
+    public function offsetSet(mixed $offset, mixed $value): void
+    {
+        throw new InvalidUseException('::offsetSet() is unsupported.');
+    }
+
+    public function offsetUnset(mixed $offset): mixed
+    {
+        throw new InvalidUseException('::offsetUnset() is unsupported.');
     }
 
     protected function pushRecord(string $line): void

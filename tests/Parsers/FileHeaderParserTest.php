@@ -453,4 +453,40 @@ final class FileHeaderParserTest extends TestCase
         $this->assertFalse($parser->offsetExists('codedRecord'));
     }
 
+    public function testOffsetSetAlwaysThrows(): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push(self::$headerLine);
+
+        $this->expectException(InvalidUseException::class);
+        $this->expectExceptionMessage('::offsetSet() is unsupported.');
+        $parser->offsetSet('codedRecord', '23');
+    }
+
+    public function testOffsetUnsetAlwaysThrows(): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push(self::$headerLine);
+
+        $this->expectException(InvalidUseException::class);
+        $this->expectExceptionMessage('::offsetUnset() is unsupported.');
+        $parser->offsetUnset('codedRecord');
+    }
+
+    public function testReadingAsIfAnArray(): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push(self::$headerLine);
+
+        $this->assertEquals('01', $parser['recordCode']);
+        $this->assertEquals('SENDR1', $parser['senderIdentification']);
+        $this->assertEquals('RECVR1', $parser['receiverIdentification']);
+        $this->assertEquals('210616', $parser['fileCreationDate']);
+        $this->assertEquals('1700', $parser['fileCreationTime']);
+        $this->assertEquals('01', $parser['fileIdentificationNumber']);
+        $this->assertEquals(80, $parser['physicalRecordLength']);
+        $this->assertEquals(10, $parser['blockSize']);
+        $this->assertEquals('2', $parser['versionNumber']);
+    }
+
 }
