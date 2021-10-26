@@ -11,7 +11,7 @@ class FileHeaderParser
 
     protected array $parsed = [];
 
-    public function readableParserName(): string
+    protected function readableParserName(): string
     {
         $nameComponents = explode('\\', self::class);
         $nameSansParser = preg_replace('/Parser$/', '', end($nameComponents));
