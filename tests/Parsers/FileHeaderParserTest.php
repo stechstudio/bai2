@@ -4,6 +4,7 @@ namespace STS\Bai2\Parsers;
 
 use PHPUnit\Framework\TestCase;
 
+use STS\Bai2\Exceptions\InvalidUseException;
 use STS\Bai2\Exceptions\InvalidTypeException;
 use STS\Bai2\Exceptions\InvalidFieldNameException;
 use STS\Bai2\Exceptions\InvalidRecordException;
@@ -416,6 +417,24 @@ final class FileHeaderParserTest extends TestCase
         $this->expectException(InvalidFieldNameException::class);
         $this->expectExceptionMessage('File Header does not have a "fooBar" field.');
         $parser->offsetGet('fooBar');
+    }
+
+    public function testOffsetGetThrowsIfNoLinesPushed(): void
+    {
+        $parser = new FileHeaderParser();
+
+        $this->expectException(InvalidUseException::class);
+        $this->expectExceptionMessage('Cannot parse File Header without first pushing line(s).');
+        $parser->offsetGet('recordCode');
+    }
+
+    public function testOffsetExistsThrowsIfNoLinesPushed(): void
+    {
+        $parser = new FileHeaderParser();
+
+        $this->expectException(InvalidUseException::class);
+        $this->expectExceptionMessage('Cannot parse File Header without first pushing line(s).');
+        $parser->offsetGet('recordCode');
     }
 
     public function testOffsetExistsForExtantField(): void

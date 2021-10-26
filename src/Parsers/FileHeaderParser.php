@@ -48,7 +48,7 @@ class FileHeaderParser
         $this->parser = new MultilineParser($line);
 
         try {
-            if ($this->parser->peek() != self::$recordCode) {
+            if ($this->parser()->peek() != self::$recordCode) {
                   throw new InvalidRecordException(
                       "Encountered an invalid or malformed {$this->readableParserName()} record."
                   );
@@ -63,7 +63,7 @@ class FileHeaderParser
     protected function pushContinuation(string $line): void
     {
         try {
-            $this->parser->continue($line);
+            $this->parser()->continue($line);
         } catch (ParseException | InvalidUseException) {
             throw new InvalidRecordException(
                 "Encountered an invalid or malformed {$this->readableParserName()} continuation."
@@ -98,6 +98,15 @@ class FileHeaderParser
         return new FieldParser($value, $longName);
     }
 
+    protected function parser(): MultilineParser
+    {
+        try {
+            return $this->parser;
+        } catch (\Error) {
+            throw new InvalidUseException("Cannot parse {$this->readableParserName()} without first pushing line(s).");
+        }
+    }
+
     // -------------------------------------------------------------------------
 
     private function parseAll(): self
@@ -106,46 +115,46 @@ class FileHeaderParser
         //   no lines were first pushed)
         if (empty($this->parsed)) {
             // NOTE: the recordCode was pre-validated by this point
-            $this->parsed['recordCode'] = $this->parser->shift();
+            $this->parsed['recordCode'] = $this->parser()->shift();
 
             $this->parsed['senderIdentification'] =
-                $this->parse($this->parser->shift(), 'Sender Identification')
+                $this->parse($this->parser()->shift(), 'Sender Identification')
                      ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric')
                      ->string();
 
             $this->parsed['receiverIdentification'] =
-                $this->parse($this->parser->shift(), 'Receiver Identification')
+                $this->parse($this->parser()->shift(), 'Receiver Identification')
                      ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric')
                      ->string();
 
             $this->parsed['fileCreationDate'] =
-                $this->parse($this->parser->shift(), 'File Creation Date')
+                $this->parse($this->parser()->shift(), 'File Creation Date')
                      ->match('/^\d{6}$/', 'must be composed of exactly 6 numerals')
                      ->string();
 
             $this->parsed['fileCreationTime'] =
-                $this->parse($this->parser->shift(), 'File Creation Time')
+                $this->parse($this->parser()->shift(), 'File Creation Time')
                      ->match('/^\d{4}$/', 'must be composed of exactly 4 numerals')
                      ->string();
 
             $this->parsed['fileIdentificationNumber'] =
-                $this->parse($this->parser->shift(), 'File Identification Number')
+                $this->parse($this->parser()->shift(), 'File Identification Number')
                      ->match('/^\d+$/', 'must be composed of 1 or more numerals')
                      ->int();
 
             $this->parsed['physicalRecordLength'] =
-                $this->parse($this->parser->shift(), 'Physical Record Length')
+                $this->parse($this->parser()->shift(), 'Physical Record Length')
                      ->match('/^\d+$/', 'must be composed of 1 or more numerals')
                      ->int(default: null);
-            $this->parser->setPhysicalRecordLength($this->parsed['physicalRecordLength']);
+            $this->parser()->setPhysicalRecordLength($this->parsed['physicalRecordLength']);
 
             $this->parsed['blockSize'] =
-                $this->parse($this->parser->shift(), 'Block Size')
+                $this->parse($this->parser()->shift(), 'Block Size')
                      ->match('/^\d+$/', 'must be composed of 1 or more numerals')
                      ->int(default: null);
 
             $this->parsed['versionNumber'] =
-                $this->parse($this->parser->shift(), 'Version Number')
+                $this->parse($this->parser()->shift(), 'Version Number')
                      ->is('2', 'must be "2" (this library only supports v2 of the BAI format)')
                      ->string();
         }
