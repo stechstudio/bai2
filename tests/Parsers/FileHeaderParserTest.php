@@ -408,7 +408,7 @@ final class FileHeaderParserTest extends TestCase
         $parser->offsetGet('versionNumber');
     }
 
-    public function testAccessUnknownField(): void
+    public function testOffsetGetThrowsOnUnknownField(): void
     {
         $parser = new FileHeaderParser();
         $parser->push(self::$headerLine);

@@ -95,6 +95,8 @@ class FileHeaderParser
         return new FieldParser($value, $longName);
     }
 
+    // -------------------------------------------------------------------------
+
     private function parseAll(): self
     {
         if (empty($this->parsed)) {
