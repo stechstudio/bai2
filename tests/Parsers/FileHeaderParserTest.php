@@ -510,4 +510,13 @@ final class FileHeaderParserTest extends TestCase
         );
     }
 
+    public function testToArrayThrowsIfNoLinesPushed(): void
+    {
+        $parser = new FileHeaderParser();
+
+        $this->expectException(InvalidUseException::class);
+        $this->expectExceptionMessage('Cannot parse File Header without first pushing line(s).');
+        $parser->toArray();
+    }
+
 }
