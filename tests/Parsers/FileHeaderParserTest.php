@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 
 use STS\Bai2\Exceptions\InvalidTypeException;
 use STS\Bai2\Exceptions\InvalidFieldNameException;
+use STS\Bai2\Exceptions\InvalidRecordException;
 use STS\Bai2\Exceptions\MalformedInputException;
 
 final class FileHeaderParserTest extends TestCase
@@ -76,31 +77,30 @@ final class FileHeaderParserTest extends TestCase
         $parser->offsetGet('recordCode');
     }
 
-    public function testRecordCodeValid(): void
-    {
+    /**
+     * @testWith ["16,nope,nope,nope/"]
+     *           ["This ain't no header line!"]
+     */
+    public function testPushRejectsInvalidHeaderLine(string $invalidHeader): void {
         $parser = new FileHeaderParser();
-        $parser->push(self::$headerLine);
-        $this->assertEquals('01', $parser->offsetGet('recordCode'));
+
+        $this->expectException(InvalidRecordException::class);
+        $this->expectExceptionMessage('Encountered an invalid or malformed File Header record.');
+        $parser->push($invalidHeader);
     }
 
-    public function testRecordCodeMissing(): void
+    /**
+     * @testWith ["23,This ain't no continuation line!"]
+     *           ["This ain't no continuation line!"]
+     */
+    public function testPushRejectsInvalidContinuationLine(string $invalidContinuation): void
     {
         $parser = new FileHeaderParser();
-        $parser->push(',SENDR1,RECVR1,210616,1700,01,80,10,2/');
+        $parser->push(self::$headerLinePartialFirst);
 
-        $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Record Code" cannot be omitted.');
-        $parser->offsetGet('recordCode');
-    }
-
-    public function testRecordCodeInvalidType(): void
-    {
-        $parser = new FileHeaderParser();
-        $parser->push('ZZ,SENDR1,RECVR1,210616,1700,01,80,10,2/');
-
-        $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Record Code" must be "01".');
-        $parser->offsetGet('recordCode');
+        $this->expectException(InvalidRecordException::class);
+        $this->expectExceptionMessage('Encountered an invalid or malformed File Header continuation.');
+        $parser->push($invalidContinuation);
     }
 
     /**

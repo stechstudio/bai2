@@ -3,6 +3,9 @@
 namespace STS\Bai2\Parsers;
 
 use STS\Bai2\Exceptions\InvalidFieldNameException;
+use STS\Bai2\Exceptions\InvalidRecordException;
+use STS\Bai2\Exceptions\InvalidUseException;
+use STS\Bai2\Exceptions\ParseException;
 
 class FileHeaderParser
 {
@@ -10,6 +13,8 @@ class FileHeaderParser
     protected MultilineParser $parser;
 
     protected array $parsed = [];
+
+    protected static string $recordCode = '01';
 
     protected function readableParserName(): string
     {
@@ -37,8 +42,13 @@ class FileHeaderParser
     {
         if (!isset($this->parser)) {
             $this->parser = new MultilineParser($line);
+            $this->validateRecordLine();
         } else {
-            $this->parser->continue($line);
+            try {
+                $this->parser->continue($line);
+            } catch (ParseException | InvalidUseException) {
+                throw $this->invalidContinuationException();
+            }
         }
 
         return $this;
@@ -60,13 +70,38 @@ class FileHeaderParser
         return new FieldParser($value, $longName);
     }
 
+    protected function validateRecordLine(): void
+    {
+        try {
+            if ($this->parser->peek() != self::$recordCode) {
+                  throw $this->invalidRecordException();
+            }
+        } catch (ParseException) {
+            throw $this->invalidRecordException();
+        }
+    }
+
+    protected function invalidRecordException(): InvalidRecordException
+    {
+        return new InvalidRecordException(
+            "Encountered an invalid or malformed {$this->readableParserName()} record."
+        );
+    }
+
+    protected function invalidContinuationException(): InvalidRecordException
+    {
+        return new InvalidRecordException(
+            "Encountered an invalid or malformed {$this->readableParserName()} continuation."
+        );
+    }
+
     private function parseAll(): self
     {
+        // TODO(zmd): throw if we try to parse but no parser was set (meaning,
+        //   no lines were first pushed)
         if (empty($this->parsed)) {
-            $this->parsed['recordCode'] =
-                $this->parse($this->parser->shift(), 'Record Code')
-                     ->is('01', 'must be "01"')
-                     ->string();
+            // NOTE: the recordCode was pre-validated by this point
+            $this->parsed['recordCode'] = $this->parser->shift();
 
             $this->parsed['senderIdentification'] =
                 $this->parse($this->parser->shift(), 'Sender Identification')
