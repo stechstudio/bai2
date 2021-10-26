@@ -489,4 +489,25 @@ final class FileHeaderParserTest extends TestCase
         $this->assertEquals('2', $parser['versionNumber']);
     }
 
+    public function testToArray(): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push(self::$headerLine);
+
+        $this->assertEquals(
+            [
+                'recordCode' => '01',
+                'senderIdentification' => 'SENDR1',
+                'receiverIdentification' => 'RECVR1',
+                'fileCreationDate' => '210616',
+                'fileCreationTime' => '1700',
+                'fileIdentificationNumber' => '01',
+                'physicalRecordLength' => 80,
+                'blockSize' => 10,
+                'versionNumber' => '2',
+            ],
+            $parser->toArray()
+        );
+    }
+
 }

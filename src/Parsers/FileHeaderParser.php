@@ -25,6 +25,11 @@ class FileHeaderParser implements \ArrayAccess
         return $this;
     }
 
+    public function toArray(): array
+    {
+        return $this->parseAllOnce()->parsed;
+    }
+
     public function offsetGet(mixed $offset): string|int|null
     {
         if ($this->offsetExists($offset)) {
