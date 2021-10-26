@@ -11,6 +11,28 @@ class FileHeaderParser
 
     protected array $parsed = [];
 
+    public function readableParserName(): string
+    {
+        $nameComponents = explode('\\', self::class);
+        $nameSansParser = preg_replace('/Parser$/', '', end($nameComponents));
+
+        // "FooBarBaz" -> ['F', 'oo', 'B', 'ar', 'B', 'az']
+        $components = preg_split(
+            '/([A-Z])/',
+            $nameSansParser,
+            flags: PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY
+        );
+
+        // ['F', 'oo', 'B', 'ar', 'B', 'az'] -> [['F', 'oo'], ['B', 'ar'], ['B', 'az']]
+        $chunked = array_chunk($components, 2);
+
+        // [['F', 'oo'], ['B', 'ar'], ['B', 'az']] -> ['Foo', 'Bar', 'Baz']
+        $words = array_map(fn ($chunk) => implode('', $chunk), $chunked);
+
+        // ['Foo', 'Bar', 'Baz'] -> 'Foo Bar Baz'
+        return implode(' ', $words);
+    }
+
     public function push(string $line): self
     {
         if (!isset($this->parser)) {
@@ -28,7 +50,7 @@ class FileHeaderParser
             return $this->parsed[$key];
         } else {
             throw new InvalidFieldNameException(
-                "File Header does not have a \"{$key}\" field."
+                "{$this->readableParserName()} does not have a \"{$key}\" field."
             );
         }
     }
