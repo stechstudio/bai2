@@ -418,4 +418,20 @@ final class FileHeaderParserTest extends TestCase
         $parser->offsetGet('fooBar');
     }
 
+    public function testOffsetExistsForExtantField(): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push(self::$headerLine);
+
+        $this->assertTrue($parser->offsetExists('recordCode'));
+    }
+
+    public function testOffsetExistsForNonExtantField(): void
+    {
+        $parser = new FileHeaderParser();
+        $parser->push(self::$headerLine);
+
+        $this->assertFalse($parser->offsetExists('codedRecord'));
+    }
+
 }

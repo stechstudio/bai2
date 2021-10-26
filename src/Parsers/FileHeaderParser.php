@@ -29,15 +29,18 @@ class FileHeaderParser
 
     public function offsetGet(string $key): string|int|null
     {
-        // TODO(zmd): throw if we try to parse but no parser was set (meaning,
-        //   no lines were first pushed)
-        if (array_key_exists($key, $this->parseAll()->parsed)) {
+        if ($this->offsetExists($key)) {
             return $this->parsed[$key];
         } else {
             throw new InvalidFieldNameException(
                 "{$this->readableParserName()} does not have a \"{$key}\" field."
             );
         }
+    }
+
+    public function offsetExists(string $key): bool
+    {
+        return array_key_exists($key, $this->parseAll()->parsed);
     }
 
     protected function pushRecord(string $line): void
@@ -99,6 +102,8 @@ class FileHeaderParser
 
     private function parseAll(): self
     {
+        // TODO(zmd): throw if we try to parse but no parser was set (meaning,
+        //   no lines were first pushed)
         if (empty($this->parsed)) {
             // NOTE: the recordCode was pre-validated by this point
             $this->parsed['recordCode'] = $this->parser->shift();
