@@ -38,7 +38,7 @@ class FileHeaderParser
 
     public function offsetExists(string $key): bool
     {
-        return array_key_exists($key, $this->parseAll()->parsed);
+        return array_key_exists($key, $this->parseAllOnce()->parsed);
     }
 
     protected function pushRecord(string $line): void
@@ -105,57 +105,65 @@ class FileHeaderParser
         }
     }
 
+    private function parseAllOnce(): self
+    {
+        if (empty($this->parsed)) {
+            // NOTE: the recordCode was pre-validated by this point, and must
+            // always exist
+            $this->parsed['recordCode'] = $this->getParser()->shift();
+
+            $this->parseAll();
+        }
+
+        return $this;
+    }
+
     // -------------------------------------------------------------------------
 
     protected static string $recordCode = '01';
 
-    private function parseAll(): self
+    protected function parseAll(): self
     {
-        if (empty($this->parsed)) {
-            // NOTE: the recordCode was pre-validated by this point
-            $this->parsed['recordCode'] = $this->getParser()->shift();
+        $this->parsed['senderIdentification'] =
+            $this->parse($this->getParser()->shift(), 'Sender Identification')
+                 ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric')
+                 ->string();
 
-            $this->parsed['senderIdentification'] =
-                $this->parse($this->getParser()->shift(), 'Sender Identification')
-                     ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric')
-                     ->string();
+        $this->parsed['receiverIdentification'] =
+            $this->parse($this->getParser()->shift(), 'Receiver Identification')
+                 ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric')
+                 ->string();
 
-            $this->parsed['receiverIdentification'] =
-                $this->parse($this->getParser()->shift(), 'Receiver Identification')
-                     ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric')
-                     ->string();
+        $this->parsed['fileCreationDate'] =
+            $this->parse($this->getParser()->shift(), 'File Creation Date')
+                 ->match('/^\d{6}$/', 'must be composed of exactly 6 numerals')
+                 ->string();
 
-            $this->parsed['fileCreationDate'] =
-                $this->parse($this->getParser()->shift(), 'File Creation Date')
-                     ->match('/^\d{6}$/', 'must be composed of exactly 6 numerals')
-                     ->string();
+        $this->parsed['fileCreationTime'] =
+            $this->parse($this->getParser()->shift(), 'File Creation Time')
+                 ->match('/^\d{4}$/', 'must be composed of exactly 4 numerals')
+                 ->string();
 
-            $this->parsed['fileCreationTime'] =
-                $this->parse($this->getParser()->shift(), 'File Creation Time')
-                     ->match('/^\d{4}$/', 'must be composed of exactly 4 numerals')
-                     ->string();
+        $this->parsed['fileIdentificationNumber'] =
+            $this->parse($this->getParser()->shift(), 'File Identification Number')
+                 ->match('/^\d+$/', 'must be composed of 1 or more numerals')
+                 ->int();
 
-            $this->parsed['fileIdentificationNumber'] =
-                $this->parse($this->getParser()->shift(), 'File Identification Number')
-                     ->match('/^\d+$/', 'must be composed of 1 or more numerals')
-                     ->int();
+        $this->parsed['physicalRecordLength'] =
+            $this->parse($this->getParser()->shift(), 'Physical Record Length')
+                 ->match('/^\d+$/', 'must be composed of 1 or more numerals')
+                 ->int(default: null);
+        $this->getParser()->setPhysicalRecordLength($this->parsed['physicalRecordLength']);
 
-            $this->parsed['physicalRecordLength'] =
-                $this->parse($this->getParser()->shift(), 'Physical Record Length')
-                     ->match('/^\d+$/', 'must be composed of 1 or more numerals')
-                     ->int(default: null);
-            $this->getParser()->setPhysicalRecordLength($this->parsed['physicalRecordLength']);
+        $this->parsed['blockSize'] =
+            $this->parse($this->getParser()->shift(), 'Block Size')
+                 ->match('/^\d+$/', 'must be composed of 1 or more numerals')
+                 ->int(default: null);
 
-            $this->parsed['blockSize'] =
-                $this->parse($this->getParser()->shift(), 'Block Size')
-                     ->match('/^\d+$/', 'must be composed of 1 or more numerals')
-                     ->int(default: null);
-
-            $this->parsed['versionNumber'] =
-                $this->parse($this->getParser()->shift(), 'Version Number')
-                     ->is('2', 'must be "2" (this library only supports v2 of the BAI format)')
-                     ->string();
-        }
+        $this->parsed['versionNumber'] =
+            $this->parse($this->getParser()->shift(), 'Version Number')
+                 ->is('2', 'must be "2" (this library only supports v2 of the BAI format)')
+                 ->string();
 
         return $this;
     }
