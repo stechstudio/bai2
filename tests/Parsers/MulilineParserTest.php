@@ -4,6 +4,10 @@ namespace STS\Bai2\Parsers;
 
 use PHPUnit\Framework\TestCase;
 
+use STS\Bai2\Exceptions\InvalidUseException;
+use STS\Bai2\Exceptions\MalformedInputException;
+use STS\Bai2\Exceptions\ParseException;
+
 final class MultilineParserTest extends TestCase
 {
 
@@ -351,7 +355,7 @@ final class MultilineParserTest extends TestCase
             // can shift no more for we did not ::continue() any more
             try {
                 $parser->shift();
-            } catch (\Exception $e) {
+            } catch (ParseException $e) {
                 $this->assertEquals(
                     'Cannot access fields at the end of the buffer.',
                     $e->getMessage()
@@ -617,7 +621,7 @@ final class MultilineParserTest extends TestCase
         $this->withParser($input, function ($parser) {
             $parser->drop(9);
 
-            $this->expectException(\Exception::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $parser->peek();
         });
@@ -639,7 +643,7 @@ final class MultilineParserTest extends TestCase
             $parser->shift();
             $parser->shift();
 
-            $this->expectException(\Exception::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $parser->shift();
         });
@@ -651,7 +655,7 @@ final class MultilineParserTest extends TestCase
     public function testThrowsIfDroppingMoreThanAvailableInBuffer(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
-            $this->expectException(\Exception::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $parser->drop(10);
         });
@@ -670,7 +674,7 @@ final class MultilineParserTest extends TestCase
             $parser->shiftText();
 
             // make it go boom!
-            $this->expectException(\Exception::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $parser->shiftText();
         });
@@ -684,7 +688,7 @@ final class MultilineParserTest extends TestCase
         $this->withParser($input, function ($parser) {
             $parser->shiftText();
 
-            $this->expectException(\Exception::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $parser->peek();
         });
@@ -698,7 +702,7 @@ final class MultilineParserTest extends TestCase
         $this->withParser($input, function ($parser) {
             $parser->shiftText();
 
-            $this->expectException(\Exception::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $parser->shift();
         });
@@ -712,7 +716,7 @@ final class MultilineParserTest extends TestCase
         $this->withParser($input, function ($parser) {
             $parser->shiftText();
 
-            $this->expectException(\Exception::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $parser->drop(2);
         });
@@ -726,7 +730,7 @@ final class MultilineParserTest extends TestCase
         $this->withParser($input, function ($parser) {
             $parser->drop(8);
 
-            $this->expectException(\Exception::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access last (non-text) field on unterminated input line.');
             $parser->peek();
         });
@@ -740,7 +744,7 @@ final class MultilineParserTest extends TestCase
         $this->withParser($input, function ($parser) {
             $parser->drop(8);
 
-            $this->expectException(\Exception::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access last (non-text) field on unterminated input line.');
             $parser->shift();
         });
@@ -752,7 +756,7 @@ final class MultilineParserTest extends TestCase
     public function testThrowsIfDroppingAnUnterminatedField(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
-            $this->expectException(\Exception::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access last (non-text) field on unterminated input line.');
             $parser->drop(9);
         });
@@ -761,7 +765,7 @@ final class MultilineParserTest extends TestCase
     public function testThrowsIfAttemptingToCallContinueWithNonContinuationRecord(): void
     {
         $this->withParser('01,SENDR1,RECVR1/', function ($parser) {
-            $this->expectException(\Exception::class);
+            $this->expectException(InvalidUseException::class);
             $this->expectExceptionMessage('Cannot call ::continue() on non-continuation input.');
             $parser->continue('16,003,10000,D,3/');
         });
@@ -794,7 +798,7 @@ final class MultilineParserTest extends TestCase
             );
 
             // YOU SHALL NOT PASS!
-            $this->expectException(\Exception::class);
+            $this->expectException(InvalidUseException::class);
             $this->expectExceptionMessage('Cannot call ::continue() after reading the text field.');
             $parser->continue('88,Why would you even want to do this?');
         });
@@ -805,7 +809,7 @@ final class MultilineParserTest extends TestCase
      */
     public function testThrowsWhenContructWithLineLongerThanPhysicalLength(string|array $input): void
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
         $this->withPhysicalRecordLengthParser($input, 80, function ($parser) {});
     }
@@ -816,7 +820,7 @@ final class MultilineParserTest extends TestCase
     public function testThrowsWhenSetPhysicalRecordLengthExceedingOriginalLineLength(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
-            $this->expectException(\Exception::class);
+            $this->expectException(MalformedInputException::class);
             $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
             $parser->setPhysicalRecordLength(80);
         });
