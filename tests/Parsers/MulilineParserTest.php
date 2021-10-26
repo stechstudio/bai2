@@ -826,4 +826,23 @@ final class MultilineParserTest extends TestCase
         });
     }
 
+    public function testSettingPhysicalRecordLengthStillEnforcedOnPreviouslyConsumedLines(): void
+    {
+        $headerLinePartialTooLong = '01,SENDR1,RECVR1/                                                                ';
+        $headerLinePartialContinued = '88,210616,1700,01,80,10,2/';
+
+        $this->withParser($headerLinePartialTooLong, function ($parser) use ($headerLinePartialContinued) {
+            $parser->drop(3);
+            $parser->continue($headerLinePartialContinued);
+            $parser->drop(3);
+
+            $physicalRecordLength = (int) $parser->shift();
+            $this->assertEquals(80, $physicalRecordLength);
+
+            $this->expectException(MalformedInputException::class);
+            $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
+            $parser->setPhysicalRecordLength($physicalRecordLength);
+        });
+    }
+
 }
