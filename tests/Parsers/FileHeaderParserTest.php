@@ -13,81 +13,112 @@ use STS\Bai2\Exceptions\MalformedInputException;
 final class FileHeaderParserTest extends TestCase
 {
 
-    private static string $headerLine = '01,SENDR1,RECVR1,210616,1700,01,80,10,2/';
+    protected static string $fullRecordLine = '01,SENDR1,RECVR1,210616,1700,01,80,10,2/';
 
-    private static string $headerLinePartialFirst = '01,SENDR1,RECVR1/';
+    protected static string $partialRecordLine = '01,SENDR1,RECVR1/';
 
-    private static string $headerLinePartialContinued = '88,210616,1700,01,80,10,2/';
+    protected static string $continuedRecordLine = '88,210616,1700,01,80,10,2/';
 
-    public function testParseFromSingleLine(): void
+    protected static string $parserClass = FileHeaderParser::class;
+
+    protected string $readableParserName = 'File Header';
+
+    protected FileHeaderParser $parser;
+
+    public function setUp(): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine(self::$headerLine);
-
-        $this->assertEquals('01', $parser->offsetGet('recordCode'));
-        $this->assertEquals('SENDR1', $parser->offsetGet('senderIdentification'));
-        $this->assertEquals('RECVR1', $parser->offsetGet('receiverIdentification'));
-        $this->assertEquals('210616', $parser->offsetGet('fileCreationDate'));
-        $this->assertEquals('1700', $parser->offsetGet('fileCreationTime'));
-        $this->assertEquals('01', $parser->offsetGet('fileIdentificationNumber'));
-        $this->assertEquals(80, $parser->offsetGet('physicalRecordLength'));
-        $this->assertEquals(10, $parser->offsetGet('blockSize'));
-        $this->assertEquals('2', $parser->offsetGet('versionNumber'));
+        $this->parser = new self::$parserClass();
     }
 
-    public function testParseFromMultipleLines(): void
-    {
-        $parser = new FileHeaderParser();
-        $parser->pushLine(self::$headerLinePartialFirst);
-        $parser->pushLine(self::$headerLinePartialContinued);
+    // ===== common array access trait functionality ===========================
 
-        $this->assertEquals('01', $parser->offsetGet('recordCode'));
-        $this->assertEquals('SENDR1', $parser->offsetGet('senderIdentification'));
-        $this->assertEquals('RECVR1', $parser->offsetGet('receiverIdentification'));
-        $this->assertEquals('210616', $parser->offsetGet('fileCreationDate'));
-        $this->assertEquals('1700', $parser->offsetGet('fileCreationTime'));
-        $this->assertEquals('01', $parser->offsetGet('fileIdentificationNumber'));
-        $this->assertEquals(80, $parser->offsetGet('physicalRecordLength'));
-        $this->assertEquals(10, $parser->offsetGet('blockSize'));
-        $this->assertEquals('2', $parser->offsetGet('versionNumber'));
+    public function testAccessFieldViaOffsetGet(): void
+    {
+        $this->parser->pushLine(self::$fullRecordLine);
+
+        $this->assertEquals('01', $this->parser->offsetGet('recordCode'));
     }
 
-    public function testPhysicalRecordLengthEnforced(): void
+    public function testOffsetGetThrowsOnUnknownField(): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine('01,SENDR1,RECVR1,210616,1700,01,30,10,2/');
+        $this->parser->pushLine(self::$fullRecordLine);
 
-        $this->expectException(MalformedInputException::class);
-        $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
-        $parser->offsetGet('recordCode');
+        $this->expectException(InvalidFieldNameException::class);
+        $this->expectExceptionMessage("{$this->readableParserName} does not have a \"fooBar\" field.");
+        $this->parser->offsetGet('fooBar');
     }
 
-    public function testPhysicalRecordLengthEnforcedRetrospectively(): void
+    public function testOffsetGetThrowsIfNoLinesPushed(): void
     {
-        $headerLinePartialTooLong = '01,SENDR1,RECVR1/                                                                ';
-        $parser = new FileHeaderParser();
-        $parser->pushLine($headerLinePartialTooLong);
+        $this->expectException(InvalidUseException::class);
+        $this->expectExceptionMessage("Cannot parse {$this->readableParserName} without first pushing line(s).");
+        $this->parser->offsetGet('recordCode');
+    }
 
-        // the continued line contains the physicalRecordLength field, which
-        // specifies a length shorter than our initial header line; that's a no
-        // go!
-        $parser->pushLine(self::$headerLinePartialContinued);
+    public function testOffsetExistsThrowsIfNoLinesPushed(): void
+    {
+        $this->expectException(InvalidUseException::class);
+        $this->expectExceptionMessage("Cannot parse {$this->readableParserName} without first pushing line(s).");
+        $this->parser->offsetGet('recordCode');
+    }
 
-        $this->expectException(MalformedInputException::class);
-        $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
-        $parser->offsetGet('recordCode');
+    public function testOffsetExistsForExtantField(): void
+    {
+        $this->parser->pushLine(self::$fullRecordLine);
+
+        $this->assertTrue($this->parser->offsetExists('recordCode'));
+    }
+
+    public function testOffsetExistsForNonExtantField(): void
+    {
+        $this->parser->pushLine(self::$fullRecordLine);
+
+        $this->assertFalse($this->parser->offsetExists('codedRecord'));
+    }
+
+    public function testOffsetSetAlwaysThrows(): void
+    {
+        $this->parser->pushLine(self::$fullRecordLine);
+
+        $this->expectException(InvalidUseException::class);
+        $this->expectExceptionMessage('::offsetSet() is unsupported.');
+        $this->parser->offsetSet('codedRecord', '23');
+    }
+
+    public function testOffsetUnsetAlwaysThrows(): void
+    {
+        $this->parser->pushLine(self::$fullRecordLine);
+
+        $this->expectException(InvalidUseException::class);
+        $this->expectExceptionMessage('::offsetUnset() is unsupported.');
+        $this->parser->offsetUnset('codedRecord');
+    }
+
+    public function testAccessFieldAsIfFromArray(): void
+    {
+        $this->parser->pushLine(self::$fullRecordLine);
+
+        $this->assertEquals('01', $this->parser['recordCode']);
+    }
+
+    // ===== common record parser usage and validations ========================
+
+    public function testToArrayThrowsIfNoLinesPushed(): void
+    {
+        $this->expectException(InvalidUseException::class);
+        $this->expectExceptionMessage("Cannot parse {$this->readableParserName} without first pushing line(s).");
+        $this->parser->toArray();
     }
 
     /**
-     * @testWith ["16,nope,nope,nope/"]
+     * @testWith ["18,nope,nope,nope/"]
      *           ["This ain't no header line!"]
      */
-    public function testPushLineRejectsInvalidHeaderLine(string $invalidHeader): void {
-        $parser = new FileHeaderParser();
-
+    public function testPushLineRejectsInvalidHeaderLine(string $invalidHeader): void
+    {
         $this->expectException(InvalidRecordException::class);
-        $this->expectExceptionMessage('Encountered an invalid or malformed File Header record.');
-        $parser->pushLine($invalidHeader);
+        $this->expectExceptionMessage("Encountered an invalid or malformed {$this->readableParserName} record.");
+        $this->parser->pushLine($invalidHeader);
     }
 
     /**
@@ -96,13 +127,91 @@ final class FileHeaderParserTest extends TestCase
      */
     public function testPushLineRejectsInvalidContinuationLine(string $invalidContinuation): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine(self::$headerLinePartialFirst);
+        $this->parser->pushLine(self::$partialRecordLine);
 
         $this->expectException(InvalidRecordException::class);
-        $this->expectExceptionMessage('Encountered an invalid or malformed File Header continuation.');
-        $parser->pushLine($invalidContinuation);
+        $this->expectExceptionMessage("Encountered an invalid or malformed {$this->readableParserName} continuation.");
+        $this->parser->pushLine($invalidContinuation);
     }
+
+    // ----- record-specific parsing and usage ---------------------------------
+
+    public function testParseFromSingleLine(): void
+    {
+        $this->parser->pushLine(self::$fullRecordLine);
+
+        $this->assertEquals('01', $this->parser['recordCode']);
+        $this->assertEquals('SENDR1', $this->parser['senderIdentification']);
+        $this->assertEquals('RECVR1', $this->parser['receiverIdentification']);
+        $this->assertEquals('210616', $this->parser['fileCreationDate']);
+        $this->assertEquals('1700', $this->parser['fileCreationTime']);
+        $this->assertEquals('01', $this->parser['fileIdentificationNumber']);
+        $this->assertEquals(80, $this->parser['physicalRecordLength']);
+        $this->assertEquals(10, $this->parser['blockSize']);
+        $this->assertEquals('2', $this->parser['versionNumber']);
+    }
+
+    public function testParseFromMultipleLines(): void
+    {
+        $this->parser->pushLine(self::$partialRecordLine);
+        $this->parser->pushLine(self::$continuedRecordLine);
+
+        $this->assertEquals('01', $this->parser['recordCode']);
+        $this->assertEquals('SENDR1', $this->parser['senderIdentification']);
+        $this->assertEquals('RECVR1', $this->parser['receiverIdentification']);
+        $this->assertEquals('210616', $this->parser['fileCreationDate']);
+        $this->assertEquals('1700', $this->parser['fileCreationTime']);
+        $this->assertEquals('01', $this->parser['fileIdentificationNumber']);
+        $this->assertEquals(80, $this->parser['physicalRecordLength']);
+        $this->assertEquals(10, $this->parser['blockSize']);
+        $this->assertEquals('2', $this->parser['versionNumber']);
+    }
+
+    public function testPhysicalRecordLengthEnforcedOnFirstLine(): void
+    {
+        $this->parser->pushLine('01,SENDR1,RECVR1,210616,1700,01,30,10,2/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
+        $this->parser['recordCode'];
+    }
+
+    public function testPhysicalRecordLengthEnforcedOnSubsequentLine(): void
+    {
+        $headerLinePartialTooLong = '01,SENDR1,RECVR1/                                                                ';
+        $this->parser->pushLine($headerLinePartialTooLong);
+
+        // the continued line contains the physicalRecordLength field, which
+        // specifies a length shorter than our initial header line; that's a no
+        // go!
+        $this->parser->pushLine(self::$continuedRecordLine);
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
+        $this->parser['recordCode'];
+    }
+
+    public function testToArray(): void
+    {
+        $this->parser->pushLine(self::$fullRecordLine);
+
+        $this->assertEquals(
+            [
+                'recordCode' => '01',
+                'senderIdentification' => 'SENDR1',
+                'receiverIdentification' => 'RECVR1',
+                'fileCreationDate' => '210616',
+                'fileCreationTime' => '1700',
+                'fileIdentificationNumber' => '01',
+                'physicalRecordLength' => 80,
+                'blockSize' => 10,
+                'versionNumber' => '2',
+            ],
+            $this->parser->toArray()
+        );
+    }
+
+    // ----- record-specific field validation ----------------------------------
 
     /**
      * @testWith ["01,SENDR1,RECVR1,210616,1700,01,80,10,2/", "SENDR1"]
@@ -114,20 +223,18 @@ final class FileHeaderParserTest extends TestCase
      */
     public function testSenderIdentificationValid(string $line, string $expected): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine($line);
+        $this->parser->pushLine($line);
 
-        $this->assertEquals($expected, $parser->offsetGet('senderIdentification'));
+        $this->assertEquals($expected, $this->parser['senderIdentification']);
     }
 
     public function testSenderIdentificationMissing(): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine('01,,RECVR1,210616,1700,01,80,10,2/');
+        $this->parser->pushLine('01,,RECVR1,210616,1700,01,80,10,2/');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Sender Identification" cannot be omitted.');
-        $parser->offsetGet('senderIdentification');
+        $this->parser['senderIdentification'];
     }
 
     /**
@@ -141,12 +248,11 @@ final class FileHeaderParserTest extends TestCase
      */
     public function testSenderIdentificationInvalidType(string $line): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine($line);
+        $this->parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Sender Identification" must be alpha-numeric.');
-        $parser->offsetGet('senderIdentification');
+        $this->parser['senderIdentification'];
     }
 
     /**
@@ -159,20 +265,18 @@ final class FileHeaderParserTest extends TestCase
      */
     public function testReceiverIdentificationValid(string $line, string $expected): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine($line);
+        $this->parser->pushLine($line);
 
-        $this->assertEquals($expected, $parser->offsetGet('receiverIdentification'));
+        $this->assertEquals($expected, $this->parser['receiverIdentification']);
     }
 
     public function testReceiverIdentificationMissing(): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine('01,SENDR1,,210616,1700,01,80,10,2/');
+        $this->parser->pushLine('01,SENDR1,,210616,1700,01,80,10,2/');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Receiver Identification" cannot be omitted.');
-        $parser->offsetGet('receiverIdentification');
+        $this->parser['receiverIdentification'];
     }
 
     /**
@@ -186,12 +290,11 @@ final class FileHeaderParserTest extends TestCase
      */
     public function testReceiverIdentificationInvalidType(string $line): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine($line);
+        $this->parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Receiver Identification" must be alpha-numeric.');
-        $parser->offsetGet('receiverIdentification');
+        $this->parser['receiverIdentification'];
     }
 
     /**
@@ -200,20 +303,18 @@ final class FileHeaderParserTest extends TestCase
      */
     public function testFileCreationDateValid(string $line, string $expected): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine($line);
+        $this->parser->pushLine($line);
 
-        $this->assertEquals($expected, $parser->offsetGet('fileCreationDate'));
+        $this->assertEquals($expected, $this->parser['fileCreationDate']);
     }
 
     public function testFileCreationDateMissing(): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine('01,SENDR1,RECVR1,,1700,01,80,10,2/');
+        $this->parser->pushLine('01,SENDR1,RECVR1,,1700,01,80,10,2/');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "File Creation Date" cannot be omitted.');
-        $parser->offsetGet('fileCreationDate');
+        $this->parser['fileCreationDate'];
     }
 
     /**
@@ -229,12 +330,11 @@ final class FileHeaderParserTest extends TestCase
      */
     public function testFileCreationDateInvalidType(string $line): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine($line);
+        $this->parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "File Creation Date" must be composed of exactly 6 numerals.');
-        $parser->offsetGet('fileCreationDate');
+        $this->parser['fileCreationDate'];
     }
 
     /**
@@ -245,20 +345,18 @@ final class FileHeaderParserTest extends TestCase
      */
     public function testFileCreationTimeValid(string $line, string $expected): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine($line);
+        $this->parser->pushLine($line);
 
-        $this->assertEquals($expected, $parser->offsetGet('fileCreationTime'));
+        $this->assertEquals($expected, $this->parser['fileCreationTime']);
     }
 
     public function testFileCreationTimeMissing(): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine('01,SENDR1,RECVR1,210616,,01,80,10,2/');
+        $this->parser->pushLine('01,SENDR1,RECVR1,210616,,01,80,10,2/');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "File Creation Time" cannot be omitted.');
-        $parser->offsetGet('fileCreationTime');
+        $this->parser['fileCreationTime'];
     }
 
     /**
@@ -270,12 +368,11 @@ final class FileHeaderParserTest extends TestCase
      */
     public function testFileCreationTimeInvalidType(string $line): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine($line);
+        $this->parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "File Creation Time" must be composed of exactly 4 numerals.');
-        $parser->offsetGet('fileCreationTime');
+        $this->parser['fileCreationTime'];
     }
 
     /**
@@ -288,20 +385,18 @@ final class FileHeaderParserTest extends TestCase
      */
     public function testFileIdentificationNumberValid(string $line, string $expected): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine($line);
+        $this->parser->pushLine($line);
 
-        $this->assertEquals($expected, $parser->offsetGet('fileIdentificationNumber'));
+        $this->assertEquals($expected, $this->parser['fileIdentificationNumber']);
     }
 
     public function testFileIdentificationNumberMissing(): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine('01,SENDR1,RECVR1,210616,1700,,80,10,2/');
+        $this->parser->pushLine('01,SENDR1,RECVR1,210616,1700,,80,10,2/');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "File Identification Number" cannot be omitted.');
-        $parser->offsetGet('fileIdentificationNumber');
+        $this->parser['fileIdentificationNumber'];
     }
 
     /**
@@ -314,12 +409,11 @@ final class FileHeaderParserTest extends TestCase
      */
     public function testFileIdentificationNumberInvalidType(string $line): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine($line);
+        $this->parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "File Identification Number" must be composed of 1 or more numerals.');
-        $parser->offsetGet('fileIdentificationNumber');
+        $this->parser['fileIdentificationNumber'];
     }
 
     /**
@@ -331,10 +425,9 @@ final class FileHeaderParserTest extends TestCase
      */
     public function testPhysicalRecordLengthValid(string $line, ?int $expected): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine($line);
+        $this->parser->pushLine($line);
 
-        $this->assertEquals($expected, $parser->offsetGet('physicalRecordLength'));
+        $this->assertEquals($expected, $this->parser['physicalRecordLength']);
     }
 
     /**
@@ -343,12 +436,11 @@ final class FileHeaderParserTest extends TestCase
      */
     public function testPhysicalRecordLengthInvalidType(string $line): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine($line);
+        $this->parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Physical Record Length", if provided, must be composed of 1 or more numerals.');
-        $parser->offsetGet('physicalRecordLength');
+        $this->parser['physicalRecordLength'];
     }
 
     /**
@@ -362,10 +454,9 @@ final class FileHeaderParserTest extends TestCase
      */
     public function testBlockSizeValid(string $line, ?int $expected): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine($line);
+        $this->parser->pushLine($line);
 
-        $this->assertEquals($expected, $parser->offsetGet('blockSize'));
+        $this->assertEquals($expected, $this->parser['blockSize']);
     }
 
     /**
@@ -374,149 +465,35 @@ final class FileHeaderParserTest extends TestCase
      */
     public function testBlockSizeInvalidType(string $line): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine($line);
+        $this->parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Block Size", if provided, must be composed of 1 or more numerals.');
-        $parser->offsetGet('blockSize');
+        $this->parser['blockSize'];
     }
 
     public function testVersionNumberValid(): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine(self::$headerLine);
-        $this->assertEquals('2', $parser->offsetGet('versionNumber'));
+        $this->parser->pushLine(self::$fullRecordLine);
+        $this->assertEquals('2', $this->parser['versionNumber']);
     }
 
     public function testVersionNumberMissing(): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine('01,SENDR1,RECVR1,210616,1700,01,80,10,/');
+        $this->parser->pushLine('01,SENDR1,RECVR1,210616,1700,01,80,10,/');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Version Number" cannot be omitted.');
-        $parser->offsetGet('versionNumber');
+        $this->parser['versionNumber'];
     }
 
     public function testVersionNumberInvalidType(): void
     {
-        $parser = new FileHeaderParser();
-        $parser->pushLine('01,SENDR1,RECVR1,210616,1700,01,80,10,F/');
+        $this->parser->pushLine('01,SENDR1,RECVR1,210616,1700,01,80,10,F/');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Version Number" must be "2" (this library only supports v2 of the BAI format).');
-        $parser->offsetGet('versionNumber');
-    }
-
-    public function testOffsetGetThrowsOnUnknownField(): void
-    {
-        $parser = new FileHeaderParser();
-        $parser->pushLine(self::$headerLine);
-
-        $this->expectException(InvalidFieldNameException::class);
-        $this->expectExceptionMessage('File Header does not have a "fooBar" field.');
-        $parser->offsetGet('fooBar');
-    }
-
-    public function testOffsetGetThrowsIfNoLinesPushed(): void
-    {
-        $parser = new FileHeaderParser();
-
-        $this->expectException(InvalidUseException::class);
-        $this->expectExceptionMessage('Cannot parse File Header without first pushing line(s).');
-        $parser->offsetGet('recordCode');
-    }
-
-    public function testOffsetExistsThrowsIfNoLinesPushed(): void
-    {
-        $parser = new FileHeaderParser();
-
-        $this->expectException(InvalidUseException::class);
-        $this->expectExceptionMessage('Cannot parse File Header without first pushing line(s).');
-        $parser->offsetGet('recordCode');
-    }
-
-    public function testOffsetExistsForExtantField(): void
-    {
-        $parser = new FileHeaderParser();
-        $parser->pushLine(self::$headerLine);
-
-        $this->assertTrue($parser->offsetExists('recordCode'));
-    }
-
-    public function testOffsetExistsForNonExtantField(): void
-    {
-        $parser = new FileHeaderParser();
-        $parser->pushLine(self::$headerLine);
-
-        $this->assertFalse($parser->offsetExists('codedRecord'));
-    }
-
-    public function testOffsetSetAlwaysThrows(): void
-    {
-        $parser = new FileHeaderParser();
-        $parser->pushLine(self::$headerLine);
-
-        $this->expectException(InvalidUseException::class);
-        $this->expectExceptionMessage('::offsetSet() is unsupported.');
-        $parser->offsetSet('codedRecord', '23');
-    }
-
-    public function testOffsetUnsetAlwaysThrows(): void
-    {
-        $parser = new FileHeaderParser();
-        $parser->pushLine(self::$headerLine);
-
-        $this->expectException(InvalidUseException::class);
-        $this->expectExceptionMessage('::offsetUnset() is unsupported.');
-        $parser->offsetUnset('codedRecord');
-    }
-
-    public function testReadingAsIfAnArray(): void
-    {
-        $parser = new FileHeaderParser();
-        $parser->pushLine(self::$headerLine);
-
-        $this->assertEquals('01', $parser['recordCode']);
-        $this->assertEquals('SENDR1', $parser['senderIdentification']);
-        $this->assertEquals('RECVR1', $parser['receiverIdentification']);
-        $this->assertEquals('210616', $parser['fileCreationDate']);
-        $this->assertEquals('1700', $parser['fileCreationTime']);
-        $this->assertEquals('01', $parser['fileIdentificationNumber']);
-        $this->assertEquals(80, $parser['physicalRecordLength']);
-        $this->assertEquals(10, $parser['blockSize']);
-        $this->assertEquals('2', $parser['versionNumber']);
-    }
-
-    public function testToArray(): void
-    {
-        $parser = new FileHeaderParser();
-        $parser->pushLine(self::$headerLine);
-
-        $this->assertEquals(
-            [
-                'recordCode' => '01',
-                'senderIdentification' => 'SENDR1',
-                'receiverIdentification' => 'RECVR1',
-                'fileCreationDate' => '210616',
-                'fileCreationTime' => '1700',
-                'fileIdentificationNumber' => '01',
-                'physicalRecordLength' => 80,
-                'blockSize' => 10,
-                'versionNumber' => '2',
-            ],
-            $parser->toArray()
-        );
-    }
-
-    public function testToArrayThrowsIfNoLinesPushed(): void
-    {
-        $parser = new FileHeaderParser();
-
-        $this->expectException(InvalidUseException::class);
-        $this->expectExceptionMessage('Cannot parse File Header without first pushing line(s).');
-        $parser->toArray();
+        $this->parser['versionNumber'];
     }
 
 }
