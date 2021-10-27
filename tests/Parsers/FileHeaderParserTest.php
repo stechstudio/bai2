@@ -2,137 +2,23 @@
 
 namespace STS\Bai2\Parsers;
 
-use PHPUnit\Framework\TestCase;
+use STS\Bai2\Tests\Parsers\RecordParserTestCase;
 
-use STS\Bai2\Exceptions\InvalidUseException;
 use STS\Bai2\Exceptions\InvalidTypeException;
-use STS\Bai2\Exceptions\InvalidFieldNameException;
-use STS\Bai2\Exceptions\InvalidRecordException;
 use STS\Bai2\Exceptions\MalformedInputException;
 
-final class FileHeaderParserTest extends TestCase
+final class FileHeaderParserTest extends RecordParserTestCase
 {
-
-    protected static string $fullRecordLine = '01,SENDR1,RECVR1,210616,1700,01,80,10,2/';
-
-    protected static string $partialRecordLine = '01,SENDR1,RECVR1/';
-
-    protected static string $continuedRecordLine = '88,210616,1700,01,80,10,2/';
 
     protected static string $parserClass = FileHeaderParser::class;
 
     protected string $readableParserName = 'File Header';
 
-    protected FileHeaderParser $parser;
+    protected static string $fullRecordLine = '01,SENDR1,RECVR1,210616,1700,01,80,10,2/';
 
-    public function setUp(): void
-    {
-        $this->parser = new self::$parserClass();
-    }
+    protected static string $partialRecordLine = '01,SENDR1,RECVR1/';
 
-    // ===== common array access trait functionality ===========================
-
-    public function testAccessFieldViaOffsetGet(): void
-    {
-        $this->parser->pushLine(self::$fullRecordLine);
-
-        $this->assertEquals('01', $this->parser->offsetGet('recordCode'));
-    }
-
-    public function testOffsetGetThrowsOnUnknownField(): void
-    {
-        $this->parser->pushLine(self::$fullRecordLine);
-
-        $this->expectException(InvalidFieldNameException::class);
-        $this->expectExceptionMessage("{$this->readableParserName} does not have a \"fooBar\" field.");
-        $this->parser->offsetGet('fooBar');
-    }
-
-    public function testOffsetGetThrowsIfNoLinesPushed(): void
-    {
-        $this->expectException(InvalidUseException::class);
-        $this->expectExceptionMessage("Cannot parse {$this->readableParserName} without first pushing line(s).");
-        $this->parser->offsetGet('recordCode');
-    }
-
-    public function testOffsetExistsThrowsIfNoLinesPushed(): void
-    {
-        $this->expectException(InvalidUseException::class);
-        $this->expectExceptionMessage("Cannot parse {$this->readableParserName} without first pushing line(s).");
-        $this->parser->offsetGet('recordCode');
-    }
-
-    public function testOffsetExistsForExtantField(): void
-    {
-        $this->parser->pushLine(self::$fullRecordLine);
-
-        $this->assertTrue($this->parser->offsetExists('recordCode'));
-    }
-
-    public function testOffsetExistsForNonExtantField(): void
-    {
-        $this->parser->pushLine(self::$fullRecordLine);
-
-        $this->assertFalse($this->parser->offsetExists('codedRecord'));
-    }
-
-    public function testOffsetSetAlwaysThrows(): void
-    {
-        $this->parser->pushLine(self::$fullRecordLine);
-
-        $this->expectException(InvalidUseException::class);
-        $this->expectExceptionMessage('::offsetSet() is unsupported.');
-        $this->parser->offsetSet('codedRecord', '23');
-    }
-
-    public function testOffsetUnsetAlwaysThrows(): void
-    {
-        $this->parser->pushLine(self::$fullRecordLine);
-
-        $this->expectException(InvalidUseException::class);
-        $this->expectExceptionMessage('::offsetUnset() is unsupported.');
-        $this->parser->offsetUnset('codedRecord');
-    }
-
-    public function testAccessFieldAsIfFromArray(): void
-    {
-        $this->parser->pushLine(self::$fullRecordLine);
-
-        $this->assertEquals('01', $this->parser['recordCode']);
-    }
-
-    // ===== common record parser usage and validations ========================
-
-    public function testToArrayThrowsIfNoLinesPushed(): void
-    {
-        $this->expectException(InvalidUseException::class);
-        $this->expectExceptionMessage("Cannot parse {$this->readableParserName} without first pushing line(s).");
-        $this->parser->toArray();
-    }
-
-    /**
-     * @testWith ["18,nope,nope,nope/"]
-     *           ["This ain't no header line!"]
-     */
-    public function testPushLineRejectsInvalidHeaderLine(string $invalidHeader): void
-    {
-        $this->expectException(InvalidRecordException::class);
-        $this->expectExceptionMessage("Encountered an invalid or malformed {$this->readableParserName} record.");
-        $this->parser->pushLine($invalidHeader);
-    }
-
-    /**
-     * @testWith ["23,This ain't no continuation line!"]
-     *           ["This ain't no continuation line!"]
-     */
-    public function testPushLineRejectsInvalidContinuationLine(string $invalidContinuation): void
-    {
-        $this->parser->pushLine(self::$partialRecordLine);
-
-        $this->expectException(InvalidRecordException::class);
-        $this->expectExceptionMessage("Encountered an invalid or malformed {$this->readableParserName} continuation.");
-        $this->parser->pushLine($invalidContinuation);
-    }
+    private static string $continuedRecordLine = '88,210616,1700,01,80,10,2/';
 
     // ----- record-specific parsing and usage ---------------------------------
 
