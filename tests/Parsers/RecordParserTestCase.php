@@ -4,6 +4,8 @@ namespace STS\Bai2\Tests\Parsers;
 
 use PHPUnit\Framework\TestCase;
 
+use STS\Bai2\Parsers\AbstractRecordParser;
+
 use STS\Bai2\Exceptions\InvalidUseException;
 use STS\Bai2\Exceptions\InvalidRecordException;
 use STS\Bai2\Exceptions\InvalidFieldNameException;
@@ -11,8 +13,7 @@ use STS\Bai2\Exceptions\InvalidFieldNameException;
 class RecordParserTestCase extends TestCase
 {
 
-    // TODO(zmd): once we have the record parser base class, use that as the type
-    protected $parser;
+    protected AbstractRecordParser $parser;
 
     protected static string $parserClass;
 
