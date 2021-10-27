@@ -22,4 +22,24 @@ final class FileTrailerParserTest extends RecordParserTestCase
 
     private static string $continuedRecordLine = '88,5,42/';
 
+    // ----- record-specific parsing and usage ---------------------------------
+
+    // TODO(zmd): public function testParseFromSingleLine(): void {}
+
+    // TODO(zmd): public function testParseFromMultipleLines(): void {}
+
+    // TODO(zmd): public function testPhysicalRecordLengthEnforcedOnFirstLine(): void {}
+
+    // TODO(zmd): public function testPhysicalRecordLengthEnforcedOnSubsequentLine(): void {}
+
+    // TODO(zmd): public function testToArray(): void {}
+
+    // ----- record-specific field validation ----------------------------------
+
+    // TODO(zmd): test "File Control Total" validation
+
+    // TODO(zmd): test "Number of Groups" validation
+
+    // TODO(zmd): test "Number of Records" validation
+
 }
