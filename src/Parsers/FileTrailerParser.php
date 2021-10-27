@@ -2,24 +2,23 @@
 
 namespace STS\Bai2\Parsers;
 
-class FileTrailerParser
+final class FileTrailerParser extends AbstractRecordParser
 {
+    use RecordParserTrait;
 
-    public function pushLine(string $line): self
+    protected static function recordCode(): string
     {
-        // TODO(zmd): implement me for real
-        return $this;
+        return '99';
     }
 
-    public function offsetGet(string $key): string|int|float|null
+    protected function parseFields(): self
     {
-        // TODO(zmd): implement me for real
-        return match ($key) {
-            'recordCode'       => '99',
-            'fileControlTotal' => 15000,
-            'numberOfGroups'   => 10,
-            'numberOfRecords'  => 42,
-        };
+        // NOTE: the recordCode was pre-validated by this point, and must
+        // always exist, so we parse it first.
+        $this->parsed['recordCode'] = $this->getParser()->shift();
+
+        // TODO(zmd): finish implementing me!
+        return $this;
     }
 
 }

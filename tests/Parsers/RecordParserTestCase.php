@@ -17,7 +17,9 @@ class RecordParserTestCase extends TestCase
 
     protected static string $parserClass;
 
-    protected string $readableParserName;
+    protected static string $readableParserName;
+
+    protected static string $recordCode;
 
     protected static string $fullRecordLine;
 
@@ -28,13 +30,23 @@ class RecordParserTestCase extends TestCase
         $this->parser = new static::$parserClass();
     }
 
+    private function readableParserName(): string
+    {
+        return static::$readableParserName;
+    }
+
+    private function recordCode(): string
+    {
+        return static::$recordCode;
+    }
+
     // ===== common array access trait functionality ===========================
 
     public function testAccessFieldViaOffsetGet(): void
     {
         $this->parser->pushLine(static::$fullRecordLine);
 
-        $this->assertEquals('01', $this->parser->offsetGet('recordCode'));
+        $this->assertEquals(static::$recordCode, $this->parser->offsetGet('recordCode'));
     }
 
     public function testOffsetGetThrowsOnUnknownField(): void
@@ -42,21 +54,21 @@ class RecordParserTestCase extends TestCase
         $this->parser->pushLine(static::$fullRecordLine);
 
         $this->expectException(InvalidFieldNameException::class);
-        $this->expectExceptionMessage("{$this->readableParserName} does not have a \"fooBar\" field.");
+        $this->expectExceptionMessage("{$this->readableParserName()} does not have a \"fooBar\" field.");
         $this->parser->offsetGet('fooBar');
     }
 
     public function testOffsetGetThrowsIfNoLinesPushed(): void
     {
         $this->expectException(InvalidUseException::class);
-        $this->expectExceptionMessage("Cannot parse {$this->readableParserName} without first pushing line(s).");
+        $this->expectExceptionMessage("Cannot parse {$this->readableParserName()} without first pushing line(s).");
         $this->parser->offsetGet('recordCode');
     }
 
     public function testOffsetExistsThrowsIfNoLinesPushed(): void
     {
         $this->expectException(InvalidUseException::class);
-        $this->expectExceptionMessage("Cannot parse {$this->readableParserName} without first pushing line(s).");
+        $this->expectExceptionMessage("Cannot parse {$this->readableParserName()} without first pushing line(s).");
         $this->parser->offsetGet('recordCode');
     }
 
@@ -96,7 +108,7 @@ class RecordParserTestCase extends TestCase
     {
         $this->parser->pushLine(static::$fullRecordLine);
 
-        $this->assertEquals('01', $this->parser['recordCode']);
+        $this->assertEquals(static::$recordCode, $this->parser['recordCode']);
     }
 
     // ===== common record parser usage and validations ========================
@@ -104,19 +116,19 @@ class RecordParserTestCase extends TestCase
     public function testToArrayThrowsIfNoLinesPushed(): void
     {
         $this->expectException(InvalidUseException::class);
-        $this->expectExceptionMessage("Cannot parse {$this->readableParserName} without first pushing line(s).");
+        $this->expectExceptionMessage("Cannot parse {$this->readableParserName()} without first pushing line(s).");
         $this->parser->toArray();
     }
 
     /**
      * @testWith ["18,nope,nope,nope/"]
-     *           ["This ain't no header line!"]
+     *           ["This ain't no record line!"]
      */
-    public function testPushLineRejectsInvalidHeaderLine(string $invalidHeader): void
+    public function testPushLineRejectsInvalidRecordLine(string $invalidRecord): void
     {
         $this->expectException(InvalidRecordException::class);
-        $this->expectExceptionMessage("Encountered an invalid or malformed {$this->readableParserName} record.");
-        $this->parser->pushLine($invalidHeader);
+        $this->expectExceptionMessage("Encountered an invalid or malformed {$this->readableParserName()} record.");
+        $this->parser->pushLine($invalidRecord);
     }
 
     /**
@@ -128,7 +140,7 @@ class RecordParserTestCase extends TestCase
         $this->parser->pushLine(static::$partialRecordLine);
 
         $this->expectException(InvalidRecordException::class);
-        $this->expectExceptionMessage("Encountered an invalid or malformed {$this->readableParserName} continuation.");
+        $this->expectExceptionMessage("Encountered an invalid or malformed {$this->readableParserName()} continuation.");
         $this->parser->pushLine($invalidContinuation);
     }
 

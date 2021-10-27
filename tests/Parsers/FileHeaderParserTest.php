@@ -7,12 +7,17 @@ use STS\Bai2\Tests\Parsers\RecordParserTestCase;
 use STS\Bai2\Exceptions\InvalidTypeException;
 use STS\Bai2\Exceptions\MalformedInputException;
 
+/**
+ * @group RecordParserTests
+ */
 final class FileHeaderParserTest extends RecordParserTestCase
 {
 
     protected static string $parserClass = FileHeaderParser::class;
 
-    protected string $readableParserName = 'File Header';
+    protected static string $readableParserName = 'File Header';
+
+    protected static string $recordCode = '01';
 
     protected static string $fullRecordLine = '01,SENDR1,RECVR1,210616,1700,01,80,10,2/';
 
