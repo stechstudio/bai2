@@ -10,13 +10,13 @@ use STS\Bai2\Exceptions\ParseException;
 class FileHeaderParser implements \ArrayAccess
 {
 
-    private MultilineParser $parser;
+    private MultilineParser $multilineParser;
 
     protected array $parsed = [];
 
-    public function push(string $line): self
+    public function pushLine(string $line): self
     {
-        if (!isset($this->parser)) {
+        if (!isset($this->multilineParser)) {
             $this->pushRecord($line);
         } else {
             $this->pushContinuation($line);
@@ -58,10 +58,10 @@ class FileHeaderParser implements \ArrayAccess
 
     protected function pushRecord(string $line): void
     {
-        $this->parser = new MultilineParser($line);
+        $this->multilineParser = new MultilineParser($line);
 
         try {
-            if ($this->parser->peek() != self::$recordCode) {
+            if ($this->multilineParser->peek() != self::$recordCode) {
                   throw new InvalidRecordException(
                       "Encountered an invalid or malformed {$this->readableParserName()} record."
                   );
@@ -106,7 +106,7 @@ class FileHeaderParser implements \ArrayAccess
         return implode(' ', $words);
     }
 
-    protected function parse(string $value, string $longName): FieldParser
+    protected function parseField(string $value, string $longName): FieldParser
     {
         return new FieldParser($value, $longName);
     }
@@ -114,7 +114,7 @@ class FileHeaderParser implements \ArrayAccess
     protected function getParser(): MultilineParser
     {
         try {
-            return $this->parser;
+            return $this->multilineParser;
         } catch (\Error) {
             throw new InvalidUseException("Cannot parse {$this->readableParserName()} without first pushing line(s).");
         }
@@ -127,7 +127,7 @@ class FileHeaderParser implements \ArrayAccess
             // always exist
             $this->parsed['recordCode'] = $this->getParser()->shift();
 
-            $this->parseAll();
+            $this->parseFields();
         }
 
         return $this;
@@ -137,46 +137,46 @@ class FileHeaderParser implements \ArrayAccess
 
     protected static string $recordCode = '01';
 
-    protected function parseAll(): self
+    protected function parseFields(): self
     {
         $this->parsed['senderIdentification'] =
-            $this->parse($this->getParser()->shift(), 'Sender Identification')
+            $this->parseField($this->getParser()->shift(), 'Sender Identification')
                  ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric')
                  ->string();
 
         $this->parsed['receiverIdentification'] =
-            $this->parse($this->getParser()->shift(), 'Receiver Identification')
+            $this->parseField($this->getParser()->shift(), 'Receiver Identification')
                  ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric')
                  ->string();
 
         $this->parsed['fileCreationDate'] =
-            $this->parse($this->getParser()->shift(), 'File Creation Date')
+            $this->parseField($this->getParser()->shift(), 'File Creation Date')
                  ->match('/^\d{6}$/', 'must be composed of exactly 6 numerals')
                  ->string();
 
         $this->parsed['fileCreationTime'] =
-            $this->parse($this->getParser()->shift(), 'File Creation Time')
+            $this->parseField($this->getParser()->shift(), 'File Creation Time')
                  ->match('/^\d{4}$/', 'must be composed of exactly 4 numerals')
                  ->string();
 
         $this->parsed['fileIdentificationNumber'] =
-            $this->parse($this->getParser()->shift(), 'File Identification Number')
+            $this->parseField($this->getParser()->shift(), 'File Identification Number')
                  ->match('/^\d+$/', 'must be composed of 1 or more numerals')
                  ->int();
 
         $this->parsed['physicalRecordLength'] =
-            $this->parse($this->getParser()->shift(), 'Physical Record Length')
+            $this->parseField($this->getParser()->shift(), 'Physical Record Length')
                  ->match('/^\d+$/', 'must be composed of 1 or more numerals')
                  ->int(default: null);
         $this->getParser()->setPhysicalRecordLength($this->parsed['physicalRecordLength']);
 
         $this->parsed['blockSize'] =
-            $this->parse($this->getParser()->shift(), 'Block Size')
+            $this->parseField($this->getParser()->shift(), 'Block Size')
                  ->match('/^\d+$/', 'must be composed of 1 or more numerals')
                  ->int(default: null);
 
         $this->parsed['versionNumber'] =
-            $this->parse($this->getParser()->shift(), 'Version Number')
+            $this->parseField($this->getParser()->shift(), 'Version Number')
                  ->is('2', 'must be "2" (this library only supports v2 of the BAI format)')
                  ->string();
 

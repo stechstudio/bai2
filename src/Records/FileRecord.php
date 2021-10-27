@@ -20,13 +20,13 @@ class FileRecord extends AbstractEnvelopeRecord
     {
         switch (Bai2::recordTypeCode($line)) {
             case '01':
-                ($this->headerParser ??= new FileHeaderParser())->push($line);
+                ($this->headerParser ??= new FileHeaderParser())->pushLine($line);
                 break;
             case '88':
                 $this->parseOrDelegateContinuation($line);
                 break;
             case '99':
-                ($this->trailerParser ??= new FileTrailerParser())->push($line);
+                ($this->trailerParser ??= new FileTrailerParser())->pushLine($line);
                 break;
             default:
                 $this->delegateToChild($line);
@@ -124,9 +124,9 @@ class FileRecord extends AbstractEnvelopeRecord
         // TODO(zmd): error handling if $headerTrailer and/or $trailerParser
         //   never get initialized?
         if ($this->trailerParser) {
-            $this->trailerParser->push($line);
+            $this->trailerParser->pushLine($line);
         } else {
-            $this->headerParser->push($line);
+            $this->headerParser->pushLine($line);
         }
     }
 

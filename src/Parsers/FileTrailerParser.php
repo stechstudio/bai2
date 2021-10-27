@@ -5,7 +5,7 @@ namespace STS\Bai2\Parsers;
 class FileTrailerParser
 {
 
-    public function push(string $line): self
+    public function pushLine(string $line): self
     {
         // TODO(zmd): implement me for real
         return $this;

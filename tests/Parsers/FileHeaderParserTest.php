@@ -22,7 +22,7 @@ final class FileHeaderParserTest extends TestCase
     public function testParseFromSingleLine(): void
     {
         $parser = new FileHeaderParser();
-        $parser->push(self::$headerLine);
+        $parser->pushLine(self::$headerLine);
 
         $this->assertEquals('01', $parser->offsetGet('recordCode'));
         $this->assertEquals('SENDR1', $parser->offsetGet('senderIdentification'));
@@ -38,8 +38,8 @@ final class FileHeaderParserTest extends TestCase
     public function testParseFromMultipleLines(): void
     {
         $parser = new FileHeaderParser();
-        $parser->push(self::$headerLinePartialFirst);
-        $parser->push(self::$headerLinePartialContinued);
+        $parser->pushLine(self::$headerLinePartialFirst);
+        $parser->pushLine(self::$headerLinePartialContinued);
 
         $this->assertEquals('01', $parser->offsetGet('recordCode'));
         $this->assertEquals('SENDR1', $parser->offsetGet('senderIdentification'));
@@ -55,7 +55,7 @@ final class FileHeaderParserTest extends TestCase
     public function testPhysicalRecordLengthEnforced(): void
     {
         $parser = new FileHeaderParser();
-        $parser->push('01,SENDR1,RECVR1,210616,1700,01,30,10,2/');
+        $parser->pushLine('01,SENDR1,RECVR1,210616,1700,01,30,10,2/');
 
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
@@ -66,12 +66,12 @@ final class FileHeaderParserTest extends TestCase
     {
         $headerLinePartialTooLong = '01,SENDR1,RECVR1/                                                                ';
         $parser = new FileHeaderParser();
-        $parser->push($headerLinePartialTooLong);
+        $parser->pushLine($headerLinePartialTooLong);
 
         // the continued line contains the physicalRecordLength field, which
         // specifies a length shorter than our initial header line; that's a no
         // go!
-        $parser->push(self::$headerLinePartialContinued);
+        $parser->pushLine(self::$headerLinePartialContinued);
 
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
@@ -82,26 +82,26 @@ final class FileHeaderParserTest extends TestCase
      * @testWith ["16,nope,nope,nope/"]
      *           ["This ain't no header line!"]
      */
-    public function testPushRejectsInvalidHeaderLine(string $invalidHeader): void {
+    public function testPushLineRejectsInvalidHeaderLine(string $invalidHeader): void {
         $parser = new FileHeaderParser();
 
         $this->expectException(InvalidRecordException::class);
         $this->expectExceptionMessage('Encountered an invalid or malformed File Header record.');
-        $parser->push($invalidHeader);
+        $parser->pushLine($invalidHeader);
     }
 
     /**
      * @testWith ["23,This ain't no continuation line!"]
      *           ["This ain't no continuation line!"]
      */
-    public function testPushRejectsInvalidContinuationLine(string $invalidContinuation): void
+    public function testPushLineRejectsInvalidContinuationLine(string $invalidContinuation): void
     {
         $parser = new FileHeaderParser();
-        $parser->push(self::$headerLinePartialFirst);
+        $parser->pushLine(self::$headerLinePartialFirst);
 
         $this->expectException(InvalidRecordException::class);
         $this->expectExceptionMessage('Encountered an invalid or malformed File Header continuation.');
-        $parser->push($invalidContinuation);
+        $parser->pushLine($invalidContinuation);
     }
 
     /**
@@ -115,7 +115,7 @@ final class FileHeaderParserTest extends TestCase
     public function testSenderIdentificationValid(string $line, string $expected): void
     {
         $parser = new FileHeaderParser();
-        $parser->push($line);
+        $parser->pushLine($line);
 
         $this->assertEquals($expected, $parser->offsetGet('senderIdentification'));
     }
@@ -123,7 +123,7 @@ final class FileHeaderParserTest extends TestCase
     public function testSenderIdentificationMissing(): void
     {
         $parser = new FileHeaderParser();
-        $parser->push('01,,RECVR1,210616,1700,01,80,10,2/');
+        $parser->pushLine('01,,RECVR1,210616,1700,01,80,10,2/');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Sender Identification" cannot be omitted.');
@@ -142,7 +142,7 @@ final class FileHeaderParserTest extends TestCase
     public function testSenderIdentificationInvalidType(string $line): void
     {
         $parser = new FileHeaderParser();
-        $parser->push($line);
+        $parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Sender Identification" must be alpha-numeric.');
@@ -160,7 +160,7 @@ final class FileHeaderParserTest extends TestCase
     public function testReceiverIdentificationValid(string $line, string $expected): void
     {
         $parser = new FileHeaderParser();
-        $parser->push($line);
+        $parser->pushLine($line);
 
         $this->assertEquals($expected, $parser->offsetGet('receiverIdentification'));
     }
@@ -168,7 +168,7 @@ final class FileHeaderParserTest extends TestCase
     public function testReceiverIdentificationMissing(): void
     {
         $parser = new FileHeaderParser();
-        $parser->push('01,SENDR1,,210616,1700,01,80,10,2/');
+        $parser->pushLine('01,SENDR1,,210616,1700,01,80,10,2/');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Receiver Identification" cannot be omitted.');
@@ -187,7 +187,7 @@ final class FileHeaderParserTest extends TestCase
     public function testReceiverIdentificationInvalidType(string $line): void
     {
         $parser = new FileHeaderParser();
-        $parser->push($line);
+        $parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Receiver Identification" must be alpha-numeric.');
@@ -201,7 +201,7 @@ final class FileHeaderParserTest extends TestCase
     public function testFileCreationDateValid(string $line, string $expected): void
     {
         $parser = new FileHeaderParser();
-        $parser->push($line);
+        $parser->pushLine($line);
 
         $this->assertEquals($expected, $parser->offsetGet('fileCreationDate'));
     }
@@ -209,7 +209,7 @@ final class FileHeaderParserTest extends TestCase
     public function testFileCreationDateMissing(): void
     {
         $parser = new FileHeaderParser();
-        $parser->push('01,SENDR1,RECVR1,,1700,01,80,10,2/');
+        $parser->pushLine('01,SENDR1,RECVR1,,1700,01,80,10,2/');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "File Creation Date" cannot be omitted.');
@@ -230,7 +230,7 @@ final class FileHeaderParserTest extends TestCase
     public function testFileCreationDateInvalidType(string $line): void
     {
         $parser = new FileHeaderParser();
-        $parser->push($line);
+        $parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "File Creation Date" must be composed of exactly 6 numerals.');
@@ -246,7 +246,7 @@ final class FileHeaderParserTest extends TestCase
     public function testFileCreationTimeValid(string $line, string $expected): void
     {
         $parser = new FileHeaderParser();
-        $parser->push($line);
+        $parser->pushLine($line);
 
         $this->assertEquals($expected, $parser->offsetGet('fileCreationTime'));
     }
@@ -254,7 +254,7 @@ final class FileHeaderParserTest extends TestCase
     public function testFileCreationTimeMissing(): void
     {
         $parser = new FileHeaderParser();
-        $parser->push('01,SENDR1,RECVR1,210616,,01,80,10,2/');
+        $parser->pushLine('01,SENDR1,RECVR1,210616,,01,80,10,2/');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "File Creation Time" cannot be omitted.');
@@ -271,7 +271,7 @@ final class FileHeaderParserTest extends TestCase
     public function testFileCreationTimeInvalidType(string $line): void
     {
         $parser = new FileHeaderParser();
-        $parser->push($line);
+        $parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "File Creation Time" must be composed of exactly 4 numerals.');
@@ -289,7 +289,7 @@ final class FileHeaderParserTest extends TestCase
     public function testFileIdentificationNumberValid(string $line, string $expected): void
     {
         $parser = new FileHeaderParser();
-        $parser->push($line);
+        $parser->pushLine($line);
 
         $this->assertEquals($expected, $parser->offsetGet('fileIdentificationNumber'));
     }
@@ -297,7 +297,7 @@ final class FileHeaderParserTest extends TestCase
     public function testFileIdentificationNumberMissing(): void
     {
         $parser = new FileHeaderParser();
-        $parser->push('01,SENDR1,RECVR1,210616,1700,,80,10,2/');
+        $parser->pushLine('01,SENDR1,RECVR1,210616,1700,,80,10,2/');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "File Identification Number" cannot be omitted.');
@@ -315,7 +315,7 @@ final class FileHeaderParserTest extends TestCase
     public function testFileIdentificationNumberInvalidType(string $line): void
     {
         $parser = new FileHeaderParser();
-        $parser->push($line);
+        $parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "File Identification Number" must be composed of 1 or more numerals.');
@@ -332,7 +332,7 @@ final class FileHeaderParserTest extends TestCase
     public function testPhysicalRecordLengthValid(string $line, ?int $expected): void
     {
         $parser = new FileHeaderParser();
-        $parser->push($line);
+        $parser->pushLine($line);
 
         $this->assertEquals($expected, $parser->offsetGet('physicalRecordLength'));
     }
@@ -344,7 +344,7 @@ final class FileHeaderParserTest extends TestCase
     public function testPhysicalRecordLengthInvalidType(string $line): void
     {
         $parser = new FileHeaderParser();
-        $parser->push($line);
+        $parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Physical Record Length", if provided, must be composed of 1 or more numerals.');
@@ -363,7 +363,7 @@ final class FileHeaderParserTest extends TestCase
     public function testBlockSizeValid(string $line, ?int $expected): void
     {
         $parser = new FileHeaderParser();
-        $parser->push($line);
+        $parser->pushLine($line);
 
         $this->assertEquals($expected, $parser->offsetGet('blockSize'));
     }
@@ -375,7 +375,7 @@ final class FileHeaderParserTest extends TestCase
     public function testBlockSizeInvalidType(string $line): void
     {
         $parser = new FileHeaderParser();
-        $parser->push($line);
+        $parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Block Size", if provided, must be composed of 1 or more numerals.');
@@ -385,14 +385,14 @@ final class FileHeaderParserTest extends TestCase
     public function testVersionNumberValid(): void
     {
         $parser = new FileHeaderParser();
-        $parser->push(self::$headerLine);
+        $parser->pushLine(self::$headerLine);
         $this->assertEquals('2', $parser->offsetGet('versionNumber'));
     }
 
     public function testVersionNumberMissing(): void
     {
         $parser = new FileHeaderParser();
-        $parser->push('01,SENDR1,RECVR1,210616,1700,01,80,10,/');
+        $parser->pushLine('01,SENDR1,RECVR1,210616,1700,01,80,10,/');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Version Number" cannot be omitted.');
@@ -402,7 +402,7 @@ final class FileHeaderParserTest extends TestCase
     public function testVersionNumberInvalidType(): void
     {
         $parser = new FileHeaderParser();
-        $parser->push('01,SENDR1,RECVR1,210616,1700,01,80,10,F/');
+        $parser->pushLine('01,SENDR1,RECVR1,210616,1700,01,80,10,F/');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Version Number" must be "2" (this library only supports v2 of the BAI format).');
@@ -412,7 +412,7 @@ final class FileHeaderParserTest extends TestCase
     public function testOffsetGetThrowsOnUnknownField(): void
     {
         $parser = new FileHeaderParser();
-        $parser->push(self::$headerLine);
+        $parser->pushLine(self::$headerLine);
 
         $this->expectException(InvalidFieldNameException::class);
         $this->expectExceptionMessage('File Header does not have a "fooBar" field.');
@@ -440,7 +440,7 @@ final class FileHeaderParserTest extends TestCase
     public function testOffsetExistsForExtantField(): void
     {
         $parser = new FileHeaderParser();
-        $parser->push(self::$headerLine);
+        $parser->pushLine(self::$headerLine);
 
         $this->assertTrue($parser->offsetExists('recordCode'));
     }
@@ -448,7 +448,7 @@ final class FileHeaderParserTest extends TestCase
     public function testOffsetExistsForNonExtantField(): void
     {
         $parser = new FileHeaderParser();
-        $parser->push(self::$headerLine);
+        $parser->pushLine(self::$headerLine);
 
         $this->assertFalse($parser->offsetExists('codedRecord'));
     }
@@ -456,7 +456,7 @@ final class FileHeaderParserTest extends TestCase
     public function testOffsetSetAlwaysThrows(): void
     {
         $parser = new FileHeaderParser();
-        $parser->push(self::$headerLine);
+        $parser->pushLine(self::$headerLine);
 
         $this->expectException(InvalidUseException::class);
         $this->expectExceptionMessage('::offsetSet() is unsupported.');
@@ -466,7 +466,7 @@ final class FileHeaderParserTest extends TestCase
     public function testOffsetUnsetAlwaysThrows(): void
     {
         $parser = new FileHeaderParser();
-        $parser->push(self::$headerLine);
+        $parser->pushLine(self::$headerLine);
 
         $this->expectException(InvalidUseException::class);
         $this->expectExceptionMessage('::offsetUnset() is unsupported.');
@@ -476,7 +476,7 @@ final class FileHeaderParserTest extends TestCase
     public function testReadingAsIfAnArray(): void
     {
         $parser = new FileHeaderParser();
-        $parser->push(self::$headerLine);
+        $parser->pushLine(self::$headerLine);
 
         $this->assertEquals('01', $parser['recordCode']);
         $this->assertEquals('SENDR1', $parser['senderIdentification']);
@@ -492,7 +492,7 @@ final class FileHeaderParserTest extends TestCase
     public function testToArray(): void
     {
         $parser = new FileHeaderParser();
-        $parser->push(self::$headerLine);
+        $parser->pushLine(self::$headerLine);
 
         $this->assertEquals(
             [
