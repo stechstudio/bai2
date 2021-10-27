@@ -2,13 +2,13 @@
 
 namespace STS\Bai2\Parsers;
 
-final class FileTrailerParser extends AbstractRecordParser
+final class TransactionParser extends AbstractRecordParser
 {
     use RecordParserTrait;
 
     protected static function recordCode(): string
     {
-        return '99';
+        return '16';
     }
 
     protected function parseFields(): self

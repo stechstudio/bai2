@@ -13,8 +13,6 @@ final class FileHeaderParser extends AbstractRecordParser
 
     protected function parseFields(): self
     {
-        // NOTE: the recordCode was pre-validated by this point, and must
-        // always exist, so we parse it first.
         $this->parsed['recordCode'] = $this->getParser()->shift();
 
         $this->parsed['senderIdentification'] =
