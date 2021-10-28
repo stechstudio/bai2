@@ -53,7 +53,24 @@ final class GroupHeaderParserTest extends RecordParserTestCase
         $this->assertEquals('2', $this->parser['asOfDateModifier']);
     }
 
-    // TODO(zmd): public function testToArray(): void {}
+    public function testToArray(): void
+    {
+        $this->parser->pushLine(self::$fullRecordLine);
+
+        $this->assertEquals(
+            [
+                'recordCode' => '02',
+                'ultimateReceiverIdentification' => 'ABC123',
+                'originatorIdentification' => 'XYZ789',
+                'groupStatus' => '1',
+                'asOfDate' => '211027',
+                'asOfTime' => '0800',
+                'currencyCode' => 'USD',
+                'asOfDateModifier' => '2',
+            ],
+            $this->parser->toArray()
+        );
+    }
 
     // ----- record-specific field validation ----------------------------------
 
