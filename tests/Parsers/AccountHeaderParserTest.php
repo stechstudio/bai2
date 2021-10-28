@@ -25,7 +25,28 @@ final class AccountHeaderParserTest extends RecordParserTestCase
 
     // ----- record-specific parsing and usage ---------------------------------
 
-    // TODO(zmd): public function testParseFromSingleLine(): void {}
+    /**
+     *  --   ----------   -   :  ---   ------   -   -    :  ---   --------   -   -
+     *  03 , 0975312468 ,   ,    010 , 500000 ,   ,   ,     190 , 70000000 , 4 , 0 /
+     *                           ^                          ^
+     *                           |                          |
+     *                   acct status follows        acct summary follows
+     *
+     *  TODO(zmd): use @testWith with variations, need to have plenty of tests
+     *    for the field variations dependent on what type code and funds type
+     *    are represented. Important to be mindful of the funds types
+     *    variations as well!
+     */
+    public function testParseFromSingleLine(): void
+    {
+        $this->parser->pushLine(self::$fullRecordLine);
+
+        $this->assertEquals('03', $this->parser['recordCode']);
+        $this->assertEquals('0975312468', $this->parser['customerAccountNumber']);
+        $this->assertEquals(null, $this->parser['currencyCode']);
+
+        // TODO(zmd): finish writing me!
+    }
 
     // TODO(zmd): public function testParseFromMultipleLines(): void {}
 
