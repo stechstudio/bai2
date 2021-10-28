@@ -34,6 +34,14 @@ trait RecordParserTrait
         return $this->parseFieldsOnce()->parsed;
     }
 
+    protected function shiftAndParseField(string $longName): FieldParser
+    {
+        return $this->parseField(
+            $this->shiftField(),
+            $longName
+        );
+    }
+
     protected function parseField(string $value, string $longName): FieldParser
     {
         return new FieldParser($value, $longName);
