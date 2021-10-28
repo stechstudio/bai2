@@ -58,6 +58,21 @@ final class FileHeaderParserTest extends RecordParserTestCase
         $this->assertEquals('2', $this->parser['versionNumber']);
     }
 
+    //
+    // NOTE: since, if the physical record length is used at all, it is set as
+    // a field in the incoming file header line, we cannot know or set that
+    // physical line length (and thus validate input line lengths) until we
+    // attempt to parse the file header record. That is different from the
+    // other record types, where they can be checked immediately based on the
+    // physical record length specified in the file header.
+    //
+    // Because record parsers are a parse-once deal, we exclude the possibility
+    // of setting the physical record length in the first line, using it, then
+    // validating on push any subsequent lines. The other record types will
+    // know up front and thus the record length validation will be upon pushing
+    // a line (rather than during parse/read time).
+    //
+
     public function testPhysicalRecordLengthEnforcedOnFirstLine(): void
     {
         $this->parser->pushLine('01,SENDR1,RECVR1,210616,1700,01,30,10,2/');

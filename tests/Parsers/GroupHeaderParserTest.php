@@ -53,9 +53,24 @@ final class GroupHeaderParserTest extends RecordParserTestCase
         $this->assertEquals('2', $this->parser['asOfDateModifier']);
     }
 
-    // TODO(zmd): public function testPhysicalRecordLengthEnforcedOnFirstLine(): void {}
+    public function testPhysicalRecordLengthEnforcedOnFirstLine(): void
+    {
+        $parser = new GroupHeaderParser(physicalLineLength: 80);
 
-    // TODO(zmd): public function testPhysicalRecordLengthEnforcedOnSubsequentLine(): void {}
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
+        $parser->pushLine($this->partialRecordLine . str_repeat(' ', 80));
+    }
+
+    public function testPhysicalRecordLengthEnforcedOnSubsequentLine(): void
+    {
+        $parser = new GroupHeaderParser(physicalLineLength: 80);
+        $parser->pushLine($this->partialRecordLine);
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
+        $parser->pushLine($this->continuedRecordLine . str_repeat(' ', 80));
+    }
 
     // TODO(zmd): public function testToArray(): void {}
 
