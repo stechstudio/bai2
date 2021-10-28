@@ -19,42 +19,41 @@ final class GroupHeaderParser extends AbstractRecordParser
     {
         $this->parsed['recordCode'] = $this->getParser()->shift();
 
-        // TODO(zmd): validate format
+        // TODO(zmd): validate format & default/optional
         $this->parsed['ultimateReceiverIdentification'] =
             $this->parseField($this->getParser()->shift(), 'Ultimate Receiver Identification')
-                 ->string();
+                 ->string(default: null);
 
-        // TODO(zmd): validate format
+        // TODO(zmd): validate format & default/optional
         $this->parsed['originatorIdentification'] =
             $this->parseField($this->getParser()->shift(), 'Originator Identification')
-                 ->string();
+                 ->string(default: null);
 
-        // TODO(zmd): validate format
+        // TODO(zmd): validate format & default/optional
         $this->parsed['groupStatus'] =
             $this->parseField($this->getParser()->shift(), 'Group Status')
-                 ->string();
+                 ->string(default: null);
 
-        // TODO(zmd): validate format
+        // TODO(zmd): validate format & default/optional
         $this->parsed['asOfDate'] =
             $this->parseField($this->getParser()->shift(), 'As-of-Date')
-                 ->string();
+                 ->string(default: null);
 
-        // TODO(zmd): validate format
+        // TODO(zmd): validate format & default/optional
         $this->parsed['asOfTime'] =
             $this->parseField($this->getParser()->shift(), 'As-of-Time')
-                 ->string();
+                 ->string(default: null);
 
-        // TODO(zmd): validate format
+        // TODO(zmd): validate format & default/optional
         $this->parsed['currencyCode'] =
             $this->parseField($this->getParser()->shift(), 'Currency Code')
-                 ->string();
+                 ->string(default: null);
 
-        // TODO(zmd): validate format
+        // TODO(zmd): validate format & default/optional
         $this->parsed['asOfDateModifier'] =
             $this->parseField($this->getParser()->shift(), 'As-of-Date Modifier')
-                 ->string();
+                 ->string(default: null);
 
-        // TODO(zmd): finish implementing me!
         return $this;
     }
 
