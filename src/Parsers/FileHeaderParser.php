@@ -2,9 +2,22 @@
 
 namespace STS\Bai2\Parsers;
 
+use STS\Bai2\Exceptions\InvalidUseException;
+
 final class FileHeaderParser extends AbstractRecordParser
 {
     use RecordParserTrait;
+
+    public function __construct(protected ?int $physicalRecordLength = null)
+    {
+        if (is_int($physicalRecordLength)) {
+            throw new InvalidUseException(
+                'It is an error to try to set the Physical Record Length on a '
+                    . 'File Header before it has been parsed and read the '
+                    . "File Header's content."
+            );
+        }
+    }
 
     protected static function recordCode(): string
     {

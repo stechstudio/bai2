@@ -6,6 +6,7 @@ use STS\Bai2\Tests\Parsers\RecordParserTestCase;
 
 use STS\Bai2\Exceptions\InvalidTypeException;
 use STS\Bai2\Exceptions\MalformedInputException;
+use STS\Bai2\Exceptions\InvalidUseException;
 
 /**
  * @group RecordParserTests
@@ -23,7 +24,7 @@ final class FileHeaderParserTest extends RecordParserTestCase
 
     protected static string $partialRecordLine = '01,SENDR1,RECVR1/';
 
-    private static string $continuedRecordLine = '88,210616,1700,01,80,10,2/';
+    protected static string $continuedRecordLine = '88,210616,1700,01,80,10,2/';
 
     // ----- record-specific parsing and usage ---------------------------------
 
@@ -58,21 +59,34 @@ final class FileHeaderParserTest extends RecordParserTestCase
         $this->assertEquals('2', $this->parser['versionNumber']);
     }
 
-    //
-    // NOTE: since, if the physical record length is used at all, it is set as
-    // a field in the incoming file header line, we cannot know or set that
-    // physical line length (and thus validate input line lengths) until we
-    // attempt to parse the file header record. That is different from the
-    // other record types, where they can be checked immediately based on the
-    // physical record length specified in the file header.
-    //
-    // Because record parsers are a parse-once deal, we exclude the possibility
-    // of setting the physical record length in the first line, using it, then
-    // validating on push any subsequent lines. The other record types will
-    // know up front and thus the record length validation will be upon pushing
-    // a line (rather than during parse/read time).
-    //
+    /**
+     * Since, if the physical record length is used at all, it is set as a
+     * field in the incoming file header line, we cannot know or set that
+     * physical line length (and thus validate input line lengths) until we
+     * attempt to parse the file header record. That is different from the
+     * other record types, where they can be checked immediately based on the
+     * physical record length previously specified (and thus known) in the file
+     * header prior to they themselves being parsed.
+     */
+    public function testSettingPhysicalRecordLengthAtConstructToAnythingOtherThanNullThrows(): void
+    {
+        $this->expectException(InvalidUseException::class);
+        $this->expectExceptionMessage(
+            'It is an error to try to set the Physical Record Length on a File '
+                . "Header before it has been parsed and read the File Header's "
+                . 'content.'
+        );
+        $parser = new FileHeaderParser(physicalRecordLength: 80);
+    }
 
+    /**
+     * The other record types will know up front their physical line length, if
+     * not defaulted, and thus their record length validation will be upon
+     * pushing a line (rather than during parse/read). But a File Header only
+     * can find out it's physical record length at parse time; thus here the
+     * exception gets thrown at field access (which triggers the parse) rather
+     * than line push time.
+     */
     public function testPhysicalRecordLengthEnforcedOnFirstLine(): void
     {
         $this->parser->pushLine('01,SENDR1,RECVR1,210616,1700,01,30,10,2/');
@@ -82,6 +96,13 @@ final class FileHeaderParserTest extends RecordParserTestCase
         $this->parser['recordCode'];
     }
 
+    /**
+     * Because record parsers are a parse-once deal, we exclude the possibility
+     * of setting the physical record length in the first line, parsing it out
+     * and using it to set the physical line length within the object, then
+     * proceeding to push in further lines (since pushing lines after parse is
+     * disallowed).
+     */
     public function testPhysicalRecordLengthEnforcedOnSubsequentLine(): void
     {
         $headerLinePartialTooLong = '01,SENDR1,RECVR1/                                                                ';

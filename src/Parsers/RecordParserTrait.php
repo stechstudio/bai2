@@ -16,9 +16,7 @@ trait RecordParserTrait
 
     abstract protected static function recordCode(): string;
 
-    public function __construct(protected ?int $physicalRecordLength = null)
-    {
-    }
+    protected ?int $physicalRecordLength;
 
     public function pushLine(string $line): self
     {

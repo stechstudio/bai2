@@ -21,17 +21,13 @@ final class GroupTrailerParserTest extends RecordParserTestCase
 
     protected static string $partialRecordLine = '98,11800000/';
 
-    private static string $continuedRecordLine = '88,2,6/';
+    protected static string $continuedRecordLine = '88,2,6/';
 
     // ----- record-specific parsing and usage ---------------------------------
 
     // TODO(zmd): public function testParseFromSingleLine(): void {}
 
     // TODO(zmd): public function testParseFromMultipleLines(): void {}
-
-    // TODO(zmd): public function testPhysicalRecordLengthEnforcedOnFirstLine(): void {}
-
-    // TODO(zmd): public function testPhysicalRecordLengthEnforcedOnSubsequentLine(): void {}
 
     // TODO(zmd): public function testToArray(): void {}
 

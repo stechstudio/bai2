@@ -6,6 +6,10 @@ final class TransactionParser extends AbstractRecordParser
 {
     use RecordParserTrait;
 
+    public function __construct(protected ?int $physicalRecordLength = null)
+    {
+    }
+
     protected static function recordCode(): string
     {
         return '16';

@@ -20,17 +20,13 @@ final class TransactionParserTest extends RecordParserTestCase
 
     protected static string $partialRecordLine = '16,003,10000,D,3/';
 
-    private static string $continuedRecordLine = "88,1,1000,5,10000,30,25000,123456789,987654321,The following character is, of all the path separation characters I've ever used, my absolute favorite: /";
+    protected static string $continuedRecordLine = "88,1,1000,5,10000,30,25000,123456789,987654321,The following character is, of all the path separation characters I've ever used, my absolute favorite: /";
 
     // ----- record-specific parsing and usage ---------------------------------
 
     // TODO(zmd): public function testParseFromSingleLine(): void {}
 
     // TODO(zmd): public function testParseFromMultipleLines(): void {}
-
-    // TODO(zmd): public function testPhysicalRecordLengthEnforcedOnFirstLine(): void {}
-
-    // TODO(zmd): public function testPhysicalRecordLengthEnforcedOnSubsequentLine(): void {}
 
     // TODO(zmd): public function testToArray(): void {}
 

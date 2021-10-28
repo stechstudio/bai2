@@ -9,6 +9,7 @@ use STS\Bai2\Parsers\AbstractRecordParser;
 use STS\Bai2\Exceptions\InvalidUseException;
 use STS\Bai2\Exceptions\InvalidRecordException;
 use STS\Bai2\Exceptions\InvalidFieldNameException;
+use STS\Bai2\Exceptions\MalformedInputException;
 
 class RecordParserTestCase extends TestCase
 {
@@ -24,6 +25,8 @@ class RecordParserTestCase extends TestCase
     protected static string $fullRecordLine;
 
     protected static string $partialRecordLine;
+
+    protected static string $continuedRecordLine;
 
     public function setUp(): void
     {
@@ -112,6 +115,25 @@ class RecordParserTestCase extends TestCase
     }
 
     // ===== common record parser usage and validations ========================
+
+    public function testPhysicalRecordLengthEnforcedOnFirstLine(): void
+    {
+        $parser = new static::$parserClass(physicalRecordLength: 80);
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
+        $parser->pushLine(static::$partialRecordLine . str_repeat(' ', 80));
+    }
+
+    public function testPhysicalRecordLengthEnforcedOnSubsequentLine(): void
+    {
+        $parser = new static::$parserClass(physicalRecordLength: 80);
+        $parser->pushLine(static::$partialRecordLine);
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
+        $parser->pushLine(static::$continuedRecordLine . str_repeat(' ', 80));
+    }
 
     public function testToArrayThrowsIfNoLinesPushed(): void
     {
