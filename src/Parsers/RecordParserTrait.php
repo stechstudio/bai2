@@ -16,6 +16,10 @@ trait RecordParserTrait
 
     abstract protected static function recordCode(): string;
 
+    public function __construct(protected ?int $physicalRecordLength = null)
+    {
+    }
+
     public function pushLine(string $line): self
     {
         if (!isset($this->multilineParser)) {
@@ -48,7 +52,7 @@ trait RecordParserTrait
 
     private function pushRecord(string $line): void
     {
-        $this->multilineParser = new MultilineParser($line);
+        $this->multilineParser = new MultilineParser($line, $this->physicalRecordLength);
 
         try {
             if ($this->multilineParser->peek() != static::recordCode()) {

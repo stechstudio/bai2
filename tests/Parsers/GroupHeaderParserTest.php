@@ -4,6 +4,8 @@ namespace STS\Bai2\Parsers;
 
 use STS\Bai2\Tests\Parsers\RecordParserTestCase;
 
+use STS\Bai2\Exceptions\MalformedInputException;
+
 /**
  * @group RecordParserTests
  */
@@ -55,21 +57,21 @@ final class GroupHeaderParserTest extends RecordParserTestCase
 
     public function testPhysicalRecordLengthEnforcedOnFirstLine(): void
     {
-        $parser = new GroupHeaderParser(physicalLineLength: 80);
+        $parser = new GroupHeaderParser(physicalRecordLength: 80);
 
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
-        $parser->pushLine($this->partialRecordLine . str_repeat(' ', 80));
+        $parser->pushLine(self::$partialRecordLine . str_repeat(' ', 80));
     }
 
     public function testPhysicalRecordLengthEnforcedOnSubsequentLine(): void
     {
-        $parser = new GroupHeaderParser(physicalLineLength: 80);
-        $parser->pushLine($this->partialRecordLine);
+        $parser = new GroupHeaderParser(physicalRecordLength: 80);
+        $parser->pushLine(self::$partialRecordLine);
 
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
-        $parser->pushLine($this->continuedRecordLine . str_repeat(' ', 80));
+        $parser->pushLine(self::$continuedRecordLine . str_repeat(' ', 80));
     }
 
     // TODO(zmd): public function testToArray(): void {}
