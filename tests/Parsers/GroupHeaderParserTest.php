@@ -24,7 +24,19 @@ final class GroupHeaderParserTest extends RecordParserTestCase
 
     // ----- record-specific parsing and usage ---------------------------------
 
-    // TODO(zmd): public function testParseFromSingleLine(): void {}
+    public function testParseFromSingleLine(): void
+    {
+        $this->parser->pushLine(self::$fullRecordLine);
+
+        $this->assertEquals('02', $this->parser['recordCode']);
+        $this->assertEquals('ABC123', $this->parser['ultimateReceiverIdentification']);
+        $this->assertEquals('XYZ789', $this->parser['originatorIdentification']);
+        $this->assertEquals('1', $this->parser['groupStatus']);
+        $this->assertEquals('211027', $this->parser['asOfDate']);
+        $this->assertEquals('0800', $this->parser['asOfTime']);
+        $this->assertEquals('USD', $this->parser['currencyCode']);
+        $this->assertEquals('2', $this->parser['asOfDateModifier']);
+    }
 
     // TODO(zmd): public function testParseFromMultipleLines(): void {}
 
