@@ -38,7 +38,20 @@ final class GroupHeaderParserTest extends RecordParserTestCase
         $this->assertEquals('2', $this->parser['asOfDateModifier']);
     }
 
-    // TODO(zmd): public function testParseFromMultipleLines(): void {}
+    public function testParseFromMultipleLines(): void
+    {
+        $this->parser->pushLine(self::$partialRecordLine);
+        $this->parser->pushLine(self::$continuedRecordLine);
+
+        $this->assertEquals('02', $this->parser['recordCode']);
+        $this->assertEquals('ABC123', $this->parser['ultimateReceiverIdentification']);
+        $this->assertEquals('XYZ789', $this->parser['originatorIdentification']);
+        $this->assertEquals('1', $this->parser['groupStatus']);
+        $this->assertEquals('211027', $this->parser['asOfDate']);
+        $this->assertEquals('0800', $this->parser['asOfTime']);
+        $this->assertEquals('USD', $this->parser['currencyCode']);
+        $this->assertEquals('2', $this->parser['asOfDateModifier']);
+    }
 
     // TODO(zmd): public function testPhysicalRecordLengthEnforcedOnFirstLine(): void {}
 
