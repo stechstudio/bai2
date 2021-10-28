@@ -22,7 +22,7 @@ final class AccountHeaderParser extends AbstractRecordParser
 
     protected function parseFields(): self
     {
-        $this->parsed['recordCode'] = $this->getParser()->shift();
+        $this->parsed['recordCode'] = $this->shiftField();
 
         // TODO(zmd): finish implementing me!
         return $this;

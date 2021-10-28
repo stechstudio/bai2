@@ -39,6 +39,11 @@ trait RecordParserTrait
         return new FieldParser($value, $longName);
     }
 
+    protected function shiftField(): string
+    {
+        return $this->getParser()->shift();
+    }
+
     protected function getParser(): MultilineParser
     {
         try {

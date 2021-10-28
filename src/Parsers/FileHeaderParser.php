@@ -26,7 +26,7 @@ final class FileHeaderParser extends AbstractRecordParser
 
     protected function parseFields(): self
     {
-        $this->parsed['recordCode'] = $this->getParser()->shift();
+        $this->parsed['recordCode'] = $this->shiftField();
 
         $this->parsed['senderIdentification'] =
             $this->parseField($this->getParser()->shift(), 'Sender Identification')

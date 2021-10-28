@@ -17,7 +17,7 @@ final class GroupHeaderParser extends AbstractRecordParser
 
     protected function parseFields(): self
     {
-        $this->parsed['recordCode'] = $this->getParser()->shift();
+        $this->parsed['recordCode'] = $this->shiftField();
 
         // TODO(zmd): validate format & default/optional
         $this->parsed['ultimateReceiverIdentification'] =
