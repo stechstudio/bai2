@@ -34,6 +34,11 @@ class MultilineParser
         return $this->currentOrNextLine()->peek();
     }
 
+    public function hasMore(): bool
+    {
+        return $this->currentOrNextLine()->hasMore();
+    }
+
     public function drop(int $numToDrop): array
     {
         $slice = [];

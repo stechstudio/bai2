@@ -444,6 +444,20 @@ final class MultilineParserTest extends TestCase
     /**
      * @dataProvider headerInputProducer
      */
+    public function testHasMore(string|array $input): void
+    {
+        $this->withParser($input, function ($parser) {
+            $parser->drop(8);
+            $this->assertTrue($parser->hasMore());
+
+            $parser->shift();
+            $this->assertFalse($parser->hasMore());
+        });
+    }
+
+    /**
+     * @dataProvider headerInputProducer
+     */
     public function testShiftReturnsNextFieldAndConsumesIt(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
