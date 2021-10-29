@@ -373,6 +373,17 @@ final class AccountHeaderParserTest extends RecordParserTestCase
                     'valueTime' => '0800'
                 ]
             ],
+            [
+                '03,0975312468,,190,70000000,4,S,150000,100000,90000/',
+                [
+                    'distributionOfAvailability' => 'S',
+                    'availability' => [
+                        0 => 150000,
+                        1 => 100000,
+                        2 => 90000
+                    ]
+                ]
+            ],
         ];
     }
 
