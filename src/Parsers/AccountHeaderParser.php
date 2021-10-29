@@ -165,7 +165,8 @@ final class AccountHeaderParser extends AbstractRecordParser
                     // TODO(zmd): this is incomplete parsing of fundsType
                     //   (finish implementation once we have written failing
                     //   tests)
-                    $accountInformationOrStatus['fundsType'] =
+                    $accountInformationOrStatus['fundsType'] = [];
+                    $accountInformationOrStatus['fundsType']['distributionOfAvailability'] =
                         $this->shiftAndParseField('Funds Type')
                              ->string(default: null);
                 } else {

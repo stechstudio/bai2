@@ -42,7 +42,9 @@ final class AccountHeaderParserTest extends RecordParserTestCase
                     'typeCode' => '190',
                     'amount' => 70000000,
                     'itemCount' => 4,
-                    'fundsType' => '0'
+                    'fundsType' => [
+                        'distributionOfAvailability' => '0'
+                    ]
                 ],
             ],
             $this->parser['summaryAndStatusInformation']
@@ -67,7 +69,9 @@ final class AccountHeaderParserTest extends RecordParserTestCase
                     'typeCode' => '190',
                     'amount' => 70000000,
                     'itemCount' => 4,
-                    'fundsType' => '0'
+                    'fundsType' => [
+                        'distributionOfAvailability' => '0'
+                    ]
                 ],
             ],
             $this->parser['summaryAndStatusInformation']
@@ -92,7 +96,9 @@ final class AccountHeaderParserTest extends RecordParserTestCase
                         'typeCode' => '190',
                         'amount' => 70000000,
                         'itemCount' => 4,
-                        'fundsType' => '0'
+                        'fundsType' => [
+                            'distributionOfAvailability' => '0'
+                        ]
                     ],
                 ]
             ],
@@ -106,82 +112,212 @@ final class AccountHeaderParserTest extends RecordParserTestCase
     {
         return [
             [
-                "03,0975312468,,,,,/",
+                '03,0975312468,,,,,/',
                 []
             ],
             [
-                "03,0975312468,,,,,,,,,/",
+                '03,0975312468,,,,,,,,,/',
                 []
             ],
             [
-                "03,0975312468,,010,500000,,/",
+                '03,0975312468,,010,500000,,/',
                 [
-                    ["typeCode" => "010", "amount" => 500000],
+                    [
+                        'typeCode' => '010',
+                        'amount' => 500000
+                    ],
                 ]
             ],
             [
-                "03,0975312468,,190,70000000,4,0/",
+                '03,0975312468,,190,70000000,4,0/',
                 [
-                    ["typeCode" => "190", "amount" => 70000000, "itemCount" => 4, "fundsType" => "0" ],
+                    [
+                        'typeCode' => '190',
+                        'amount' => 70000000,
+                        'itemCount' => 4,
+                        'fundsType' => [
+                            'distributionOfAvailability' => '0'
+                        ]
+                    ],
                 ]
             ],
             [
-                "03,0975312468,,010,500000,,,190,70000000,4,0/",
+                '03,0975312468,,010,500000,,,190,70000000,4,0/',
                 [
-                    ["typeCode" => "010", "amount" => 500000],
-                    ["typeCode" => "190", "amount" => 70000000, "itemCount" => 4, "fundsType" => "0" ],
+                    [
+                        'typeCode' => '010',
+                        'amount' => 500000
+                    ],
+                    [
+                        'typeCode' => '190',
+                        'amount' => 70000000,
+                        'itemCount' => 4,
+                        'fundsType' => [
+                            'distributionOfAvailability' => '0'
+                        ]
+                    ],
                 ]
             ],
             [
-                "03,0975312468,,190,70000000,4,0,010,500000,,/",
+                '03,0975312468,,190,70000000,4,0,010,500000,,/',
                 [
-                    ["typeCode" => "190", "amount" => 70000000, "itemCount" => 4, "fundsType" => "0" ],
-                    ["typeCode" => "010", "amount" => 500000],
+                    [
+                        'typeCode' => '190',
+                        'amount' => 70000000,
+                        'itemCount' => 4,
+                        'fundsType' => [
+                            'distributionOfAvailability' => '0'
+                        ]
+                    ],
+                    [
+                        'typeCode' => '010',
+                        'amount' => 500000
+                    ],
                 ]
             ],
             [
-                "03,0975312468,,010,500000,,,024,133700,,,190,70000000,4,0,205,12345678,2,0,207,87654321,13,0/",
+                '03,0975312468,,010,500000,,,024,133700,,,190,70000000,4,0,205,12345678,2,0,207,87654321,13,0/',
                 [
-                    ["typeCode" => "010", "amount" => 500000],
-                    ["typeCode" => "024", "amount" => 133700],
-                    ["typeCode" => "190", "amount" => 70000000, "itemCount" => 4, "fundsType" => "0" ],
-                    ["typeCode" => "205", "amount" => 12345678, "itemCount" => 2, "fundsType" => "0" ],
-                    ["typeCode" => "207", "amount" => 87654321, "itemCount" => 13, "fundsType" => "0" ],
+                    [
+                        'typeCode' => '010',
+                        'amount' => 500000
+                    ],
+                    [
+                        'typeCode' => '024',
+                        'amount' => 133700
+                    ],
+                    [
+                        'typeCode' => '190',
+                        'amount' => 70000000,
+                        'itemCount' => 4,
+                        'fundsType' => [
+                            'distributionOfAvailability' => '0'
+                        ]
+                    ],
+                    [
+                        'typeCode' => '205',
+                        'amount' => 12345678,
+                        'itemCount' => 2,
+                        'fundsType' => [
+                            'distributionOfAvailability' => '0'
+                        ]
+                    ],
+                    [
+                        'typeCode' => '207',
+                        'amount' => 87654321,
+                        'itemCount' => 13,
+                        'fundsType' => [
+                            'distributionOfAvailability' => '0'
+                        ]
+                    ],
                 ]
             ],
             [
-                "03,0975312468,,001,500000,,,099,133700,,,100,70000000,4,0,799,12345678,2,0/",
+                '03,0975312468,,001,500000,,,099,133700,,,100,70000000,4,0,799,12345678,2,0/',
                 [
-                    ["typeCode" => "001", "amount" => 500000],
-                    ["typeCode" => "099", "amount" => 133700],
-                    ["typeCode" => "100", "amount" => 70000000, "itemCount" => 4, "fundsType" => "0" ],
-                    ["typeCode" => "799", "amount" => 12345678, "itemCount" => 2, "fundsType" => "0" ],
+                    [
+                        'typeCode' => '001',
+                        'amount' => 500000
+                    ],
+                    [
+                        'typeCode' => '099',
+                        'amount' => 133700
+                    ],
+                    [
+                        'typeCode' => '100',
+                        'amount' => 70000000,
+                        'itemCount' => 4,
+                        'fundsType' => [
+                            'distributionOfAvailability' => '0'
+                        ]
+                    ],
+                    [
+                        'typeCode' => '799',
+                        'amount' => 12345678,
+                        'itemCount' => 2,
+                        'fundsType' => [
+                            'distributionOfAvailability' => '0'
+                        ]
+                    ],
                 ]
             ],
             [
-                "03,0975312468,,900,500000,,,919,133700,,,920,70000000,4,0,999,12345678,2,0/",
+                '03,0975312468,,900,500000,,,919,133700,,,920,70000000,4,0,999,12345678,2,0/',
                 [
-                    ["typeCode" => "900", "amount" => 500000],
-                    ["typeCode" => "919", "amount" => 133700],
-                    ["typeCode" => "920", "amount" => 70000000, "itemCount" => 4, "fundsType" => "0" ],
-                    ["typeCode" => "999", "amount" => 12345678, "itemCount" => 2, "fundsType" => "0" ],
+                    [
+                        'typeCode' => '900',
+                        'amount' => 500000
+                    ],
+                    [
+                        'typeCode' => '919',
+                        'amount' => 133700
+                    ],
+                    [
+                        'typeCode' => '920',
+                        'amount' => 70000000,
+                        'itemCount' => 4,
+                        'fundsType' => [
+                            'distributionOfAvailability' => '0'
+                        ]
+                    ],
+                    [
+                        'typeCode' => '999',
+                        'amount' => 12345678,
+                        'itemCount' => 2,
+                        'fundsType' => [
+                            'distributionOfAvailability' => '0'
+                        ]
+                    ],
                 ]
             ],
             [
-                "03,0975312468,,010,500000,,,190,,4,0,205,12345678,,0,207,87654321,13,/",
+                '03,0975312468,,010,500000,,,190,,4,0,205,12345678,,0,207,87654321,13,/',
                 [
-                    ["typeCode" => "010", "amount" => 500000],
-                    ["typeCode" => "190", "amount" => null, "itemCount" => 4, "fundsType" => "0" ],
-                    ["typeCode" => "205", "amount" => 12345678, "itemCount" => null, "fundsType" => "0" ],
-                    ["typeCode" => "207", "amount" => 87654321, "itemCount" => 13, "fundsType" => null ],
+                    [
+                        'typeCode' => '010',
+                        'amount' => 500000
+                    ],
+                    [
+                        'typeCode' => '190',
+                        'amount' => null,
+                        'itemCount' => 4,
+                        'fundsType' => [
+                            'distributionOfAvailability' => '0'
+                        ]
+                    ],
+                    [
+                        'typeCode' => '205',
+                        'amount' => 12345678,
+                        'itemCount' => null,
+                        'fundsType' => [
+                            'distributionOfAvailability' => '0'
+                        ]
+                    ],
+                    [
+                        'typeCode' => '207',
+                        'amount' => 87654321,
+                        'itemCount' => 13,
+                        'fundsType' => [
+                            'distributionOfAvailability' => null
+                        ]
+                    ],
                 ]
             ],
             [
-                "03,0975312468,,010,+500000,,,015,-420000,,,024,133700,,/",
+                '03,0975312468,,010,+500000,,,015,-420000,,,024,133700,,/',
                 [
-                    ["typeCode" => "010", "amount" => 500000],
-                    ["typeCode" => "015", "amount" => -420000],
-                    ["typeCode" => "024", "amount" => 133700],
+                    [
+                        'typeCode' => '010',
+                        'amount' => 500000
+                    ],
+                    [
+                        'typeCode' => '015',
+                        'amount' => -420000
+                    ],
+                    [
+                        'typeCode' => '024',
+                        'amount' => 133700
+                    ],
                 ]
             ],
         ];
