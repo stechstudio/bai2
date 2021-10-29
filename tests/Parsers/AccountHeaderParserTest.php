@@ -74,7 +74,31 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         );
     }
 
-    // TODO(zmd): public function testToArray(): void {}
+    public function testToArray(): void
+    {
+        $this->parser->pushLine(self::$fullRecordLine);
+
+        $this->assertEquals(
+            [
+                'recordCode' => '03',
+                'customerAccountNumber' => '0975312468',
+                'currencyCode' => null,
+                'summaryAndStatusInformation' => [
+                    [
+                        'typeCode' => '010',
+                        'amount' => 500000
+                    ],
+                    [
+                        'typeCode' => '190',
+                        'amount' => 70000000,
+                        'itemCount' => 4,
+                        'fundsType' => '0'
+                    ],
+                ]
+            ],
+            $this->parser->toArray()
+        );
+    }
 
     // TODO(zmd): public function testSummaryAndStatusInformationVariations(): void {}
 
