@@ -126,11 +126,6 @@ final class AccountHeaderParser extends AbstractRecordParser
             if ($typeCode) {
                 $accountInformationOrStatus = [ 'typeCode' => $typeCode ];
 
-                // TODO(zmd): validate format & default/optional
-                $accountInformationOrStatus['amount'] =
-                    $this->shiftAndParseField('Amount')
-                         ->int(default: null);
-
                 $typeCodeInt = (int) $typeCode;
                 if (
                     ($typeCodeInt >=   1 && $typeCodeInt <=  99) ||
@@ -138,6 +133,13 @@ final class AccountHeaderParser extends AbstractRecordParser
                 ) {
                     // Account Status Type Code (itemCount and fundsType should
                     // be defaulted)
+
+                    // TODO(zmd): validate format & default/optional (can be
+                    //   signed or unsigned)
+                    $accountInformationOrStatus['amount'] =
+                        $this->shiftAndParseField('Amount')
+                             ->int(default: null);
+
                     // TODO(zmd): validate format & default/optional (they
                     //   should be ->is(''))
                     $this->getParser()->drop(2);
@@ -147,6 +149,13 @@ final class AccountHeaderParser extends AbstractRecordParser
                 ) {
                     // Account Summary Type Code (may have itemCount and
                     // fundsType fields)
+
+                    // TODO(zmd): validate format & default/optional (unsigned
+                    //   only; can NOT be signed)
+                    $accountInformationOrStatus['amount'] =
+                        $this->shiftAndParseField('Amount')
+                             ->int(default: null);
+
                     // TODO(zmd): validate format & default/optional
                     $accountInformationOrStatus['itemCount'] =
                         $this->shiftAndParseField('Item Count')
@@ -166,7 +175,7 @@ final class AccountHeaderParser extends AbstractRecordParser
 
                 $this->parsed['summaryAndStatusInformation'][] = $accountInformationOrStatus;
             } else {
-                // Account Status Type Code
+                // Defaulted Type Code
                 // TODO(zmd): validate format & default/optional (they should be ->is(''))
                 $this->getParser()->drop(3);
             }
