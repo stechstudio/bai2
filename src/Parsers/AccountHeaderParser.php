@@ -172,7 +172,6 @@ final class AccountHeaderParser extends AbstractRecordParser
             }
         }
 
-        // TODO(zmd): finish implementing me!
         return $this;
     }
 
