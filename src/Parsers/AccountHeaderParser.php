@@ -167,7 +167,7 @@ final class AccountHeaderParser extends AbstractRecordParser
                     //   tests)
                     $accountInformationOrStatus['fundsType'] = [];
                     $accountInformationOrStatus['fundsType']['distributionOfAvailability'] =
-                        $this->shiftAndParseField('Funds Type')
+                        $this->shiftAndParseField('Funds Type, Distribution of Availability')
                              ->string(default: null);
                 } else {
                     // TODO(zmd): validate if encountering an *obviously* invalid
