@@ -115,6 +115,62 @@ final class AccountHeaderParser extends AbstractRecordParser
             $this->shiftAndParseField('Currency Code')
                  ->string(default: null);
 
+        // TODO(zmd): clean this mess up!
+        $this->parsed['summaryAndStatusInformation'] = [];
+        while ($this->getParser()->hasMore()) {
+            // TODO(zmd): validate format & default/optional
+            $typeCode =
+                $this->shiftAndParseField('Type Code')
+                     ->string(default: null);
+
+            if ($typeCode) {
+                $accountInformationOrStatus = [ 'typeCode' => $typeCode ];
+
+                // TODO(zmd): validate format & default/optional
+                $accountInformationOrStatus['amount'] =
+                    $this->shiftAndParseField('Amount')
+                         ->int(default: null);
+
+                $typeCodeInt = (int) $typeCode;
+                if (
+                    ($typeCodeInt >=   1 && $typeCodeInt <=  99) ||
+                    ($typeCodeInt >= 900 && $typeCodeInt <= 919)
+                ) {
+                    // Account Status Type Code (itemCount and fundsType should
+                    // be defaulted)
+                    // TODO(zmd): validate format & default/optional (they
+                    //   should be ->is(''))
+                    $this->getParser()->drop(2);
+                } else if (
+                    ($typeCodeInt >= 100 && $typeCodeInt <= 799) ||
+                    ($typeCodeInt >= 920 && $typeCodeInt <= 999)
+                ) {
+                    // Account Summary Type Code (may have itemCount and
+                    // fundsType fields)
+                    // TODO(zmd): validate format & default/optional
+                    $accountInformationOrStatus['itemCount'] =
+                        $this->shiftAndParseField('Item Count')
+                             ->int(default: null);
+
+                    // TODO(zmd): validate format & default/optional
+                    // TODO(zmd): this is incomplete parsing of fundsType
+                    //   (finish implementation once we have written failing
+                    //   tests)
+                    $accountInformationOrStatus['fundsType'] =
+                        $this->shiftAndParseField('Funds Type')
+                             ->string(default: null);
+                } else {
+                    // TODO(zmd): validate if encountering an *obviously* invalid
+                    //   type code range?
+                }
+
+                $this->parsed['summaryAndStatusInformation'][] = $accountInformationOrStatus;
+            } else {
+                // Account Status Type Code
+                // TODO(zmd): validate format & default/optional (they should be ->is(''))
+                $this->getParser()->drop(3);
+            }
+        }
 
         // TODO(zmd): finish implementing me!
         return $this;

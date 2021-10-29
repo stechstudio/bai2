@@ -11,7 +11,7 @@ trait RecordParserArrayAccessTrait
 {
     use ReadableNameTrait, RecordParserIdempotentParsingTrait;
 
-    public function offsetGet(mixed $offset): string|int|null
+    public function offsetGet(mixed $offset): array|string|int|null
     {
         if ($this->offsetExists($offset)) {
             return $this->parsed[$offset];
