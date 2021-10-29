@@ -338,6 +338,51 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         );
     }
 
+    public function fundsTypeVariationsProducer(): array
+    {
+        return [
+            [
+                '03,0975312468,,190,70000000,4,/',
+                [
+                    'distributionOfAvailability' => null
+                ]
+            ],
+            [
+                '03,0975312468,,190,70000000,4,0/',
+                [
+                    'distributionOfAvailability' => '0'
+                ]
+            ],
+            [
+                '03,0975312468,,190,70000000,4,1/',
+                [
+                    'distributionOfAvailability' => '1'
+                ]
+            ],
+            [
+                '03,0975312468,,190,70000000,4,2/',
+                [
+                    'distributionOfAvailability' => '2'
+                ]
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider fundsTypeVariationsProducer
+     */
+    public function testFundsTypeVariations(
+        string $input,
+        array $expectedSummaryAndStatusInformation
+    ): void {
+        $this->parser->pushLine($input);
+
+        $this->assertEquals(
+            $expectedSummaryAndStatusInformation,
+            $this->parser['summaryAndStatusInformation'][0]['fundsType']
+        );
+    }
+
     // ----- record-specific field validation ----------------------------------
 
     // TODO(zmd): test "Customer Account Number" validation
