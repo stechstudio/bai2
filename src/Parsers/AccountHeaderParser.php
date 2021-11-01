@@ -134,46 +134,45 @@ final class AccountHeaderParser extends AbstractRecordParser
                 // Defaulted Type Code
                 // TODO(zmd): validate format & default/optional (they should be ->is(''))
                 $this->getParser()->drop(3);
-            } else {
-                $accountInformationOrStatus = [ 'typeCode' => $typeCode ];
+            } else if ($this->isAccountStatusTypeCode($typeCode)) {
+                $accountInformationOrStatus = ['typeCode' => $typeCode];
+                // Account Status Type Code (itemCount and fundsType should be
+                // defaulted)
 
-                $typeCodeInt = (int) $typeCode;
-                if ($this->isAccountStatusTypeCode($typeCode)) {
-                    // Account Status Type Code (itemCount and fundsType should
-                    // be defaulted)
+                // TODO(zmd): validate format & default/optional (can be signed
+                //   or unsigned)
+                $accountInformationOrStatus['amount'] =
+                    $this->shiftAndParseField('Amount')
+                         ->int(default: null);
 
-                    // TODO(zmd): validate format & default/optional (can be
-                    //   signed or unsigned)
-                    $accountInformationOrStatus['amount'] =
-                        $this->shiftAndParseField('Amount')
-                             ->int(default: null);
-
-                    // TODO(zmd): validate format & default/optional (they
-                    //   should be ->is(''))
-                    $this->getParser()->drop(2);
-                } else if ($this->isAccountSummaryTypeCode($typeCode)) {
-                    // Account Summary Type Code (may have itemCount and
-                    // fundsType fields)
-
-                    // TODO(zmd): validate format & default/optional (unsigned
-                    //   only; can NOT be signed)
-                    $accountInformationOrStatus['amount'] =
-                        $this->shiftAndParseField('Amount')
-                             ->int(default: null);
-
-                    // TODO(zmd): validate format & default/optional
-                    $accountInformationOrStatus['itemCount'] =
-                        $this->shiftAndParseField('Item Count')
-                             ->int(default: null);
-
-                    $accountInformationOrStatus['fundsType']
-                        = $this->shiftAndParseFundsType();
-                } else {
-                    // TODO(zmd): validate if encountering an *obviously* invalid
-                    //   type code range?
-                }
+                // TODO(zmd): validate format & default/optional (they should be
+                //   ->is(''))
+                $this->getParser()->drop(2);
 
                 $summaryAndStatusInformation[] = $accountInformationOrStatus;
+            } else if ($this->isAccountSummaryTypeCode($typeCode)) {
+                $accountInformationOrStatus = ['typeCode' => $typeCode];
+                // Account Summary Type Code (may have itemCount and fundsType
+                // fields)
+
+                // TODO(zmd): validate format & default/optional (unsigned only;
+                //   can NOT be signed)
+                $accountInformationOrStatus['amount'] =
+                    $this->shiftAndParseField('Amount')
+                         ->int(default: null);
+
+                // TODO(zmd): validate format & default/optional
+                $accountInformationOrStatus['itemCount'] =
+                    $this->shiftAndParseField('Item Count')
+                         ->int(default: null);
+
+                $accountInformationOrStatus['fundsType']
+                    = $this->shiftAndParseFundsType();
+
+                $summaryAndStatusInformation[] = $accountInformationOrStatus;
+            } else {
+                // TODO(zmd): validate if encountering an *obviously* invalid
+                //   type code range?
             }
         }
 
