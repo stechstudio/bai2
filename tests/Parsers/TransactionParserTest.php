@@ -77,7 +77,29 @@ final class TransactionParserTest extends RecordParserTestCase
         );
     }
 
-    // TODO(zmd): public function testToArray(): void {}
+    public function testToArray(): void
+    {
+        $this->parser->pushLine(self::$fullRecordLine);
+        $this->assertEquals(
+            [
+                'recordCode' => '16',
+                'typeCode' => '003',
+                'amount' => 10000,
+                'fundsType' => [
+                    'distributionOfAvailability' => 'D',
+                    'availability' => [
+                         1 =>  1000,
+                         5 => 10000,
+                        30 => 25000,
+                    ]
+                ],
+                'bankReferenceNumber' => '123456789',
+                'customerReferenceNumber' => '987654321',
+                'text' => "The following character is, of all the path separation characters I've ever used, my absolute favorite: /"
+            ],
+            $this->parser->toArray()
+        );
+    }
 
     // ----- record-specific field validation ----------------------------------
 
