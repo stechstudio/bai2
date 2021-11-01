@@ -446,6 +446,14 @@ final class AccountHeaderParserTest extends RecordParserTestCase
                 ]
             ],
             [
+                '03,0975312468,,190,70000000,4,V,210909,/',
+                [
+                    'distributionOfAvailability' => 'V',
+                    'valueDate' => '210909',
+                    'valueTime' => null,
+                ]
+            ],
+            [
                 '03,0975312468,,190,70000000,4,S,150000,100000,90000/',
                 [
                     'distributionOfAvailability' => 'S',
@@ -567,12 +575,12 @@ final class AccountHeaderParserTest extends RecordParserTestCase
      */
     public function testFundsTypeVariations(
         string $input,
-        array $expectedSummaryAndStatusInformation
+        array $expectedFundsType
     ): void {
         $this->parser->pushLine($input);
 
         $this->assertEquals(
-            $expectedSummaryAndStatusInformation,
+            $expectedFundsType,
             $this->parser['summaryAndStatusInformation'][0]['fundsType']
         );
     }
