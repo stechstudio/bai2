@@ -190,6 +190,25 @@ final class AccountHeaderParser extends AbstractRecordParser
                  ->string(default: null);
 
         // TODO(zmd): finish implementing me!
+        switch ($fundsType['distributionOfAvailability']) {
+            case 'Z':
+            case '0':
+            case '1':
+            case '2':
+                break;
+
+            case 'V':
+                // TODO(zmd): parse value dated funds type info
+                break;
+
+            case 'S':
+                // TODO(zmd): parse S-type distributed availability funds type info
+                break;
+
+            case 'D':
+                // TODO(zmd): parse D-type distributed availability funds type info
+                break;
+        }
 
         return $fundsType;
     }
