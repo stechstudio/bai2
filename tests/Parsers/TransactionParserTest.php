@@ -101,6 +101,206 @@ final class TransactionParserTest extends RecordParserTestCase
         );
     }
 
+    public function fundsTypeVariationsProducer(): array
+    {
+        return [
+            [
+                '16,003,10000,,123456789,987654321,SOME TEXT FTW/',
+                [
+                    'distributionOfAvailability' => null,
+                ]
+            ],
+            [
+                '16,003,10000,0,123456789,987654321,SOME TEXT FTW/',
+                [
+                    'distributionOfAvailability' => '0',
+                ]
+            ],
+            [
+                '16,003,10000,1,123456789,987654321,SOME TEXT FTW/',
+                [
+                    'distributionOfAvailability' => '1',
+                ]
+            ],
+            [
+                '16,003,10000,2,123456789,987654321,SOME TEXT FTW/',
+                [
+                    'distributionOfAvailability' => '2',
+                ]
+            ],
+            [
+                '16,003,10000,V,210909,0800,123456789,987654321,SOME TEXT FTW/',
+                [
+                    'distributionOfAvailability' => 'V',
+                    'valueDate' => '210909',
+                    'valueTime' => '0800',
+                ]
+            ],
+            [
+                '16,003,10000,V,210909,0000,123456789,987654321,SOME TEXT FTW/',
+                [
+                    'distributionOfAvailability' => 'V',
+                    'valueDate' => '210909',
+                    'valueTime' => '0000',
+                ]
+            ],
+            [
+                '16,003,10000,V,210909,2400,123456789,987654321,SOME TEXT FTW/',
+                [
+                    'distributionOfAvailability' => 'V',
+                    'valueDate' => '210909',
+                    'valueTime' => '2400',
+                ]
+            ],
+            [
+                '16,003,10000,V,210909,9999,123456789,987654321,SOME TEXT FTW/',
+                [
+                    'distributionOfAvailability' => 'V',
+                    'valueDate' => '210909',
+                    'valueTime' => '9999',
+                ]
+            ],
+            [
+                '16,003,10000,V,210909,,123456789,987654321,SOME TEXT FTW/',
+                [
+                    'distributionOfAvailability' => 'V',
+                    'valueDate' => '210909',
+                    'valueTime' => null,
+                ]
+            ],
+            [
+                '16,003,10000,S,150000,100000,90000,123456789,987654321,SOME TEXT FTW/',
+                [
+                    'distributionOfAvailability' => 'S',
+                    'availability' => [
+                        0 => 150000,
+                        1 => 100000,
+                        2 =>  90000,
+                    ]
+                ]
+            ],
+            [
+                '16,003,10000,S,-150000,+100000,90000,123456789,987654321,SOME TEXT FTW/',
+                [
+                    'distributionOfAvailability' => 'S',
+                    'availability' => [
+                        0 => -150000,
+                        1 =>  100000,
+                        2 =>   90000,
+                    ]
+                ]
+            ],
+            [
+                '16,003,10000,D,3,0,150000,1,100000,2,90000,123456789,987654321,SOME TEXT FTW/',
+                [
+                    'distributionOfAvailability' => 'D',
+                    'availability' => [
+                        0 => 150000,
+                        1 => 100000,
+                        2 =>  90000,
+                    ]
+                ]
+            ],
+            [
+                '16,003,10000,D,5,0,150000,1,100000,3,90000,5,70000,7,50000,123456789,987654321,SOME TEXT FTW/',
+                [
+                    'distributionOfAvailability' => 'D',
+                    'availability' => [
+                        0 => 150000,
+                        1 => 100000,
+                        3 =>  90000,
+                        5 =>  70000,
+                        7 =>  50000,
+                    ]
+                ]
+            ],
+            [
+                '16,003,10000,D,30,'
+                    . '5,150000,'
+                    . '10,145000,'
+                    . '15,140000,'
+                    . '20,135000,'
+                    . '25,130000,'
+                    . '30,125000,'
+                    . '35,120000,'
+                    . '40,125000,'
+                    . '45,120000,'
+                    . '50,115000,'
+                    . '55,110000,'
+                    . '60,105000,'
+                    . '65,100000,'
+                    . '70,95000,'
+                    . '75,90000,'
+                    . '80,85000,'
+                    . '85,80000,'
+                    . '90,75000,'
+                    . '95,70000,'
+                    . '100,65000,'
+                    . '105,60000,'
+                    . '110,55000,'
+                    . '115,50000,'
+                    . '120,45000,'
+                    . '125,40000,'
+                    . '130,35000,'
+                    . '135,30000,'
+                    . '140,25000,'
+                    . '145,20000,'
+                    . '150,15000,'
+                    . '123456789,987654321,SOME TEXT FTW/',
+                [
+                    'distributionOfAvailability' => 'D',
+                    'availability' => [
+                          5 => 150000,
+                         10 => 145000,
+                         15 => 140000,
+                         20 => 135000,
+                         25 => 130000,
+                         30 => 125000,
+                         35 => 120000,
+                         40 => 125000,
+                         45 => 120000,
+                         50 => 115000,
+                         55 => 110000,
+                         60 => 105000,
+                         65 => 100000,
+                         70 =>  95000,
+                         75 =>  90000,
+                         80 =>  85000,
+                         85 =>  80000,
+                         90 =>  75000,
+                         95 =>  70000,
+                        100 =>  65000,
+                        105 =>  60000,
+                        110 =>  55000,
+                        115 =>  50000,
+                        120 =>  45000,
+                        125 =>  40000,
+                        130 =>  35000,
+                        135 =>  30000,
+                        140 =>  25000,
+                        145 =>  20000,
+                        150 =>  15000,
+                    ]
+                ]
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider fundsTypeVariationsProducer
+     */
+    public function testFundsTypeVariations(
+        string $input,
+        array $expectedFundsType
+    ): void {
+        $this->parser->pushLine($input);
+
+        $this->assertEquals(
+            $expectedFundsType,
+            $this->parser['fundsType']
+        );
+    }
+
     // ----- record-specific field validation ----------------------------------
 
     // TODO(zmd): test "Type Code" validation
