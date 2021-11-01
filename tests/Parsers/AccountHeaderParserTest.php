@@ -320,6 +320,54 @@ final class AccountHeaderParserTest extends RecordParserTestCase
                     ],
                 ]
             ],
+            [
+                '03,0975312468,,'
+                    . '190,70000000,4,D,7,0,35000000,1,17500000,2,8750000,3,4375000,4,2187500,5,1093750,6,1093750,'
+                    . '205,12345678,2,V,211101,1141,'
+                    . '207,87654321,13,S,60000000,17654321,10000000/',
+                [
+                    [
+                        'typeCode' => '190',
+                        'amount' => 70000000,
+                        'itemCount' => 4,
+                        'fundsType' => [
+                            'distributionOfAvailability' => 'D',
+                            'availability' => [
+                                0 => 35000000,
+                                1 => 17500000,
+                                2 =>  8750000,
+                                3 =>  4375000,
+                                4 =>  2187500,
+                                5 =>  1093750,
+                                6 =>  1093750,
+                            ]
+                        ]
+                    ],
+                    [
+                        'typeCode' => '205',
+                        'amount' => 12345678,
+                        'itemCount' => 2,
+                        'fundsType' => [
+                            'distributionOfAvailability' => 'V',
+                            'valueDate' => '211101',
+                            'valueTime' => '1141'
+                        ]
+                    ],
+                    [
+                        'typeCode' => '207',
+                        'amount' => 87654321,
+                        'itemCount' => 13,
+                        'fundsType' => [
+                            'distributionOfAvailability' => 'S',
+                            'availability' => [
+                                0 => 60000000,
+                                1 => 17654321,
+                                2 => 10000000,
+                            ]
+                        ]
+                    ],
+                ]
+            ],
         ];
     }
 
