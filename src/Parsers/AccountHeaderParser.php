@@ -87,7 +87,8 @@ use STS\Bai2\Parsers\AccountSummaryOrStatusTypeCode as TypeCode;
  */
 final class AccountHeaderParser extends AbstractRecordParser
 {
-    use RecordParserTrait, FundsTypeFieldParserTrait;
+    use RecordParserTrait;
+    use FundsTypeFieldParserTrait;
 
     public function __construct(protected ?int $physicalRecordLength = null)
     {

@@ -10,7 +10,9 @@ use STS\Bai2\Exceptions\ParseException;
 
 trait RecordParserTrait
 {
-    use ReadableNameTrait, RecordParserIdempotentParsingTrait, RecordParserArrayAccessTrait;
+    use ReadableNameTrait;
+    use RecordParserIdempotentParsingTrait;
+    use RecordParserArrayAccessTrait;
 
     private MultilineParser $multilineParser;
 

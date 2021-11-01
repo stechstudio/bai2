@@ -6,13 +6,10 @@ namespace STS\Bai2\Parsers;
 class AccountSummaryOrStatusTypeCode
 {
 
-    const DEFAULTED = 0;
-
-    const STATUS = 1;
-
-    const SUMMARY = 2;
-
-    const INVALID = -1;
+    public const DEFAULTED = 0;
+    public const STATUS = 1;
+    public const SUMMARY = 2;
+    public const INVALID = -1;
 
     public static function detect(?string $typeCode): int
     {
