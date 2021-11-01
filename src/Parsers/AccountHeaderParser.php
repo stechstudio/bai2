@@ -179,7 +179,8 @@ final class AccountHeaderParser extends AbstractRecordParser
         return $this;
     }
 
-    # TODO(zmd) parses funds type triat (used here and in transaction parser)
+    // TODO(zmd) extract parses funds type trait (used here and in transaction
+    //  parser)
     protected function shiftAndParseFundsType(): array
     {
         $fundsType = [];
@@ -198,9 +199,15 @@ final class AccountHeaderParser extends AbstractRecordParser
                 break;
 
             case 'V':
-                // TODO(zmd): parse value dated funds type info
-                //   'valueDate' => '210909',
-                //   'valueTime' => '0000',
+                // TODO(zmd): validate format & default/optional
+                $fundsType['valueDate'] =
+                    $this->shiftAndParseField('Funds Type, Value Dated, Date')
+                         ->string(default: null);
+
+                // TODO(zmd): validate format & default/optional
+                $fundsType['valueTime'] =
+                    $this->shiftAndParseField('Funds Type, Value Dated, Time')
+                         ->string(default: null);
                 break;
 
             case 'S':
