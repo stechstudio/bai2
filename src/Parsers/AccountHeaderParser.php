@@ -115,22 +115,30 @@ final class AccountHeaderParser extends AbstractRecordParser
             $this->shiftAndParseField('Currency Code')
                  ->string(default: null);
 
-        // TODO(zmd): clean this mess up!
-        $this->parsed['summaryAndStatusInformation'] = [];
+        $this->parsed['summaryAndStatusInformation'] = $this->shiftAndParseSummaryAndStatusInformation();
+
+        return $this;
+    }
+
+    private function shiftAndParseSummaryAndStatusInformation(): array
+    {
+        $summaryAndStatusInformation = [];
+
         while ($this->getParser()->hasMore()) {
             // TODO(zmd): validate format & default/optional
             $typeCode =
                 $this->shiftAndParseField('Type Code')
                      ->string(default: null);
 
-            if ($typeCode) {
+            if ($this->isDefaultedTypeCode($typeCode)) {
+                // Defaulted Type Code
+                // TODO(zmd): validate format & default/optional (they should be ->is(''))
+                $this->getParser()->drop(3);
+            } else {
                 $accountInformationOrStatus = [ 'typeCode' => $typeCode ];
 
                 $typeCodeInt = (int) $typeCode;
-                if (
-                    ($typeCodeInt >=   1 && $typeCodeInt <=  99) ||
-                    ($typeCodeInt >= 900 && $typeCodeInt <= 919)
-                ) {
+                if ($this->isAccountStatusTypeCode($typeCode)) {
                     // Account Status Type Code (itemCount and fundsType should
                     // be defaulted)
 
@@ -143,10 +151,7 @@ final class AccountHeaderParser extends AbstractRecordParser
                     // TODO(zmd): validate format & default/optional (they
                     //   should be ->is(''))
                     $this->getParser()->drop(2);
-                } else if (
-                    ($typeCodeInt >= 100 && $typeCodeInt <= 799) ||
-                    ($typeCodeInt >= 920 && $typeCodeInt <= 999)
-                ) {
+                } else if ($this->isAccountSummaryTypeCode($typeCode)) {
                     // Account Summary Type Code (may have itemCount and
                     // fundsType fields)
 
@@ -168,15 +173,34 @@ final class AccountHeaderParser extends AbstractRecordParser
                     //   type code range?
                 }
 
-                $this->parsed['summaryAndStatusInformation'][] = $accountInformationOrStatus;
-            } else {
-                // Defaulted Type Code
-                // TODO(zmd): validate format & default/optional (they should be ->is(''))
-                $this->getParser()->drop(3);
+                $summaryAndStatusInformation[] = $accountInformationOrStatus;
             }
         }
 
-        return $this;
+        return $summaryAndStatusInformation;
+    }
+
+    private function isDefaultedTypeCode(?string $typeCode): bool
+    {
+        return is_null($typeCode);
+    }
+
+    private function isAccountStatusTypeCode(string $typeCode): bool
+    {
+        $typeCodeInt = (int) $typeCode;
+        return (
+            ($typeCodeInt >=   1 && $typeCodeInt <=  99) ||
+            ($typeCodeInt >= 900 && $typeCodeInt <= 919)
+        );
+    }
+
+    private function isAccountSummaryTypeCode(string $typeCode): bool
+    {
+        $typeCodeInt = (int) $typeCode;
+        return (
+            ($typeCodeInt >= 100 && $typeCodeInt <= 799) ||
+            ($typeCodeInt >= 920 && $typeCodeInt <= 999)
+        );
     }
 
 }
