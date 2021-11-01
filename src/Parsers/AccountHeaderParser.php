@@ -3,7 +3,7 @@
 namespace STS\Bai2\Parsers;
 
 /**
- * # Account Identifer and Summary Status
+ * # Account Identifier and Summary Status
  *
  * * __Defaulted Type Code__:
  *     * `null`
@@ -161,14 +161,8 @@ final class AccountHeaderParser extends AbstractRecordParser
                         $this->shiftAndParseField('Item Count')
                              ->int(default: null);
 
-                    // TODO(zmd): validate format & default/optional
-                    // TODO(zmd): this is incomplete parsing of fundsType
-                    //   (finish implementation once we have written failing
-                    //   tests)
-                    $accountInformationOrStatus['fundsType'] = [];
-                    $accountInformationOrStatus['fundsType']['distributionOfAvailability'] =
-                        $this->shiftAndParseField('Funds Type, Distribution of Availability')
-                             ->string(default: null);
+                    $accountInformationOrStatus['fundsType']
+                        = $this->shiftAndParseFundsType();
                 } else {
                     // TODO(zmd): validate if encountering an *obviously* invalid
                     //   type code range?
@@ -183,6 +177,21 @@ final class AccountHeaderParser extends AbstractRecordParser
         }
 
         return $this;
+    }
+
+    # TODO(zmd) parses funds type triat (used here and in transaction parser)
+    protected function shiftAndParseFundsType(): array
+    {
+        $fundsType = [];
+
+        // TODO(zmd): validate format & default/optional
+        $fundsType['distributionOfAvailability'] =
+            $this->shiftAndParseField('Funds Type, Distribution of Availability')
+                 ->string(default: null);
+
+        // TODO(zmd): finish implementing me!
+
+        return $fundsType;
     }
 
 }
