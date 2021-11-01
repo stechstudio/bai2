@@ -24,7 +24,31 @@ final class TransactionParserTest extends RecordParserTestCase
 
     // ----- record-specific parsing and usage ---------------------------------
 
-    // TODO(zmd): public function testParseFromSingleLine(): void {}
+    public function testParseFromSingleLine(): void
+    {
+        $this->parser->pushLine(self::$fullRecordLine);
+
+        $this->assertEquals('16', $this->parser['recordCode']);
+        $this->assertEquals('003', $this->parser['typeCode']);
+        $this->assertEquals(10000, $this->parser['amount']);
+        $this->assertEquals(
+            [
+                'distributionOfAvailability' => 'D',
+                'availability' => [
+                     1 =>  1000,
+                     5 => 10000,
+                    30 => 25000,
+                ]
+            ],
+            $this->parser['fundsType']
+        );
+        $this->assertEquals('123456789', $this->parser['bankReferenceNumber']);
+        $this->assertEquals('987654321', $this->parser['customerReferenceNumber']);
+        $this->assertEquals(
+            "The following character is, of all the path separation characters I've ever used, my absolute favorite: /",
+            $this->parser['text']
+        );
+    }
 
     // TODO(zmd): public function testParseFromMultipleLines(): void {}
 
