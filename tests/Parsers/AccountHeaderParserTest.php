@@ -374,7 +374,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
                 ]
             ],
             [
-                '03,0975312468,,190,70000000,4,V,210909,0800/',
+                '03,0975312468,,190,70000000,4,V,210909,0000/',
                 [
                     'distributionOfAvailability' => 'V',
                     'valueDate' => '210909',
@@ -382,7 +382,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
                 ]
             ],
             [
-                '03,0975312468,,190,70000000,4,V,210909,0800/',
+                '03,0975312468,,190,70000000,4,V,210909,2400/',
                 [
                     'distributionOfAvailability' => 'V',
                     'valueDate' => '210909',
@@ -390,7 +390,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
                 ]
             ],
             [
-                '03,0975312468,,190,70000000,4,V,210909,0800/',
+                '03,0975312468,,190,70000000,4,V,210909,9999/',
                 [
                     'distributionOfAvailability' => 'V',
                     'valueDate' => '210909',
@@ -431,7 +431,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
                 ]
             ],
             [
-                '03,0975312468,,190,70000000,4,D,5,0,150000,1,100000,3,90000,5,70000,,7,50000/',
+                '03,0975312468,,190,70000000,4,D,5,0,150000,1,100000,3,90000,5,70000,7,50000/',
                 [
                     'distributionOfAvailability' => 'D',
                     'availability' => [

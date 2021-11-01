@@ -240,6 +240,21 @@ final class AccountHeaderParser extends AbstractRecordParser
                 //   3 =>  90000,
                 //   5 =>  70000,
                 //   7 =>  50000,
+                // TODO(zmd): validate format & default/optional
+                $numDistributions =
+                    $this->shiftAndParseField('Funds Type, Distributed Availability (D), Number of Distributions')
+                         ->int(default: null);
+                for (; $numDistributions > 0; --$numDistributions) {
+                    // TODO(zmd): validate format & default/optional
+                    $days = $this->shiftAndParseField('Funds Type, Distributed Availability (D), Specified Availability')
+                                 ->int(default: null);
+
+                    // TODO(zmd): validate format & default/optional
+                    $amount = $this->shiftAndParseField('Funds Type, Distributed Availability (D), Amount')
+                                   ->int(default: null);
+
+                    $fundsType['availability'][$days] = $amount;
+                }
                 break;
         }
 
