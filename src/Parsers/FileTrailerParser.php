@@ -19,7 +19,21 @@ final class FileTrailerParser extends AbstractRecordParser
     {
         $this->parsed['recordCode'] = $this->shiftField();
 
-        // TODO(zmd): finish implementing me!
+        // TODO(zmd): validate format & default/optional
+        $this->parsed['fileControlTotal'] =
+            $this->shiftAndParseField('File Control Total')
+                 ->int(default: null);
+
+        // TODO(zmd): validate format & default/optional
+        $this->parsed['numberOfGroups'] =
+            $this->shiftAndParseField('Number of Groups')
+                 ->int(default: null);
+
+        // TODO(zmd): validate format & default/optional
+        $this->parsed['numberOfRecords'] =
+            $this->shiftAndParseField('Number of Records')
+                 ->int(default: null);
+
         return $this;
     }
 

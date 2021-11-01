@@ -24,11 +24,41 @@ final class FileTrailerParserTest extends RecordParserTestCase
 
     // ----- record-specific parsing and usage ---------------------------------
 
-    // TODO(zmd): public function testParseFromSingleLine(): void {}
+    public function testParseFromSingleLine(): void
+    {
+        $this->parser->pushLine(self::$fullRecordLine);
 
-    // TODO(zmd): public function testParseFromMultipleLines(): void {}
+        $this->assertEquals('99', $this->parser['recordCode']);
+        $this->assertEquals(123456789, $this->parser['fileControlTotal']);
+        $this->assertEquals(5, $this->parser['numberOfGroups']);
+        $this->assertEquals(42, $this->parser['numberOfRecords']);
+    }
 
-    // TODO(zmd): public function testToArray(): void {}
+    public function testParseFromMultipleLines(): void
+    {
+        $this->parser->pushLine(self::$partialRecordLine);
+        $this->parser->pushLine(self::$continuedRecordLine);
+
+        $this->assertEquals('99', $this->parser['recordCode']);
+        $this->assertEquals(123456789, $this->parser['fileControlTotal']);
+        $this->assertEquals(5, $this->parser['numberOfGroups']);
+        $this->assertEquals(42, $this->parser['numberOfRecords']);
+    }
+
+    public function testToArray(): void
+    {
+        $this->parser->pushLine(self::$fullRecordLine);
+
+        $this->assertEquals(
+            [
+                'recordCode' => '99',
+                'fileControlTotal' => 123456789,
+                'numberOfGroups' => 5,
+                'numberOfRecords' => 42,
+            ],
+            $this->parser->toArray()
+        );
+    }
 
     // ----- record-specific field validation ----------------------------------
 
