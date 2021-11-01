@@ -19,7 +19,21 @@ final class GroupTrailerParser extends AbstractRecordParser
     {
         $this->parsed['recordCode'] = $this->shiftField();
 
-        // TODO(zmd): finish implementing me!
+        // TODO(zmd): validate format & default/optional
+        $this->parsed['groupControlTotal'] =
+            $this->shiftAndParseField('Group Control Total')
+                 ->int(default: null);
+
+        // TODO(zmd): validate format & default/optional
+        $this->parsed['numberOfAccounts'] =
+            $this->shiftAndParseField('Number of Accounts')
+                 ->int(default: null);
+
+        // TODO(zmd): validate format & default/optional
+        $this->parsed['numberOfRecords'] =
+            $this->shiftAndParseField('Number of Records')
+                 ->int(default: null);
+
         return $this;
     }
 

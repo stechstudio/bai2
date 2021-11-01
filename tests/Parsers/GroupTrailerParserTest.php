@@ -25,11 +25,41 @@ final class GroupTrailerParserTest extends RecordParserTestCase
 
     // ----- record-specific parsing and usage ---------------------------------
 
-    // TODO(zmd): public function testParseFromSingleLine(): void {}
+    public function testParseFromSingleLine(): void
+    {
+        $this->parser->pushLine(self::$fullRecordLine);
 
-    // TODO(zmd): public function testParseFromMultipleLines(): void {}
+        $this->assertEquals('98', $this->parser['recordCode']);
+        $this->assertEquals(11800000, $this->parser['groupControlTotal']);
+        $this->assertEquals(2, $this->parser['numberOfAccounts']);
+        $this->assertEquals(6, $this->parser['numberOfRecords']);
+    }
 
-    // TODO(zmd): public function testToArray(): void {}
+    public function testParseFromMultipleLines(): void
+    {
+        $this->parser->pushLine(self::$partialRecordLine);
+        $this->parser->pushLine(self::$continuedRecordLine);
+
+        $this->assertEquals('98', $this->parser['recordCode']);
+        $this->assertEquals(11800000, $this->parser['groupControlTotal']);
+        $this->assertEquals(2, $this->parser['numberOfAccounts']);
+        $this->assertEquals(6, $this->parser['numberOfRecords']);
+    }
+
+    public function testToArray(): void
+    {
+        $this->parser->pushLine(self::$fullRecordLine);
+
+        $this->assertEquals(
+            [
+                'recordCode' => '98',
+                'groupControlTotal' => 11800000,
+                'numberOfAccounts' => 2,
+                'numberOfRecords' => 6,
+            ],
+            $this->parser->toArray()
+        );
+    }
 
     // ----- record-specific field validation ----------------------------------
 
