@@ -19,7 +19,16 @@ final class AccountTrailerParser extends AbstractRecordParser
     {
         $this->parsed['recordCode'] = $this->shiftField();
 
-        // TODO(zmd): finish implementing me!
+        // TODO(zmd): validate format & default/optional
+        $this->parsed['accountControlTotal'] =
+            $this->shiftAndParseField('Account Control Total')
+                 ->int(default: null);
+
+        // TODO(zmd): validate format & default/optional
+        $this->parsed['numberOfRecords'] =
+            $this->shiftAndParseField('Number of Records')
+                 ->int(default: null);
+
         return $this;
     }
 

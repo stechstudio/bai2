@@ -25,11 +25,38 @@ final class AccountTrailerParserTest extends RecordParserTestCase
 
     // ----- record-specific parsing and usage ---------------------------------
 
-    // TODO(zmd): public function testParseFromSingleLine(): void {}
+    public function testParseFromSingleLine(): void
+    {
+        $this->parser->pushLine(self::$fullRecordLine);
 
-    // TODO(zmd): public function testParseFromMultipleLines(): void {}
+        $this->assertEquals('49', $this->parser['recordCode']);
+        $this->assertEquals(18650000, $this->parser['accountControlTotal']);
+        $this->assertEquals(3, $this->parser['numberOfRecords']);
+    }
 
-    // TODO(zmd): public function testToArray(): void {}
+    public function testParseFromMultipleLines(): void
+    {
+        $this->parser->pushLine(self::$partialRecordLine);
+        $this->parser->pushLine(self::$continuedRecordLine);
+
+        $this->assertEquals('49', $this->parser['recordCode']);
+        $this->assertEquals(18650000, $this->parser['accountControlTotal']);
+        $this->assertEquals(3, $this->parser['numberOfRecords']);
+    }
+
+    public function testToArray(): void
+    {
+        $this->parser->pushLine(self::$fullRecordLine);
+
+        $this->assertEquals(
+            [
+                'recordCode' => '49',
+                'accountControlTotal' => 18650000,
+                'numberOfRecords' => 3,
+            ],
+            $this->parser->toArray()
+        );
+    }
 
     // ----- record-specific field validation ----------------------------------
 
