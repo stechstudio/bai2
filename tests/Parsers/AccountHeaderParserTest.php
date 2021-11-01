@@ -368,7 +368,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
             [
                 '03,0975312468,,190,70000000,4,V,210909,0800/',
                 [
-                    'distributionOfAvailability' => '2',
+                    'distributionOfAvailability' => 'V',
                     'valueDate' => '210909',
                     'valueTime' => '0800',
                 ]
@@ -376,7 +376,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
             [
                 '03,0975312468,,190,70000000,4,V,210909,0800/',
                 [
-                    'distributionOfAvailability' => '2',
+                    'distributionOfAvailability' => 'V',
                     'valueDate' => '210909',
                     'valueTime' => '0000',
                 ]
@@ -384,7 +384,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
             [
                 '03,0975312468,,190,70000000,4,V,210909,0800/',
                 [
-                    'distributionOfAvailability' => '2',
+                    'distributionOfAvailability' => 'V',
                     'valueDate' => '210909',
                     'valueTime' => '2400',
                 ]
@@ -392,7 +392,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
             [
                 '03,0975312468,,190,70000000,4,V,210909,0800/',
                 [
-                    'distributionOfAvailability' => '2',
+                    'distributionOfAvailability' => 'V',
                     'valueDate' => '210909',
                     'valueTime' => '9999',
                 ]

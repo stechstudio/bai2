@@ -199,14 +199,27 @@ final class AccountHeaderParser extends AbstractRecordParser
 
             case 'V':
                 // TODO(zmd): parse value dated funds type info
+                //   'valueDate' => '210909',
+                //   'valueTime' => '0000',
                 break;
 
             case 'S':
                 // TODO(zmd): parse S-type distributed availability funds type info
+                //   0 => 150000,
+                //   1 => 100000,
+                //   2 =>  90000,
                 break;
 
             case 'D':
                 // TODO(zmd): parse D-type distributed availability funds type info
+                //   D,5,0,150000,1,100000,3,90000,5,70000,,7,50000
+                //     |
+                //     V
+                //   0 => 150000,
+                //   1 => 100000,
+                //   3 =>  90000,
+                //   5 =>  70000,
+                //   7 =>  50000,
                 break;
         }
 
