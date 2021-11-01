@@ -211,10 +211,23 @@ final class AccountHeaderParser extends AbstractRecordParser
                 break;
 
             case 'S':
-                // TODO(zmd): parse S-type distributed availability funds type info
-                //   0 => 150000,
-                //   1 => 100000,
-                //   2 =>  90000,
+                $fundsType['availability'] = [];
+
+                // TODO(zmd): validate format & default/optional
+                $fundsType['availability'][0] =
+                    $this->shiftAndParseField('Funds Type, Distributed Availability (S), Immediate Availability')
+                         ->int(default: null);
+
+                // TODO(zmd): validate format & default/optional
+                $fundsType['availability'][1] =
+                    $this->shiftAndParseField('Funds Type, Distributed Availability (S), One-day Availability')
+                         ->int(default: null);
+
+                // TODO(zmd): validate format & default/optional
+                $fundsType['availability'][2] =
+                    $this->shiftAndParseField('Funds Type, Distributed Availability (S), Two-or-more Day Availability')
+                         ->int(default: null);
+
                 break;
 
             case 'D':
