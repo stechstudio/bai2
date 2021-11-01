@@ -2,6 +2,8 @@
 
 namespace STS\Bai2\Parsers;
 
+use STS\Bai2\Parsers\AccountSummaryOrStatusTypeCode as TypeCode;
+
 /**
  * # Account Identifier and Summary Status
  *
@@ -130,15 +132,20 @@ final class AccountHeaderParser extends AbstractRecordParser
                 $this->shiftAndParseField('Type Code')
                      ->string(default: null);
 
-            if ($this->isDefaultedTypeCode($typeCode)) {
-                $this->shiftAndParseDefaulted();
-            } else if ($this->isAccountStatusTypeCode($typeCode)) {
-                $summaryAndStatusInformation[] = $this->shiftAndParseAccountStatus($typeCode);
-            } else if ($this->isAccountSummaryTypeCode($typeCode)) {
-                $summaryAndStatusInformation[] = $this->shiftAndParseAccountSummary($typeCode);
-            } else {
-                // TODO(zmd): validate if encountering an *obviously* invalid
-                //   type code range?
+            switch (TypeCode::detect($typeCode)) {
+                case TypeCode::DEFAULTED:
+                    $this->shiftAndParseDefaulted();
+                    break;
+                case TypeCode::STATUS:
+                    $summaryAndStatusInformation[] = $this->shiftAndParseAccountStatus($typeCode);
+                    break;
+                case TypeCode::SUMMARY:
+                    $summaryAndStatusInformation[] = $this->shiftAndParseAccountSummary($typeCode);
+                    break;
+                default:
+                    // TODO(zmd): validate if encountering an *obviously*
+                    //   invalid type code range?
+                    break;
             }
         }
 
@@ -204,29 +211,6 @@ final class AccountHeaderParser extends AbstractRecordParser
             = $this->shiftAndParseFundsType();
 
         return $accountInformationOrStatus;
-    }
-
-    private function isDefaultedTypeCode(?string $typeCode): bool
-    {
-        return is_null($typeCode);
-    }
-
-    private function isAccountStatusTypeCode(string $typeCode): bool
-    {
-        $typeCodeInt = (int) $typeCode;
-        return (
-            ($typeCodeInt >=   1 && $typeCodeInt <=  99) ||
-            ($typeCodeInt >= 900 && $typeCodeInt <= 919)
-        );
-    }
-
-    private function isAccountSummaryTypeCode(string $typeCode): bool
-    {
-        $typeCodeInt = (int) $typeCode;
-        return (
-            ($typeCodeInt >= 100 && $typeCodeInt <= 799) ||
-            ($typeCodeInt >= 920 && $typeCodeInt <= 999)
-        );
     }
 
 }
