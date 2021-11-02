@@ -756,9 +756,34 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser['summaryAndStatusInformation'];
     }
 
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryItemCountValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryItemCountMissing(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryItemCountInvalid(): void {}
+    public function testSummaryAndStatusInformationSummaryItemCountValid(): void
+    {
+        $this->parser->pushLine('03,0975312468,,190,500000,4,0/');
+        $this->assertEquals(4, $this->parser['summaryAndStatusInformation'][0]['itemCount']);
+    }
+
+    public function testSummaryAndStatusInformationSummaryItemCountOptional(): void
+    {
+        $this->parser->pushLine('03,0975312468,,190,500000,,0/');
+        $this->assertNull($this->parser['summaryAndStatusInformation'][0]['itemCount']);
+    }
+
+    /**
+     * @testWith ["03,0975312468,,190,500000,-4,0/"]
+     *           ["03,0975312468,,190,500000,+4,0/"]
+     *           ["03,0975312468,,190,500000,4.0,0/"]
+     *           ["03,0975312468,,190,500000,a4,0/"]
+     *           ["03,0975312468,,190,500000,4b,0/"]
+     *           ["03,0975312468,,190,500000,four,0/"]
+     */
+    public function testSummaryAndStatusInformationSummaryItemCountInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Item Count" must be unsigned integer when provided.');
+        $this->parser['summaryAndStatusInformation'];
+    }
 
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDistributionOfAvailabilityValid(): void {}
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDistributionOfAvailabilityMissing(): void {}

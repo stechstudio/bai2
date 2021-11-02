@@ -208,16 +208,14 @@ final class AccountHeaderParser extends AbstractRecordParser
     {
         $accountInformationOrStatus = ['typeCode' => $typeCode];
 
-        // TODO(zmd): validate format & default/optional (unsigned only; can NOT
-        //   be signed)
         $accountInformationOrStatus['amount'] =
             $this->shiftAndParseField('Amount')
                  ->match('/^\+?\d+$/', 'must be positive integer when provided')
                  ->int(default: null);
 
-        // TODO(zmd): validate format & default/optional
         $accountInformationOrStatus['itemCount'] =
             $this->shiftAndParseField('Item Count')
+                 ->match('/^\d+$/', 'must be unsigned integer when provided')
                  ->int(default: null);
 
         $accountInformationOrStatus['fundsType']
