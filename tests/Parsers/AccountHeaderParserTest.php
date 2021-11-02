@@ -587,16 +587,40 @@ final class AccountHeaderParserTest extends RecordParserTestCase
 
     // ----- record-specific field validation ----------------------------------
 
-    // TODO(zmd): test "Customer Account Number" validation
+    // TODO(zmd): public function testCustomerAccountNumberValid(): void {}
+    // TODO(zmd): public function testCustomerAccountNumberMissing(): void {}
+    // TODO(zmd): public function testCustomerAccountNumberInvalid(): void {}
 
-    // TODO(zmd): test "Currency Code" validation
+    // TODO(zmd): public function testCurrencyCodeValid(): void {}
+    // TODO(zmd): public function testCurrencyCodeMissing(): void {}
+    // TODO(zmd): public function testCurrencyCodeInvalid(): void {}
 
-    // TODO(zmd): test "Type Code" validation (and composite sub-fields!)
+    // TODO(zmd): public function testSummaryAndStatusInformationTypeCodeValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationTypeCodeMissing(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationTypeCodeInvalid(): void {}
 
-    // TODO(zmd): test     "Amount" validation
+    // TODO(zmd): public function testSummaryAndStatusInformationAmountValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationAmountMissing(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationAmountInvalid(): void {}
 
-    // TODO(zmd): test     "Item Count" validation
+    // TODO(zmd): public function testSummaryAndStatusInformationItemCountValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationItemCountMissing(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationItemCountInvalid(): void {}
 
-    // TODO(zmd): test     "Funds Type" validation (and composite sub-sub-fields!)
+    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeDistributionOfAvailabilityValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeDistributionOfAvailabilityMissing(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeDistributionOfAvailabilityInvalid(): void {}
+
+    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeValueDateValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeValueDateMissing(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeValueDateInvalid(): void {}
+
+    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeValueTimeValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeValueTimeMissing(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeValueTimeInvalid(): void {}
+
+    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeAvailabilityValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeAvailabilityInvalid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeAvailabilityMissing(): void {}
 
 }

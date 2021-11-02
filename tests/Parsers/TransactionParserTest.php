@@ -303,16 +303,40 @@ final class TransactionParserTest extends RecordParserTestCase
 
     // ----- record-specific field validation ----------------------------------
 
-    // TODO(zmd): test "Type Code" validation
+    // TODO(zmd): public function testTypeCodeValid(): void {}
+    // TODO(zmd): public function testTypeCodeMissing(): void {}
+    // TODO(zmd): public function testTypeCodeInvalid(): void {}
 
-    // TODO(zmd): test "Amount" validation
+    // TODO(zmd): public function testAmountValid(): void {}
+    // TODO(zmd): public function testAmountMissing(): void {}
+    // TODO(zmd): public function testAmountInvalid(): void {}
 
-    // TODO(zmd): test "Funds Type" validation (and composite sub-fields!)
+    // TODO(zmd): public function testFundsTypeDistributionOfAvailabilityValid(): void {}
+    // TODO(zmd): public function testFundsTypeDistributionOfAvailabilityMissing(): void {}
+    // TODO(zmd): public function testFundsTypeDistributionOfAvailabilityInvalid(): void {}
 
-    // TODO(zmd): test "Bank Reference Number" validation
+    // TODO(zmd): public function testFundsTypeValueDateValid(): void {}
+    // TODO(zmd): public function testFundsTypeValueDateMissing(): void {}
+    // TODO(zmd): public function testFundsTypeValueDateInvalid(): void {}
 
-    // TODO(zmd): test "Customer Reference Number" validation
+    // TODO(zmd): public function testFundsTypeValueTimeValid(): void {}
+    // TODO(zmd): public function testFundsTypeValueTimeMissing(): void {}
+    // TODO(zmd): public function testFundsTypeValueTimeInvalid(): void {}
 
-    // TODO(zmd): test "Text" validation
+    // TODO(zmd): public function testFundsTypeAvailabilityValid(): void {}
+    // TODO(zmd): public function testFundsTypeAvailabilityInvalid(): void {}
+    // TODO(zmd): public function testFundsTypeAvailabilityMissing(): void {}
+
+    // TODO(zmd): public function testBankReferenceNumberValid(): void {}
+    // TODO(zmd): public function testBankReferenceNumberMissing(): void {}
+    // TODO(zmd): public function testBankReferenceNumberInvalid(): void {}
+
+    // TODO(zmd): public function testCustomerReferenceNumberValid(): void {}
+    // TODO(zmd): public function testCustomerReferenceNumberMissing(): void {}
+    // TODO(zmd): public function testCustomerReferenceNumberInvalid(): void {}
+
+    // TODO(zmd): public function testTextValid(): void {}
+    // TODO(zmd): public function testTextMissing(): void {}
+    // TODO(zmd): public function testTextInvalid(): void {}
 
 }

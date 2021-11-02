@@ -62,10 +62,16 @@ final class FileTrailerParserTest extends RecordParserTestCase
 
     // ----- record-specific field validation ----------------------------------
 
-    // TODO(zmd): test "File Control Total" validation
+    // TODO(zmd): public function testGroupControlTotalValid(): void {}
+    // TODO(zmd): public function testGroupControlTotalMissing(): void {}
+    // TODO(zmd): public function testGroupControlTotalInvalid(): void {}
 
-    // TODO(zmd): test "Number of Groups" validation
+    // TODO(zmd): public function testNumberOfGroupsValid(): void {}
+    // TODO(zmd): public function testNumberOfGroupsMissing(): void {}
+    // TODO(zmd): public function testNumberOfGroupsInvalid(): void {}
 
-    // TODO(zmd): test "Number of Records" validation
+    // TODO(zmd): public function testNumberOfRecordsdValid(): void {}
+    // TODO(zmd): public function testNumberOfRecordsdMissing(): void {}
+    // TODO(zmd): public function testNumberOfRecordsdInvalid(): void {}
 
 }

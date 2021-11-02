@@ -74,18 +74,32 @@ final class GroupHeaderParserTest extends RecordParserTestCase
 
     // ----- record-specific field validation ----------------------------------
 
-    // TODO(zmd): test "Ultimate Receiver Identification" validation
+    // TODO(zmd): public function testUltimateReceiverIdentificationValid(): void {}
+    // TODO(zmd): public function testUltimateReceiverIdentificationMissing(): void {}
+    // TODO(zmd): public function testUltimateReceiverIdentificationInvalid(): void {}
 
-    // TODO(zmd): test "Originator Identification" validation
+    // TODO(zmd): public function testOriginatorIdentificationValid(): void {}
+    // TODO(zmd): public function testOriginatorIdentificationMissing(): void {}
+    // TODO(zmd): public function testOriginatorIdentificationInvalid(): void {}
 
-    // TODO(zmd): test "Group Status" validation
+    // TODO(zmd): public function testGroupStatusValid(): void {}
+    // TODO(zmd): public function testGroupStatusMissing(): void {}
+    // TODO(zmd): public function testGroupStatusInvalid(): void {}
 
-    // TODO(zmd): test "As-of-Date" validation
+    // TODO(zmd): public function testAsOfDateValid(): void {}
+    // TODO(zmd): public function testAsOfDateMissing(): void {}
+    // TODO(zmd): public function testAsOfDateInvalid(): void {}
 
-    // TODO(zmd): test "As-of-Time" validation
+    // TODO(zmd): public function testAsOfTimeValid(): void {}
+    // TODO(zmd): public function testAsOfTimeMissing(): void {}
+    // TODO(zmd): public function testAsOfTimeInvalid(): void {}
 
-    // TODO(zmd): test "Currency Code" validation
+    // TODO(zmd): public function testCurrencyCodeValid(): void {}
+    // TODO(zmd): public function testCurrencyCodeMissing(): void {}
+    // TODO(zmd): public function testCurrencyCodeInvalid(): void {}
 
-    // TODO(zmd): test "As-of-Date Modifier" validation
+    // TODO(zmd): public function testAsOfDateModifierValid(): void {}
+    // TODO(zmd): public function testAsOfDateModifierMissing(): void {}
+    // TODO(zmd): public function testAsOfDateModifierInvalid(): void {}
 
 }

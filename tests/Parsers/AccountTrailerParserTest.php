@@ -60,8 +60,12 @@ final class AccountTrailerParserTest extends RecordParserTestCase
 
     // ----- record-specific field validation ----------------------------------
 
-    // TODO(zmd): test "Account Control Code" validation
+    // TODO(zmd): public function testAccountControlCodeValid(): void {}
+    // TODO(zmd): public function testAccountControlCodeMissing(): void {}
+    // TODO(zmd): public function testAccountControlCodeInvalid(): void {}
 
-    // TODO(zmd): test "Number of Records" validation
+    // TODO(zmd): public function testNumberOfRecordsValid(): void {}
+    // TODO(zmd): public function testNumberOfRecordsMissing(): void {}
+    // TODO(zmd): public function testNumberOfRecordsInvalid(): void {}
 
 }
