@@ -785,9 +785,57 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser['summaryAndStatusInformation'];
     }
 
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDistributionOfAvailabilityValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDistributionOfAvailabilityMissing(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDistributionOfAvailabilityInvalid(): void {}
+    /**
+     * @testWith ["03,0975312468,,190,70000000,4,0/", "0"]
+     *           ["03,0975312468,,190,70000000,4,1/", "1"]
+     *           ["03,0975312468,,190,70000000,4,2/", "2"]
+     *           ["03,0975312468,,190,70000000,4,V,210909,0800/", "V"]
+     *           ["03,0975312468,,190,70000000,4,S,150000,100000,90000/", "S"]
+     *           ["03,0975312468,,190,70000000,4,D,3,0,150000,1,100000,2,90000/", "D"]
+     */
+    public function testSummaryAndStatusInformationSummaryFundsTypeDistributionOfAvailabilityValid(
+        string $line,
+        string $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertEquals(
+            $expected,
+            $this->parser['summaryAndStatusInformation'][0]['fundsType']['distributionOfAvailability']
+        );
+    }
+
+    public function testSummaryAndStatusInformationSummaryFundsTypeDistributionOfAvailabilityOptional(): void
+    {
+        $this->parser->pushLine('03,0975312468,,190,70000000,4,/');
+        $this->assertNull(
+            $this->parser['summaryAndStatusInformation'][0]['fundsType']['distributionOfAvailability']
+        );
+    }
+
+    /**
+     * @testWith ["03,0975312468,,190,70000000,4,-1/"]
+     *           ["03,0975312468,,190,70000000,4,3/"]
+     *           ["03,0975312468,,190,70000000,4,X/"]
+     *           ["03,0975312468,,190,70000000,4,_/"]
+     *           ["03,0975312468,,190,70000000,4,one/"]
+     *           ["03,0975312468,,190,70000000,4,00/"]
+     *           ["03,0975312468,,190,70000000,4,01/"]
+     *           ["03,0975312468,,190,70000000,4,02/"]
+     *           ["03,0975312468,,190,70000000,4,v,210909,0800/"]
+     *           ["03,0975312468,,190,70000000,4,s,150000,100000,90000/"]
+     *           ["03,0975312468,,190,70000000,4,d,3,0,150000,1,100000,2,90000/"]
+     */
+    public function testSummaryAndStatusInformationSummaryFundsTypeDistributionOfAvailabilityInvalid(
+        string $line
+    ): void {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage(
+            'Invalid field type: "Distribution of Availability" for "Funds Type" must be one of "0", "1", "2", "V", "S", "D", or "Z".'
+        );
+        $this->parser['summaryAndStatusInformation'];
+    }
 
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeValueDateValid(): void {}
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeValueDateMissing(): void {}

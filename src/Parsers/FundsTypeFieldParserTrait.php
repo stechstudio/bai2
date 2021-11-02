@@ -9,12 +9,11 @@ trait FundsTypeFieldParserTrait
     {
         $fundsType = [];
 
-        // TODO(zmd): validate format & default/optional
         $fundsType['distributionOfAvailability'] =
-            $this->shiftAndParseField('Funds Type, Distribution of Availability')
+            $this->shiftAndParseField('Distribution of Availability')
+                 ->match('/^(0|1|2|V|S|D|Z)$/', 'for "Funds Type" must be one of "0", "1", "2", "V", "S", "D", or "Z"')
                  ->string(default: null);
 
-        // TODO(zmd): finish implementing me!
         switch ($fundsType['distributionOfAvailability']) {
             case 'Z':
             case '0':
@@ -25,12 +24,12 @@ trait FundsTypeFieldParserTrait
             case 'V':
                 // TODO(zmd): validate format & default/optional
                 $fundsType['valueDate'] =
-                    $this->shiftAndParseField('Funds Type, Value Dated, Date')
+                    $this->shiftAndParseField('Value Dated Date')
                          ->string(default: null);
 
                 // TODO(zmd): validate format & default/optional
                 $fundsType['valueTime'] =
-                    $this->shiftAndParseField('Funds Type, Value Dated, Time')
+                    $this->shiftAndParseField('Value Dated Time')
                          ->string(default: null);
 
                 break;
