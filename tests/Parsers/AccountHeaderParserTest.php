@@ -672,6 +672,8 @@ final class AccountHeaderParserTest extends RecordParserTestCase
 
     /**
      * @testWith ["03,0975312468,,010,foo,,/"]
+     *           ["03,0975312468,,010,a500000,,/"]
+     *           ["03,0975312468,,010,500000b,,/"]
      *           ["03,0975312468,,010,500 000,,/"]
      *           ["03,0975312468,,010,500_000,,/"]
      *           ["03,0975312468,,010,500.000,,/"]
@@ -719,9 +721,40 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser['summaryAndStatusInformation'];
     }
 
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryAmountValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryAmountOptional(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryAmountInvalid(): void {}
+    /**
+     * @testWith ["03,0975312468,,190,500000,4,0/", 500000]
+     *           ["03,0975312468,,190,+500000,4,0/", 500000]
+     *           ["03,0975312468,,190,0,4,0/", 0]
+     */
+    public function testSummaryAndStatusInformationSummaryAmountValid(string $line, int $expected): void
+    {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['summaryAndStatusInformation'][0]['amount']);
+    }
+
+    public function testSummaryAndStatusInformationSummaryAmountOptional(): void
+    {
+        $this->parser->pushLine('03,0975312468,,190,,4,0/');
+        $this->assertNull($this->parser['summaryAndStatusInformation'][0]['amount']);
+    }
+
+    /**
+     * @testWith ["03,0975312468,,190,-500000,4,0/"]
+     *           ["03,0975312468,,190,a500000,4,0/"]
+     *           ["03,0975312468,,190,500000b,4,0/"]
+     *           ["03,0975312468,,190,foo,4,0/"]
+     *           ["03,0975312468,,190,500 000,4,0/"]
+     *           ["03,0975312468,,190,500_000,4,0/"]
+     *           ["03,0975312468,,190,500.000,4,0/"]
+     */
+    public function testSummaryAndStatusInformationSummaryAmountInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Amount" must be positive integer when provided.');
+        $this->parser['summaryAndStatusInformation'];
+    }
 
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryItemCountValid(): void {}
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryItemCountMissing(): void {}

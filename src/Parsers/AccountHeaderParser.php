@@ -212,6 +212,7 @@ final class AccountHeaderParser extends AbstractRecordParser
         //   be signed)
         $accountInformationOrStatus['amount'] =
             $this->shiftAndParseField('Amount')
+                 ->match('/^\+?\d+$/', 'must be positive integer when provided')
                  ->int(default: null);
 
         // TODO(zmd): validate format & default/optional
