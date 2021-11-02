@@ -110,16 +110,6 @@ final class FieldParserTest extends TestCase
         $parser->string();
     }
 
-    public function testIsConstraintMessageAdjustsWhenFieldOptional(): void
-    {
-        $parser = new FieldParser('1337', 'Meaning of Life');
-        $parser->is('42', 'must have meaning yo');
-
-        $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Meaning of Life", if provided, must have meaning yo.');
-        $parser->string(default: null);
-    }
-
     public function testFluentIsConstraint(): void
     {
         $parser = new FieldParser('apples', 'Fruit Basket');
@@ -166,16 +156,6 @@ final class FieldParserTest extends TestCase
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Appetizers" cannot be omitted.');
         $parser->string();
-    }
-
-    public function testMatchConstraintMessageAdjustsWhenFieldOptional(): void
-    {
-        $parser = new FieldParser('barbecue', 'Appetizers');
-        $parser->match('/^app/', 'must be app');
-
-        $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Appetizers", if provided, must be app.');
-        $parser->string(default: 'appliance');
     }
 
     public function testFluentMatchConstraint(): void

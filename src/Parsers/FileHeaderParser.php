@@ -55,13 +55,13 @@ final class FileHeaderParser extends AbstractRecordParser
 
         $this->parsed['physicalRecordLength'] =
             $this->shiftAndParseField('Physical Record Length')
-                 ->match('/^\d+$/', 'must be composed of 1 or more numerals')
+                 ->match('/^\d+$/', 'must be composed of 1 or more numerals when provided')
                  ->int(default: null);
         $this->getParser()->setPhysicalRecordLength($this->parsed['physicalRecordLength']);
 
         $this->parsed['blockSize'] =
             $this->shiftAndParseField('Block Size')
-                 ->match('/^\d+$/', 'must be composed of 1 or more numerals')
+                 ->match('/^\d+$/', 'must be composed of 1 or more numerals when provided')
                  ->int(default: null);
 
         $this->parsed['versionNumber'] =

@@ -366,7 +366,7 @@ final class FileHeaderParserTest extends RecordParserTestCase
         $this->parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Physical Record Length", if provided, must be composed of 1 or more numerals.');
+        $this->expectExceptionMessage('Invalid field type: "Physical Record Length" must be composed of 1 or more numerals when provided.');
         $this->parser['physicalRecordLength'];
     }
 
@@ -395,7 +395,7 @@ final class FileHeaderParserTest extends RecordParserTestCase
         $this->parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Block Size", if provided, must be composed of 1 or more numerals.');
+        $this->expectExceptionMessage('Invalid field type: "Block Size" must be composed of 1 or more numerals when provided.');
         $this->parser['blockSize'];
     }
 

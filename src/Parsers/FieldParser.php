@@ -15,13 +15,9 @@ class FieldParser
 
     public function is(string $constraint, string $violationMessage): self
     {
-        $this->constraint = function (bool $isRequired) use ($constraint, $violationMessage) {
+        $this->constraint = function () use ($constraint, $violationMessage) {
             if ($this->value !== $constraint) {
-                if ($isRequired) {
-                    $this->throw(" {$violationMessage}.");
-                } else {
-                    $this->throw(", if provided, {$violationMessage}.");
-                }
+                $this->throw(" {$violationMessage}.");
             }
         };
 
@@ -30,13 +26,9 @@ class FieldParser
 
     public function match(string $constraint, string $violationMessage): self
     {
-        $this->constraint = function (bool $isRequired) use ($constraint, $violationMessage) {
+        $this->constraint = function () use ($constraint, $violationMessage) {
             if (preg_match($constraint, $this->value) !== 1) {
-                if ($isRequired) {
-                    $this->throw(" {$violationMessage}.");
-                } else {
-                    $this->throw(", if provided, {$violationMessage}.");
-                }
+                $this->throw(" {$violationMessage}.");
             }
         };
 
@@ -56,15 +48,15 @@ class FieldParser
     protected function parseValue(array $options, callable $caster): ?string
     {
         if ($this->value === '') {
-            return $this->getDefaultOrElse($options);
+            return $this->getDefaultOrThrow($options);
         } else if ($this->constraint) {
-            ($this->constraint)(isRequired: !$this->hasDefault($options));
+            ($this->constraint)();
         }
 
         return $caster();
     }
 
-    protected function getDefaultOrElse(array $options): string|int|null
+    protected function getDefaultOrThrow(array $options): string|int|null
     {
         if ($this->hasDefault($options)) {
             return $options['default'];
