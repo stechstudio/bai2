@@ -615,7 +615,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
     }
 
     public function testSummaryAndStatusInformationTypeCodeOptional(): void {
-        $this->parser->pushLine("03,0975312468,,,,,/");
+        $this->parser->pushLine('03,0975312468,,,,,/');
         $this->assertEquals([], $this->parser['summaryAndStatusInformation']);
     }
 
@@ -652,28 +652,75 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser['summaryAndStatusInformation'];
     }
 
-    // TODO(zmd): public function testSummaryAndStatusInformationAmountValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationAmountMissing(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationAmountInvalid(): void {}
+    /**
+     * @testWith ["03,0975312468,,010,500000,,/", 500000]
+     *           ["03,0975312468,,010,+500000,,/", 500000]
+     *           ["03,0975312468,,010,-500000,,/", -500000]
+     *           ["03,0975312468,,010,0,,/", 0]
+     */
+    public function testSummaryAndStatusInformationStatusAmountValid(string $line, int $expected): void
+    {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['summaryAndStatusInformation'][0]['amount']);
+    }
 
-    // TODO(zmd): public function testSummaryAndStatusInformationItemCountValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationItemCountMissing(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationItemCountInvalid(): void {}
+    public function testSummaryAndStatusInformationStatusAmountOptional(): void
+    {
+        $this->parser->pushLine('03,0975312468,,010,,,/');
+        $this->assertNull($this->parser['summaryAndStatusInformation'][0]['amount']);
+    }
 
-    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeDistributionOfAvailabilityValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeDistributionOfAvailabilityMissing(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeDistributionOfAvailabilityInvalid(): void {}
+    /**
+     * @testWith ["03,0975312468,,010,foo,,/"]
+     *           ["03,0975312468,,010,500 000,,/"]
+     *           ["03,0975312468,,010,500_000,,/"]
+     *           ["03,0975312468,,010,500.000,,/"]
+     */
+    public function testSummaryAndStatusInformationStatusAmountInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
 
-    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeValueDateValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeValueDateMissing(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeValueDateInvalid(): void {}
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Amount" must be signed or unsigned integer when provided.');
+        $this->parser['summaryAndStatusInformation'];
+    }
 
-    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeValueTimeValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeValueTimeMissing(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeValueTimeInvalid(): void {}
+    // TODO(zmd): test that if status info (vs. summary), then item count and  |
+    //   funds type are omitted -----------------------------------------------|
 
-    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeAvailabilityValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeAvailabilityInvalid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationFundsTypeAvailabilityMissing(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationStatusItemCountValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationStatusItemCountOptional(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationStatusItemCountInvalid(): void {}
+
+    // TODO(zmd): public function testSummaryAndStatusInformationStatusFundsTypeValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationStatusFundsTypeOptional(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationStatusFundsTypeInvalid(): void {}
+
+    // ------------------------------------------------------------------------|
+    //                                                                         |
+
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryAmountValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryAmountOptional(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryAmountInvalid(): void {}
+
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryItemCountValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryItemCountMissing(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryItemCountInvalid(): void {}
+
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDistributionOfAvailabilityValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDistributionOfAvailabilityMissing(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDistributionOfAvailabilityInvalid(): void {}
+
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeValueDateValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeValueDateMissing(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeValueDateInvalid(): void {}
+
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeValueTimeValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeValueTimeMissing(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeValueTimeInvalid(): void {}
+
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeAvailabilityValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeAvailabilityInvalid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeAvailabilityMissing(): void {}
 
 }
