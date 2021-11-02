@@ -173,7 +173,7 @@ final class FileHeaderParserTest extends RecordParserTestCase
      *           ["01,SENDR_1,RECVR1,210616,1700,01,80,10,2/"]
      *           ["01,SENDR-1,RECVR1,210616,1700,01,80,10,2/"]
      */
-    public function testSenderIdentificationInvalidType(string $line): void
+    public function testSenderIdentificationInvalid(string $line): void
     {
         $this->parser->pushLine($line);
 
@@ -215,7 +215,7 @@ final class FileHeaderParserTest extends RecordParserTestCase
      *           ["01,SENDR1,RECVR_1,210616,1700,01,80,10,2/"]
      *           ["01,SENDR1,RECVR-1,210616,1700,01,80,10,2/"]
      */
-    public function testReceiverIdentificationInvalidType(string $line): void
+    public function testReceiverIdentificationInvalid(string $line): void
     {
         $this->parser->pushLine($line);
 
@@ -255,7 +255,7 @@ final class FileHeaderParserTest extends RecordParserTestCase
      *           ["01,SENDR1,RECVR1,20210616,1700,01,80,10,2/"]
      *           ["01,SENDR1,RECVR1,2109,1700,01,80,10,2/"]
      */
-    public function testFileCreationDateInvalidType(string $line): void
+    public function testFileCreationDateInvalid(string $line): void
     {
         $this->parser->pushLine($line);
 
@@ -293,7 +293,7 @@ final class FileHeaderParserTest extends RecordParserTestCase
      *           ["01,SENDR1,RECVR1,210616,late,01,80,10,2/"]
      *           ["01,SENDR1,RECVR1,210616,17:00,01,80,10,2/"]
      */
-    public function testFileCreationTimeInvalidType(string $line): void
+    public function testFileCreationTimeInvalid(string $line): void
     {
         $this->parser->pushLine($line);
 
@@ -334,7 +334,7 @@ final class FileHeaderParserTest extends RecordParserTestCase
      *           ["01,SENDR1,RECVR1,210616,0000,10-4,80,10,2/"]
      *           ["01,SENDR1,RECVR1,210616,2400,6*7,80,10,2/"]
      */
-    public function testFileIdentificationNumberInvalidType(string $line): void
+    public function testFileIdentificationNumberInvalid(string $line): void
     {
         $this->parser->pushLine($line);
 
@@ -361,7 +361,7 @@ final class FileHeaderParserTest extends RecordParserTestCase
      * @testWith ["01,SENDR1,RECVR1,210616,1700,01,eighty,10,2/"]
      *           ["01,SENDR1,RECVR1,210616,1700,01,40*2,10,2/"]
      */
-    public function testPhysicalRecordLengthInvalidType(string $line): void
+    public function testPhysicalRecordLengthInvalid(string $line): void
     {
         $this->parser->pushLine($line);
 
@@ -390,7 +390,7 @@ final class FileHeaderParserTest extends RecordParserTestCase
      * @testWith ["01,SENDR1,RECVR1,210616,1700,01,80,ten,2/"]
      *           ["01,SENDR1,RECVR1,210616,1700,01,80,2*5,2/"]
      */
-    public function testBlockSizeInvalidType(string $line): void
+    public function testBlockSizeInvalid(string $line): void
     {
         $this->parser->pushLine($line);
 
@@ -414,7 +414,7 @@ final class FileHeaderParserTest extends RecordParserTestCase
         $this->parser['versionNumber'];
     }
 
-    public function testVersionNumberInvalidType(): void
+    public function testVersionNumberInvalid(): void
     {
         $this->parser->pushLine('01,SENDR1,RECVR1,210616,1700,01,80,10,F/');
 
