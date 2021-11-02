@@ -685,19 +685,25 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser['summaryAndStatusInformation'];
     }
 
-    // TODO(zmd): test that if status info (vs. summary), then item count and  |
-    //   funds type are omitted -----------------------------------------------|
+    public function testSummaryAndStatusInformationStatusItemCountValid(): void
+    {
+        $this->parser->pushLine('03,0975312468,,010,5000,,/');
 
-    // TODO(zmd): public function testSummaryAndStatusInformationStatusItemCountValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationStatusItemCountOptional(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationStatusItemCountInvalid(): void {}
+        $this->parser['summaryAndStatusInformation'];
+        $this->assertArrayNotHasKey('itemCount', $this->parser['summaryAndStatusInformation'][0]);
+    }
+
+    public function testSummaryAndStatusInformationStatusItemCountInvalid(): void
+    {
+        $this->parser->pushLine('03,0975312468,,010,5000,4,/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Item Count" must be defaulted for status "Type Code".');
+        $this->parser['summaryAndStatusInformation'];
+    }
 
     // TODO(zmd): public function testSummaryAndStatusInformationStatusFundsTypeValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationStatusFundsTypeOptional(): void {}
     // TODO(zmd): public function testSummaryAndStatusInformationStatusFundsTypeInvalid(): void {}
-
-    // ------------------------------------------------------------------------|
-    //                                                                         |
 
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryAmountValid(): void {}
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryAmountOptional(): void {}

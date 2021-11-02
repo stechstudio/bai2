@@ -188,9 +188,12 @@ final class AccountHeaderParser extends AbstractRecordParser
                  ->match('/^[+-]?\d+$/', 'must be signed or unsigned integer when provided')
                  ->int(default: null);
 
-        // TODO(zmd): validate format & default/optional (they should be
-        //   ->is(''))
-        $this->getParser()->drop(2);
+        $this->shiftAndParseField('Item Count')
+             ->is('', 'must be defaulted for status "Type Code"')
+             ->string(default: null);
+
+        // TODO(zmd): validate format & default/optional (should be ->is(''))
+        $this->getParser()->drop(1);
 
         return $accountInformationOrStatus;
     }
