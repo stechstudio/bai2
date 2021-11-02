@@ -9,19 +9,12 @@ use STS\Bai2\Exceptions\InvalidTypeException;
 final class FieldParserTest extends TestCase
 {
 
+    // -- cast/parse ------------------------------------------------------------
+
     public function testString(): void
     {
         $parser = new FieldParser('foo', 'Foo Bar');
         $this->assertEquals('foo', $parser->string());
-    }
-
-    public function testStringValidatesPresence(): void
-    {
-        $parser = new FieldParser('', 'Foo Bar');
-
-        $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Foo Bar" cannot be omitted.');
-        $parser->string();
     }
 
     public function testStringWithDefault(): void
@@ -36,6 +29,15 @@ final class FieldParserTest extends TestCase
         $parser = new FieldParser('', 'Foo Bar');
         $this->assertEquals('bar', $parser->string(default: 'bar'));
         $this->assertNull($parser->string(default: null));
+    }
+
+    public function testStringValidatesPresence(): void
+    {
+        $parser = new FieldParser('', 'Foo Bar');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Foo Bar" cannot be omitted.');
+        $parser->string();
     }
 
     public function testInt(): void
@@ -55,15 +57,6 @@ final class FieldParserTest extends TestCase
         $this->assertEquals($expected, $parser->int());
     }
 
-    public function testIntValidatesPresence(): void
-    {
-        $parser = new FieldParser('', 'Foo Bar');
-
-        $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Foo Bar" cannot be omitted.');
-        $parser->int();
-    }
-
     public function testIntWithDefault(): void
     {
         $parser = new FieldParser(100, 'Foo Bar');
@@ -78,7 +71,18 @@ final class FieldParserTest extends TestCase
         $this->assertNull($parser->int(default: null));
     }
 
-    public function testStringWithSatisfiedIsConstraint(): void
+    public function testIntValidatesPresence(): void
+    {
+        $parser = new FieldParser('', 'Foo Bar');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Foo Bar" cannot be omitted.');
+        $parser->int();
+    }
+
+    // -- is constraint --------------------------------------------------------
+
+    public function testIsConstraintSatisfied(): void
     {
         $parser = new FieldParser('apples', 'Fruit Basket');
         $parser->is('apples', 'must be apples yo');
@@ -86,7 +90,7 @@ final class FieldParserTest extends TestCase
         $this->assertEquals('apples', $parser->string());
     }
 
-    public function testStringWithViolatedIsConstraint(): void
+    public function testIsConstraintViolated(): void
     {
         $parser = new FieldParser('oranges', 'Fruit Basket');
         $parser->is('apples', 'must be apples yo');
@@ -96,25 +100,7 @@ final class FieldParserTest extends TestCase
         $parser->string();
     }
 
-    public function testIntWithSatisfiedIsConstraint(): void
-    {
-        $parser = new FieldParser('42', 'Meaning of Life');
-        $parser->is('42', 'must have meaning yo');
-
-        $this->assertEquals(42, $parser->int());
-    }
-
-    public function testIntWithViolatedIsConstraint(): void
-    {
-        $parser = new FieldParser('1337', 'Meaning of Life');
-        $parser->is('42', 'must have meaning yo');
-
-        $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Meaning of Life" must have meaning yo.');
-        $parser->int();
-    }
-
-    public function testIsHasLowerPrescedenceThanImplicitRequiredConstraint(): void
+    public function testIsConstraintHasLowerPrecedenceThanRequiredConstraint(): void
     {
         $parser = new FieldParser('', 'Foo Bar');
         $parser->is('42', 'must have meaning yo');
@@ -124,7 +110,7 @@ final class FieldParserTest extends TestCase
         $parser->string();
     }
 
-    public function testViolatedIsConstraintMessageAdjustsInViewOfRequiredConstraint(): void
+    public function testIsConstraintMessageAdjustsWhenFieldOptional(): void
     {
         $parser = new FieldParser('1337', 'Meaning of Life');
         $parser->is('42', 'must have meaning yo');
@@ -145,11 +131,13 @@ final class FieldParserTest extends TestCase
         );
     }
 
+    // -- match constraint -----------------------------------------------------
+
     /**
      * @testWith ["apples"]
      *           ["applications"]
      */
-    public function testStringWithSatisfiedMatchConstraint(string $input): void
+    public function testMatchConstraintSatisfied(string $input): void
     {
         $parser = new FieldParser($input, 'Appetizers');
         $parser->match('/^app/', 'must be app');
@@ -160,7 +148,7 @@ final class FieldParserTest extends TestCase
      * @testWith ["blueberries"]
      *           ["integrated software"]
      */
-    public function testStringWithViolatedMatchConstraint(string $input): void
+    public function testMatchConstraintViolated(string $input): void
     {
         $parser = new FieldParser($input, 'Appetizers');
         $parser->match('/^app/', 'must be app');
@@ -170,32 +158,7 @@ final class FieldParserTest extends TestCase
         $parser->string();
     }
 
-    /**
-     * @testWith ["42300", 42300]
-     *           ["421337", 421337]
-     */
-    public function testIntWithSatisfiedMatchConstraint(string $input, int $expected): void
-    {
-        $parser = new FieldParser($input, 'Meaningful Number');
-        $parser->match('/^42/', 'must begin with meaning');
-        $this->assertEquals($expected, $parser->int());
-    }
-
-    /**
-     * @testWith ["300"]
-     *           ["1337"]
-     */
-    public function testIntWithViolatedMatchConstraint(string $input): void
-    {
-        $parser = new FieldParser($input, 'Meaningful Number');
-        $parser->match('/^42/', 'must begin with meaning');
-
-        $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Meaningful Number" must begin with meaning.');
-        $parser->int();
-    }
-
-    public function testMatchHasLowerPrescedenceThanImplicitRequiredConstraint(): void
+    public function testMatchConstraintHasLowerPrecedenceThanRequiredConstraint(): void
     {
         $parser = new FieldParser('', 'Appetizers');
         $parser->match('/^app/', 'must be app');
@@ -205,7 +168,7 @@ final class FieldParserTest extends TestCase
         $parser->string();
     }
 
-    public function testViolatedMatchConstraintMessageAdjustsInViewOfRequiredConstraint(): void
+    public function testMatchConstraintMessageAdjustsWhenFieldOptional(): void
     {
         $parser = new FieldParser('barbecue', 'Appetizers');
         $parser->match('/^app/', 'must be app');
