@@ -4,6 +4,8 @@ namespace STS\Bai2\Parsers;
 
 use STS\Bai2\Tests\Parsers\RecordParserTestCase;
 
+use STS\Bai2\Exceptions\InvalidTypeException;
+
 /**
  * @group RecordParserTests
  */
@@ -595,9 +597,60 @@ final class AccountHeaderParserTest extends RecordParserTestCase
     // TODO(zmd): public function testCurrencyCodeMissing(): void {}
     // TODO(zmd): public function testCurrencyCodeInvalid(): void {}
 
-    // TODO(zmd): public function testSummaryAndStatusInformationTypeCodeValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationTypeCodeMissing(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationTypeCodeInvalid(): void {}
+    /**
+     * @testWith ["03,0975312468,,010,500000,,/", "010"]
+     *           ["03,0975312468,,001,500000,,/", "001"]
+     *           ["03,0975312468,,099,500000,,/", "099"]
+     *           ["03,0975312468,,900,500000,,/", "900"]
+     *           ["03,0975312468,,919,500000,,/", "919"]
+     *           ["03,0975312468,,100,500000,,/", "100"]
+     *           ["03,0975312468,,799,500000,,/", "799"]
+     *           ["03,0975312468,,920,500000,,/", "920"]
+     *           ["03,0975312468,,999,500000,,/", "999"]
+     */
+    public function testSummaryAndStatusInformationTypeCodeValid(string $line, string $expected): void
+    {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['summaryAndStatusInformation'][0]['typeCode']);
+    }
+
+    public function testSummaryAndStatusInformationTypeCodeOptional(): void {
+        $this->parser->pushLine("03,0975312468,,,,,/");
+        $this->assertEquals([], $this->parser['summaryAndStatusInformation']);
+    }
+
+    /**
+     * @testWith ["03,0975312468,,ABC,500000,,/"]
+     *           ["03,0975312468,,   ,500000,,/"]
+     *           ["03,0975312468,,10,500000,,/"]
+     *           ["03,0975312468,,1-1,500000,,/"]
+     */
+    public function testSummaryAndStatusInformationTypeCodeInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Type Code" must be composed of exactly three numerals when provided.');
+        $this->parser['summaryAndStatusInformation'];
+    }
+
+    /**
+     * @testWith ["03,0975312468,,,5000,,/", "Amount"]
+     *           ["03,0975312468,,,,4,/", "Item Count"]
+     *           ["03,0975312468,,,,,0/", "Funds Type"]
+     */
+    public function testSummaryAndStatusInformationIfTypeCodeDefaultedSoTooMustBeAmountItemCountAndFundsType(string $line, string $expectedInvalidFieldLongName): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage(
+            'Invalid field type: "'
+                . $expectedInvalidFieldLongName
+                . '" must be defaulted since "Type Code" was defaulted.'
+        );
+        $this->parser['summaryAndStatusInformation'];
+    }
 
     // TODO(zmd): public function testSummaryAndStatusInformationAmountValid(): void {}
     // TODO(zmd): public function testSummaryAndStatusInformationAmountMissing(): void {}

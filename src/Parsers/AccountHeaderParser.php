@@ -128,9 +128,9 @@ final class AccountHeaderParser extends AbstractRecordParser
         $summaryAndStatusInformation = [];
 
         while ($this->getParser()->hasMore()) {
-            // TODO(zmd): validate format & default/optional
             $typeCode =
                 $this->shiftAndParseField('Type Code')
+                     ->match('/^\d{3}$/', 'must be composed of exactly three numerals when provided')
                      ->string(default: null);
 
             switch (TypeCode::detect($typeCode)) {
@@ -160,9 +160,17 @@ final class AccountHeaderParser extends AbstractRecordParser
      */
     private function shiftAndParseDefaulted(): void
     {
-        // Defaulted Type Code
-        // TODO(zmd): validate format & default/optional (they should be ->is(''))
-        $this->getParser()->drop(3);
+        $this->shiftAndParseField('Amount')
+             ->is('', 'must be defaulted since "Type Code" was defaulted')
+             ->string(default: null);
+
+        $this->shiftAndParseField('Item Count')
+             ->is('', 'must be defaulted since "Type Code" was defaulted')
+             ->string(default: null);
+
+        $this->shiftAndParseField('Funds Type')
+             ->is('', 'must be defaulted since "Type Code" was defaulted')
+             ->string(default: null);
     }
 
     /**
