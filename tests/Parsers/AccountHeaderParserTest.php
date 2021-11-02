@@ -837,9 +837,33 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser['summaryAndStatusInformation'];
     }
 
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeValueDateValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeValueDateMissing(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeValueDateInvalid(): void {}
+    /**
+     * @testWith ["03,0975312468,,190,70000000,4,V,210909,0800/", "210909"]
+     *           ["03,0975312468,,190,70000000,4,V,000000,0800/", "000000"]
+     *           ["03,0975312468,,190,70000000,4,V,999999,0800/", "999999"]
+     */
+    public function testSummaryAndStatusInformationSummaryFundsTypeValueDateValid(
+        string $line,
+        string $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertEquals(
+            $expected,
+            $this->parser['summaryAndStatusInformation'][0]['fundsType']['valueDate']
+        );
+    }
+
+/*
+    public function testSummaryAndStatusInformationSummaryFundsTypeValueDateMissing(): void
+    {
+        // TODO(zmd): implement me
+    }
+
+    public function testSummaryAndStatusInformationSummaryFundsTypeValueDateInvalid(): void
+    {
+        // TODO(zmd): implement me
+    }
+*/
 
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeValueTimeValid(): void {}
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeValueTimeMissing(): void {}
