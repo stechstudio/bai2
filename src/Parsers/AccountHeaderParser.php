@@ -192,8 +192,9 @@ final class AccountHeaderParser extends AbstractRecordParser
              ->is('', 'must be defaulted for status "Type Code"')
              ->string(default: null);
 
-        // TODO(zmd): validate format & default/optional (should be ->is(''))
-        $this->getParser()->drop(1);
+        $this->shiftAndParseField('Funds Type')
+             ->is('', 'must be defaulted for status "Type Code"')
+             ->string(default: null);
 
         return $accountInformationOrStatus;
     }

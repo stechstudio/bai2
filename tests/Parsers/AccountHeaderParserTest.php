@@ -702,8 +702,22 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser['summaryAndStatusInformation'];
     }
 
-    // TODO(zmd): public function testSummaryAndStatusInformationStatusFundsTypeValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationStatusFundsTypeInvalid(): void {}
+    public function testSummaryAndStatusInformationStatusFundsTypeValid(): void
+    {
+        $this->parser->pushLine('03,0975312468,,010,,,/');
+
+        $this->parser['summaryAndStatusInformation'];
+        $this->assertArrayNotHasKey('fundsType', $this->parser['summaryAndStatusInformation'][0]);
+    }
+
+    public function testSummaryAndStatusInformationStatusFundsTypeInvalid(): void
+    {
+        $this->parser->pushLine('03,0975312468,,010,5000,,0/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Funds Type" must be defaulted for status "Type Code".');
+        $this->parser['summaryAndStatusInformation'];
+    }
 
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryAmountValid(): void {}
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryAmountOptional(): void {}
