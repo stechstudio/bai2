@@ -36,57 +36,57 @@ class FileRecord extends AbstractEnvelopeRecord
 
     public function getSenderIdentification(): string
     {
-        return $this->extantHeaderParser()->offsetGet('senderIdentification');
+        return $this->extantHeaderParser()['senderIdentification'];
     }
 
     public function getReceiverIdentification(): string
     {
-        return $this->extantHeaderParser()->offsetGet('receiverIdentification');
+        return $this->extantHeaderParser()['receiverIdentification'];
     }
 
     public function getFileCreationDate(): string
     {
-        return $this->extantHeaderParser()->offsetGet('fileCreationDate');
+        return $this->extantHeaderParser()['fileCreationDate'];
     }
 
     public function getFileCreationTime(): string
     {
-        return $this->extantHeaderParser()->offsetGet('fileCreationTime');
+        return $this->extantHeaderParser()['fileCreationTime'];
     }
 
     public function getFileIdentificationNumber(): string
     {
-        return $this->extantHeaderParser()->offsetGet('fileIdentificationNumber');
+        return $this->extantHeaderParser()['fileIdentificationNumber'];
     }
 
     public function getPhysicalRecordLength(): ?int
     {
-        return $this->extantHeaderParser()->offsetGet('physicalRecordLength');
+        return $this->extantHeaderParser()['physicalRecordLength'];
     }
 
     public function getBlockSize(): ?int
     {
-        return $this->extantHeaderParser()->offsetGet('blockSize');
+        return $this->extantHeaderParser()['blockSize'];
     }
 
     public function getVersionNumber(): string
     {
-        return $this->extantHeaderParser()->offsetGet('versionNumber');
+        return $this->extantHeaderParser()['versionNumber'];
     }
 
     public function getFileControlTotal(): int
     {
-        return $this->extantTrailerParser()->offsetGet('fileControlTotal');
+        return $this->extantTrailerParser()['fileControlTotal'];
     }
 
     public function getNumberOfGroups(): int
     {
-        return $this->extantTrailerParser()->offsetGet('numberOfGroups');
+        return $this->extantTrailerParser()['numberOfGroups'];
     }
 
     public function getNumberOfRecords(): int
     {
-        return $this->extantTrailerParser()->offsetGet('numberOfRecords');
+        return $this->extantTrailerParser()['numberOfRecords'];
     }
 
     public function groups(): array
