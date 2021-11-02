@@ -51,7 +51,7 @@ final class FileHeaderParser extends AbstractRecordParser
         $this->parsed['fileIdentificationNumber'] =
             $this->shiftAndParseField('File Identification Number')
                  ->match('/^\d+$/', 'must be composed of 1 or more numerals')
-                 ->int();
+                 ->string();
 
         $this->parsed['physicalRecordLength'] =
             $this->shiftAndParseField('Physical Record Length')
