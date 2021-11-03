@@ -8,7 +8,7 @@ trait FundsTypeFieldParserTrait
     protected function shiftAndParseFundsType(): array
     {
         $fundsType = [];
-        $signedIntConstraint = ['/^(-|\+)?\d+$/', 'must a signed or unsigned integer value'];
+        $signedIntConstraint = ['/^(-|\+)?\d+$/', 'must be a signed or unsigned integer value'];
 
         $fundsType['distributionOfAvailability'] =
             $this->shiftAndParseField('Distribution of Availability')
@@ -69,9 +69,9 @@ trait FundsTypeFieldParserTrait
                                  ->match(...$unsignedIntConstraint)
                                  ->int();
 
-                    // TODO(zmd): validate format & default/optional
                     $amount = $this->shiftAndParseField('Distribution Amount')
-                                   ->int(default: null);
+                                   ->match(...$signedIntConstraint)
+                                   ->int();
 
                     $fundsType['availability'][$days] = $amount;
                 }

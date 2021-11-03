@@ -677,6 +677,8 @@ final class AccountHeaderParserTest extends RecordParserTestCase
      *           ["03,0975312468,,010,500 000,,/"]
      *           ["03,0975312468,,010,500_000,,/"]
      *           ["03,0975312468,,010,500.000,,/"]
+     *           ["03,0975312468,,010,5+00000,,/"]
+     *           ["03,0975312468,,010,50-0000,,/"]
      */
     public function testSummaryAndStatusInformationStatusAmountInvalid(string $line): void
     {
@@ -739,13 +741,14 @@ final class AccountHeaderParserTest extends RecordParserTestCase
     }
 
     /**
-     * @testWith ["03,0975312468,,190,-500000,4,0/"]
+     * @testWith ["03,0975312468,,190,foo,4,0/"]
      *           ["03,0975312468,,190,a500000,4,0/"]
      *           ["03,0975312468,,190,500000b,4,0/"]
-     *           ["03,0975312468,,190,foo,4,0/"]
      *           ["03,0975312468,,190,500 000,4,0/"]
      *           ["03,0975312468,,190,500_000,4,0/"]
      *           ["03,0975312468,,190,500.000,4,0/"]
+     *           ["03,0975312468,,190,5+00000,4,0/"]
+     *           ["03,0975312468,,190,-500000,4,0/"]
      */
     public function testSummaryAndStatusInformationSummaryAmountInvalid(string $line): void
     {
@@ -955,7 +958,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Immediate Availability" must a signed or unsigned integer value.');
+        $this->expectExceptionMessage('Invalid field type: "Immediate Availability" must be a signed or unsigned integer value.');
         $this->parser['summaryAndStatusInformation'];
     }
 
@@ -996,7 +999,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "One-day Availability" must a signed or unsigned integer value.');
+        $this->expectExceptionMessage('Invalid field type: "One-day Availability" must be a signed or unsigned integer value.');
         $this->parser['summaryAndStatusInformation'];
     }
 
@@ -1037,7 +1040,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Two-or-more Day Availability" must a signed or unsigned integer value.');
+        $this->expectExceptionMessage('Invalid field type: "Two-or-more Day Availability" must be a signed or unsigned integer value.');
         $this->parser['summaryAndStatusInformation'];
     }
 
@@ -1131,8 +1134,49 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser['summaryAndStatusInformation'];
     }
 
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityAmountValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityAmountMissing(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityAmountInvalid(): void {}
+    /**
+     * @testWith ["03,0975312468,,190,70000000,4,D,1,0,70000000/", 70000000]
+     * @testWith ["03,0975312468,,190,70000000,4,D,1,0,+70000000/", 70000000]
+     * @testWith ["03,0975312468,,190,70000000,4,D,1,0,-70000000/", -70000000]
+     * @testWith ["03,0975312468,,190,70000000,4,D,1,0,0/", 0]
+     */
+    public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityAmountValid(
+        string $line,
+        int $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertEquals(
+            $expected,
+            $this->parser['summaryAndStatusInformation'][0]['fundsType']['availability'][0]
+        );
+    }
+
+    public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityAmountMissing(): void
+    {
+        $this->parser->pushLine('03,0975312468,,190,70000000,4,D,1,0,/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Distribution Amount" cannot be omitted.');
+        $this->parser['summaryAndStatusInformation'];
+    }
+
+    /**
+     * @testWith ["03,0975312468,,190,70000000,4,D,1,0,foo/"]
+     *           ["03,0975312468,,190,70000000,4,D,1,0,a70000000/"]
+     *           ["03,0975312468,,190,70000000,4,D,1,0,70000000b/"]
+     *           ["03,0975312468,,190,70000000,4,D,1,0,70000 000/"]
+     *           ["03,0975312468,,190,70000000,4,D,1,0,700_00000/"]
+     *           ["03,0975312468,,190,70000000,4,D,1,0,70000000.00/"]
+     *           ["03,0975312468,,190,70000000,4,D,1,0,7+0000000/"]
+     *           ["03,0975312468,,190,70000000,4,D,1,0,70-000000/"]
+     */
+    public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityAmountInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Distribution Amount" must be a signed or unsigned integer value.');
+        $this->parser['summaryAndStatusInformation'];
+    }
 
 }
