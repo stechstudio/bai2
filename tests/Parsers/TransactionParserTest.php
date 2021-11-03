@@ -400,9 +400,38 @@ final class TransactionParserTest extends RecordParserTestCase
         $this->parser['fundsType'];
     }
 
-    // TODO(zmd): public function testFundsTypeValueTimeValid(): void {}
-    // TODO(zmd): public function testFundsTypeValueTimeOptional(): void {}
-    // TODO(zmd): public function testFundsTypeValueTimeInvalid(): void {}
+    /**
+     * @testWith ["16,003,10000,V,210909,0800,123456789,987654321,TEXT OF SUCH IMPORT", "0800"]
+     *           ["16,003,10000,V,210909,0000,123456789,987654321,TEXT OF SUCH IMPORT", "0000"]
+     *           ["16,003,10000,V,210909,2400,123456789,987654321,TEXT OF SUCH IMPORT", "2400"]
+     *           ["16,003,10000,V,210909,9999,123456789,987654321,TEXT OF SUCH IMPORT", "9999"]
+     */
+    public function testFundsTypeValueTimeValid(string $line, string $expected): void
+    {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['fundsType']['valueTime']);
+    }
+
+    public function testFundsTypeValueTimeOptional(): void
+    {
+        $this->parser->pushLine('16,003,10000,V,210909,,123456789,987654321,TEXT OF SUCH IMPORT');
+        $this->assertNull($this->parser['fundsType']['valueTime']);
+    }
+
+    /**
+     * @testWith ["16,003,10000,V,210909,a800,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,V,210909,080b,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,V,210909,08:00,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,V,210909,800,123456789,987654321,TEXT OF SUCH IMPORT"]
+     */
+    public function testFundsTypeValueTimeInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Value Dated Time" must be exactly 4 numerals (HHMM).');
+        $this->parser['fundsType'];
+    }
 
     // TODO(zmd): public function testFundsTypeSAvailabilityImmediateValid(): void {}
     // TODO(zmd): public function testFundsTypeSAvailabilityImmediateMissing(): void {}
