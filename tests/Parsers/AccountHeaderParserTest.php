@@ -1081,7 +1081,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Number of Distributoins" should be an unsigned integer.');
+        $this->expectExceptionMessage('Invalid field type: "Number of Distributions" should be an unsigned integer.');
         $this->parser['summaryAndStatusInformation'];
     }
 

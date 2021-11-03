@@ -58,10 +58,10 @@ trait FundsTypeFieldParserTrait
             case 'D':
                 $fundsType['availability'] = [];
 
-                // TODO(zmd): validate format & default/optional
                 $numDistributions =
                     $this->shiftAndParseField('Number of Distributions')
-                         ->int(default: null);
+                         ->match('/^\d+$/', 'should be an unsigned integer')
+                         ->int();
 
                 for (; $numDistributions > 0; --$numDistributions) {
                     // TODO(zmd): validate format & default/optional
