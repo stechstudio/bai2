@@ -22,9 +22,9 @@ trait FundsTypeFieldParserTrait
                 break;
 
             case 'V':
-                // TODO(zmd): validate format & default/optional
                 $fundsType['valueDate'] =
                     $this->shiftAndParseField('Value Dated Date')
+                         ->match('/^\d{6}$/', 'must be exactly 6 numerals (YYMMDD)')
                          ->string();
 
                 // TODO(zmd): validate format & default/optional

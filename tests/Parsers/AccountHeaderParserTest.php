@@ -862,19 +862,36 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser['summaryAndStatusInformation'];
     }
 
-/*
-    public function testSummaryAndStatusInformationSummaryFundsTypeValueDateInvalid(): void
+    /**
+     * @testWith ["03,0975312468,,190,70000000,4,V,a10909,0800/"]
+     *           ["03,0975312468,,190,70000000,4,V,21090b,0800/"]
+     *           ["03,0975312468,,190,70000000,4,V,20210909,0800/"]
+     *           ["03,0975312468,,190,70000000,4,V,21-09-09,0800/"]
+     *           ["03,0975312468,,190,70000000,4,V,9-Sep 2021,0800/"]
+     */
+    public function testSummaryAndStatusInformationSummaryFundsTypeValueDateInvalid(string $line): void
     {
-        // TODO(zmd): implement me
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Value Dated Date" must be exactly 6 numerals (YYMMDD).');
+        $this->parser['summaryAndStatusInformation'];
     }
-*/
 
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeValueTimeValid(): void {}
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeValueTimeMissing(): void {}
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeValueTimeInvalid(): void {}
 
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeAvailabilityValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeAvailabilityInvalid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeAvailabilityMissing(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeSFormatAvailabilityValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeSFormatAvailabilityInvalid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeSFormatAvailabilityMissing(): void {}
+
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDLengthValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDLengthInvalid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDLengthMissing(): void {}
+
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDFormatAvailabilityValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDFormatAvailabilityInvalid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDFormatAvailabilityMissing(): void {}
 
 }
