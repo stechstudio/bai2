@@ -887,8 +887,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
     public function testSummaryAndStatusInformationSummaryFundsTypeValueTimeValid(
         string $line,
         string $expected
-    ): void
-    {
+    ): void {
         $this->parser->pushLine($line);
         $this->assertEquals(
             $expected,
@@ -1085,9 +1084,52 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser['summaryAndStatusInformation'];
     }
 
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityDayValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityDayMissing(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityDayInvalid(): void {}
+    /**
+     * @testWith ["03,0975312468,,190,70000000,4,D,1,0,70000000/", 0]
+     *           ["03,0975312468,,190,70000000,4,D,1,1,70000000/", 1]
+     *           ["03,0975312468,,190,70000000,4,D,1,3,70000000/", 3]
+     *           ["03,0975312468,,190,70000000,4,D,1,5,70000000/", 5]
+     *           ["03,0975312468,,190,70000000,4,D,1,30,70000000/", 30]
+     *           ["03,0975312468,,190,70000000,4,D,1,365,70000000/", 365]
+     */
+    public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityDayValid(
+        string $line,
+        int $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertTrue(
+            array_key_exists(
+                $expected,
+                $this->parser['summaryAndStatusInformation'][0]['fundsType']['availability']
+            )
+        );
+    }
+
+    public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityDayMissing(): void
+    {
+        $this->parser->pushLine('03,0975312468,,190,70000000,4,D,1,,70000000/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Number of Days" cannot be omitted.');
+        $this->parser['summaryAndStatusInformation'];
+    }
+
+    /**
+     * @testWith ["03,0975312468,,190,70000000,4,D,1,a0,70000000/"]
+     *           ["03,0975312468,,190,70000000,4,D,1,0b,70000000/"]
+     *           ["03,0975312468,,190,70000000,4,D,1,-1,70000000/"]
+     *           ["03,0975312468,,190,70000000,4,D,1,+1,70000000/"]
+     *           ["03,0975312468,,190,70000000,4,D,1,0.5,70000000/"]
+     */
+    public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityDayInvalid(
+        string $line
+    ): void {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Number of Days" should be an unsigned integer.');
+        $this->parser['summaryAndStatusInformation'];
+    }
 
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityAmountValid(): void {}
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityAmountMissing(): void {}

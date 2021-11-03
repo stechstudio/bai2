@@ -57,19 +57,20 @@ trait FundsTypeFieldParserTrait
 
             case 'D':
                 $fundsType['availability'] = [];
+                $unsignedIntConstraint = ['/^\d+$/', 'should be an unsigned integer'];
 
                 $numDistributions =
                     $this->shiftAndParseField('Number of Distributions')
-                         ->match('/^\d+$/', 'should be an unsigned integer')
+                         ->match(...$unsignedIntConstraint)
                          ->int();
 
                 for (; $numDistributions > 0; --$numDistributions) {
-                    // TODO(zmd): validate format & default/optional
-                    $days = $this->shiftAndParseField('Number of Distributions')
-                                 ->int(default: null);
+                    $days = $this->shiftAndParseField('Number of Days')
+                                 ->match(...$unsignedIntConstraint)
+                                 ->int();
 
                     // TODO(zmd): validate format & default/optional
-                    $amount = $this->shiftAndParseField('Number of Distributions')
+                    $amount = $this->shiftAndParseField('Distribution Amount')
                                    ->int(default: null);
 
                     $fundsType['availability'][$days] = $amount;
