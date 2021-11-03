@@ -312,7 +312,7 @@ final class TransactionParserTest extends RecordParserTestCase
     // TODO(zmd): public function testAmountInvalid(): void {}
 
     // TODO(zmd): public function testFundsTypeDistributionOfAvailabilityValid(): void {}
-    // TODO(zmd): public function testFundsTypeDistributionOfAvailabilityMissing(): void {}
+    // TODO(zmd): public function testFundsTypeDistributionOfAvailabilityOptional(): void {}
     // TODO(zmd): public function testFundsTypeDistributionOfAvailabilityInvalid(): void {}
 
     // TODO(zmd): public function testFundsTypeValueDateValid(): void {}
@@ -320,12 +320,32 @@ final class TransactionParserTest extends RecordParserTestCase
     // TODO(zmd): public function testFundsTypeValueDateInvalid(): void {}
 
     // TODO(zmd): public function testFundsTypeValueTimeValid(): void {}
-    // TODO(zmd): public function testFundsTypeValueTimeMissing(): void {}
+    // TODO(zmd): public function testFundsTypeValueTimeOptional(): void {}
     // TODO(zmd): public function testFundsTypeValueTimeInvalid(): void {}
 
-    // TODO(zmd): public function testFundsTypeAvailabilityValid(): void {}
-    // TODO(zmd): public function testFundsTypeAvailabilityInvalid(): void {}
-    // TODO(zmd): public function testFundsTypeAvailabilityMissing(): void {}
+    // TODO(zmd): public function testFundsTypeSAvailabilityImmediateValid(): void {}
+    // TODO(zmd): public function testFundsTypeSAvailabilityImmediateMissing(): void {}
+    // TODO(zmd): public function testFundsTypeSImmediateAvailabilityInvalid(): void {}
+
+    // TODO(zmd): public function testFundsTypeSOneDayAvailabilityValid(): void {}
+    // TODO(zmd): public function testFundsTypeSOneDayAvailabilityMissing(): void {}
+    // TODO(zmd): public function testFundsTypeSOneDayAvailabilityInvalid(): void {}
+
+    // TODO(zmd): public function testFundsTypeSTwoOrMoreDayAvailabilityValid(): void {}
+    // TODO(zmd): public function testFundsTypeSTwoOrMoreDayAvailabilityMissing(): void {}
+    // TODO(zmd): public function testFundsTypeSTwoOrMoreDayAvailabilityInvalid(): void {}
+
+    // TODO(zmd): public function testFundsTypeDLengthValid(): void {}
+    // TODO(zmd): public function testFundsTypeDLengthMissing(): void {}
+    // TODO(zmd): public function testFundsTypeDLengthInvalid(): void {}
+
+    // TODO(zmd): public function testFundsTypeDAvailabilityDayValid(): void {}
+    // TODO(zmd): public function testFundsTypeDAvailabilityDayMissing(): void {}
+    // TODO(zmd): public function testFundsTypeDAvailabilityDayInvalid(): void {}
+
+    // TODO(zmd): public function testFundsTypeDAvailabilityAmountValid(): void {}
+    // TODO(zmd): public function testFundsTypeDAvailabilityAmountMissing(): void {}
+    // TODO(zmd): public function testFundsTypeDAvailabilityAmountInvalid(): void {}
 
     // TODO(zmd): public function testBankReferenceNumberValid(): void {}
     // TODO(zmd): public function testBankReferenceNumberMissing(): void {}

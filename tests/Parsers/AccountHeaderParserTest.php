@@ -639,8 +639,10 @@ final class AccountHeaderParserTest extends RecordParserTestCase
      *           ["03,0975312468,,,,4,/", "Item Count"]
      *           ["03,0975312468,,,,,0/", "Funds Type"]
      */
-    public function testSummaryAndStatusInformationIfTypeCodeDefaultedSoTooMustBeAmountItemCountAndFundsType(string $line, string $expectedInvalidFieldLongName): void
-    {
+    public function testSummaryAndStatusInformationIfTypeCodeDefaultedSoTooMustBeAmountItemCountAndFundsType(
+        string $line,
+        string $expectedInvalidFieldLongName
+    ): void {
         $this->parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
