@@ -27,9 +27,9 @@ trait FundsTypeFieldParserTrait
                          ->match('/^\d{6}$/', 'must be exactly 6 numerals (YYMMDD)')
                          ->string();
 
-                // TODO(zmd): validate format & default/optional
                 $fundsType['valueTime'] =
                     $this->shiftAndParseField('Value Dated Time')
+                         ->match('/^\d{4}$/', 'must be exactly 4 numerals (HHMM)')
                          ->string(default: null);
 
                 break;

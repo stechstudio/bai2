@@ -878,9 +878,46 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser['summaryAndStatusInformation'];
     }
 
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeValueTimeValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeValueTimeMissing(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeValueTimeInvalid(): void {}
+    /**
+     * @testWith ["03,0975312468,,190,70000000,4,V,210909,0800/", "0800"]
+     *           ["03,0975312468,,190,70000000,4,V,210909,0000/", "0000"]
+     *           ["03,0975312468,,190,70000000,4,V,210909,2400/", "2400"]
+     *           ["03,0975312468,,190,70000000,4,V,210909,9999/", "9999"]
+     */
+    public function testSummaryAndStatusInformationSummaryFundsTypeValueTimeValid(
+        string $line,
+        string $expected
+    ): void
+    {
+        $this->parser->pushLine($line);
+        $this->assertEquals(
+            $expected,
+            $this->parser['summaryAndStatusInformation'][0]['fundsType']['valueTime']
+        );
+    }
+
+    public function testSummaryAndStatusInformationSummaryFundsTypeValueTimeOptional(): void
+    {
+        $this->parser->pushLine('03,0975312468,,190,70000000,4,V,210909,/');
+        $this->assertNull(
+            $this->parser['summaryAndStatusInformation'][0]['fundsType']['valueTime']
+        );
+    }
+
+    /**
+     * @testWith ["03,0975312468,,190,70000000,4,V,210909,a800/"]
+     *           ["03,0975312468,,190,70000000,4,V,210909,080b/"]
+     *           ["03,0975312468,,190,70000000,4,V,210909,08:00/"]
+     *           ["03,0975312468,,190,70000000,4,V,210909,800/"]
+     */
+    public function testSummaryAndStatusInformationSummaryFundsTypeValueTimeInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Value Dated Time" must be exactly 4 numerals (HHMM).');
+        $this->parser['summaryAndStatusInformation'];
+    }
 
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeSFormatAvailabilityValid(): void {}
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeSFormatAvailabilityInvalid(): void {}
