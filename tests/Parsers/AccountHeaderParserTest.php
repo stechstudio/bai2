@@ -853,12 +853,16 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         );
     }
 
-/*
     public function testSummaryAndStatusInformationSummaryFundsTypeValueDateMissing(): void
     {
-        // TODO(zmd): implement me
+        $this->parser->pushLine('03,0975312468,,190,70000000,4,V,,0800/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Value Dated Date" cannot be omitted.');
+        $this->parser['summaryAndStatusInformation'];
     }
 
+/*
     public function testSummaryAndStatusInformationSummaryFundsTypeValueDateInvalid(): void
     {
         // TODO(zmd): implement me

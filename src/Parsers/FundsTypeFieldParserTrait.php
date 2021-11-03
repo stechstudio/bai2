@@ -25,7 +25,7 @@ trait FundsTypeFieldParserTrait
                 // TODO(zmd): validate format & default/optional
                 $fundsType['valueDate'] =
                     $this->shiftAndParseField('Value Dated Date')
-                         ->string(default: null);
+                         ->string();
 
                 // TODO(zmd): validate format & default/optional
                 $fundsType['valueTime'] =
