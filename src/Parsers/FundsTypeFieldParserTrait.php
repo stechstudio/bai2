@@ -56,18 +56,20 @@ trait FundsTypeFieldParserTrait
                 break;
 
             case 'D':
+                $fundsType['availability'] = [];
+
                 // TODO(zmd): validate format & default/optional
                 $numDistributions =
-                    $this->shiftAndParseField('Funds Type, Distributed Availability (D), Number of Distributions')
+                    $this->shiftAndParseField('Number of Distributions')
                          ->int(default: null);
 
                 for (; $numDistributions > 0; --$numDistributions) {
                     // TODO(zmd): validate format & default/optional
-                    $days = $this->shiftAndParseField('Funds Type, Distributed Availability (D), Specified Availability')
+                    $days = $this->shiftAndParseField('Number of Distributions')
                                  ->int(default: null);
 
                     // TODO(zmd): validate format & default/optional
-                    $amount = $this->shiftAndParseField('Funds Type, Distributed Availability (D), Amount')
+                    $amount = $this->shiftAndParseField('Number of Distributions')
                                    ->int(default: null);
 
                     $fundsType['availability'][$days] = $amount;

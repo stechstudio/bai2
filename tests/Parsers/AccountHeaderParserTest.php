@@ -1042,12 +1042,55 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser['summaryAndStatusInformation'];
     }
 
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDLengthValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDLengthMissing(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDLengthInvalid(): void {}
+    /**
+     * @testWith ["03,0975312468,,190,70000000,4,D,0/", 0]
+     *           ["03,0975312468,,190,70000000,4,D,1,0,70000000/", 1]
+     *           ["03,0975312468,,190,70000000,4,D,3,0,50000000,1,15000000,2,5000000/", 3]
+     *           ["03,0975312468,,190,70000000,4,D,5,0,150000,1,100000,3,90000,5,70000,7,50000/", 5]
+     *           ["03,0975312468,,190,70000000,4,D,30,5,150000,10,145000,15,140000,20,135000,25,130000,30,125000,35,120000,40,125000,45,120000,50,115000,55,110000,60,105000,65,100000,70,95000,75,90000,80,85000,85,80000,90,75000,95,70000,100,65000,105,60000,110,55000,115,50000,120,45000,125,40000,130,35000,135,30000,140,25000,145,20000,150,15000/", 30]
+     */
+    public function testSummaryAndStatusInformationSummaryFundsTypeDLengthValid(
+        string $line,
+        int $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertEquals(
+            $expected,
+            count($this->parser['summaryAndStatusInformation'][0]['fundsType']['availability'])
+        );
+    }
 
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityMissing(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityInvalid(): void {}
+    public function testSummaryAndStatusInformationSummaryFundsTypeDLengthMissing(): void
+    {
+        $this->parser->pushLine('03,0975312468,,190,70000000,4,D,,0,70000000/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Number of Distributions" cannot be omitted.');
+        $this->parser['summaryAndStatusInformation'];
+    }
+
+    /**
+     * @testWith ["03,0975312468,,190,70000000,4,D,a1,0,70000000/"]
+     *           ["03,0975312468,,190,70000000,4,D,1b,0,70000000/"]
+     *           ["03,0975312468,,190,70000000,4,D,-1,0,70000000/"]
+     *           ["03,0975312468,,190,70000000,4,D,+1,0,70000000/"]
+     *           ["03,0975312468,,190,70000000,4,D,1.0,0,70000000/"]
+     */
+    public function testSummaryAndStatusInformationSummaryFundsTypeDLengthInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Number of Distributoins" should be an unsigned integer.');
+        $this->parser['summaryAndStatusInformation'];
+    }
+
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityDayValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityDayMissing(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityDayInvalid(): void {}
+
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityAmountValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityAmountMissing(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityAmountInvalid(): void {}
 
 }
