@@ -4,6 +4,8 @@ namespace STS\Bai2\Parsers;
 
 use STS\Bai2\Tests\Parsers\RecordParserTestCase;
 
+use STS\Bai2\Exceptions\InvalidTypeException;
+
 /**
  * @group RecordParserTests
  */
@@ -311,9 +313,56 @@ final class TransactionParserTest extends RecordParserTestCase
     // TODO(zmd): public function testAmountMissing(): void {}
     // TODO(zmd): public function testAmountInvalid(): void {}
 
-    // TODO(zmd): public function testFundsTypeDistributionOfAvailabilityValid(): void {}
-    // TODO(zmd): public function testFundsTypeDistributionOfAvailabilityOptional(): void {}
-    // TODO(zmd): public function testFundsTypeDistributionOfAvailabilityInvalid(): void {}
+    /**
+     * @testWith ["16,003,10000,0,123456789,987654321,TEXT OF SUCH IMPORT", "0"]
+     *           ["16,003,10000,1,123456789,987654321,TEXT OF SUCH IMPORT", "1"]
+     *           ["16,003,10000,2,123456789,987654321,TEXT OF SUCH IMPORT", "2"]
+     *           ["16,003,10000,V,210909,0800,123456789,987654321,TEXT OF SUCH IMPORT", "V"]
+     *           ["16,003,10000,S,150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", "S"]
+     *           ["16,003,10000,D,3,0,150000,1,100000,2,90000,123456789,987654321,TEXT OF SUCH IMPORT", "D"]
+     */
+    public function testFundsTypeDistributionOfAvailabilityValid(
+        string $line,
+        string $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertEquals(
+            $expected,
+            $this->parser['fundsType']['distributionOfAvailability']
+        );
+    }
+
+    public function testFundsTypeDistributionOfAvailabilityOptional(): void
+    {
+        $this->parser->pushLine('16,003,10000,,123456789,987654321,TEXT OF SUCH IMPORT');
+        $this->assertNull(
+            $this->parser['fundsType']['distributionOfAvailability']
+        );
+    }
+
+    /**
+     * @testWith ["16,003,10000,-1,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,3,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,X,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,_,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,one,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,00,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,01,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,02,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,v,210909,0800,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,s,150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,d,3,0,150000,1,100000,2,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     */
+    public function testFundsTypeDistributionOfAvailabilityInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage(
+            'Invalid field type: "Distribution of Availability" for "Funds Type" must be one of "0", "1", "2", "V", "S", "D", or "Z".'
+        );
+        $this->parser['fundsType'];
+    }
 
     // TODO(zmd): public function testFundsTypeValueDateValid(): void {}
     // TODO(zmd): public function testFundsTypeValueDateMissing(): void {}
