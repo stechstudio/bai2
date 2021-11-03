@@ -919,16 +919,61 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser['summaryAndStatusInformation'];
     }
 
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeSFormatAvailabilityValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeSFormatAvailabilityInvalid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeSFormatAvailabilityMissing(): void {}
+    /**
+     * @testWith ["03,0975312468,,190,70000000,4,S,150000,100000,90000/", 150000]
+     *           ["03,0975312468,,190,70000000,4,S,+150000,100000,90000/", 150000]
+     *           ["03,0975312468,,190,70000000,4,S,-150000,100000,90000/", -150000]
+     */
+    public function testSummaryAndStatusInformationSummaryFundsTypeSAvailabilityImmediateValid(
+        string $line,
+        int $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertEquals(
+            $expected,
+            $this->parser['summaryAndStatusInformation'][0]['fundsType']['availability'][0]
+        );
+    }
+
+    public function testSummaryAndStatusInformationSummaryFundsTypeSAvailabilityImmediateMissing(): void
+    {
+        $this->parser->pushLine('03,0975312468,,190,70000000,4,S,,100000,90000/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Immediate Availability" cannot be omitted.');
+        $this->parser['summaryAndStatusInformation'];
+    }
+
+    /**
+     * @testWith ["03,0975312468,,190,70000000,4,S,a150000,100000,90000/"]
+     *           ["03,0975312468,,190,70000000,4,S,150000b,100000,90000/"]
+     *           ["03,0975312468,,190,70000000,4,S,150_000,100000,90000/"]
+     *           ["03,0975312468,,190,70000000,4,S,150000.00,100000,90000/"]
+     */
+    public function testSummaryAndStatusInformationSummaryFundsTypeSImmediateAvailabilityInvalid(
+        string $line
+    ): void {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Immediate Availability" must a signed or unsigned integer value.');
+        $this->parser['summaryAndStatusInformation'];
+    }
+
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeSOneDayAvailabilityValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeSOneDayAvailabilityMissing(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeSOneDayAvailabilityInvalid(): void {}
+
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeSTwoOrMoreDayAvailabilityValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeSTwoOrMoreDayAvailabilityMissing(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeSTwoOrMoreDayAvailabilityInvalid(): void {}
 
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDLengthValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDLengthInvalid(): void {}
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDLengthMissing(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDLengthInvalid(): void {}
 
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDFormatAvailabilityValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDFormatAvailabilityInvalid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDFormatAvailabilityMissing(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityValid(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityMissing(): void {}
+    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityInvalid(): void {}
 
 }
