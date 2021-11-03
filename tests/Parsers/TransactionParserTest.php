@@ -364,9 +364,41 @@ final class TransactionParserTest extends RecordParserTestCase
         $this->parser['fundsType'];
     }
 
-    // TODO(zmd): public function testFundsTypeValueDateValid(): void {}
-    // TODO(zmd): public function testFundsTypeValueDateMissing(): void {}
-    // TODO(zmd): public function testFundsTypeValueDateInvalid(): void {}
+    /**
+     * @testWith ["16,003,10000,V,210909,0800,123456789,987654321,TEXT OF SUCH IMPORT", "210909"]
+     *           ["16,003,10000,V,000000,0800,123456789,987654321,TEXT OF SUCH IMPORT", "000000"]
+     *           ["16,003,10000,V,999999,0800,123456789,987654321,TEXT OF SUCH IMPORT", "999999"]
+     */
+    public function testFundsTypeValueDateValid(string $line, string $expected): void
+    {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['fundsType']['valueDate']);
+    }
+
+    public function testFundsTypeValueDateMissing(): void
+    {
+        $this->parser->pushLine('16,003,10000,V,,0800,123456789,987654321,TEXT OF SUCH IMPORT');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Value Dated Date" cannot be omitted.');
+        $this->parser['fundsType'];
+    }
+
+    /**
+     * @testWith ["16,003,10000,V,a10909,0800,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,V,21090b,0800,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,V,20210909,0800,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,V,21-09-09,0800,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,V,9-Sep 2021,0800,123456789,987654321,TEXT OF SUCH IMPORT"]
+     */
+    public function testFundsTypeValueDateInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Value Dated Date" must be exactly 6 numerals (YYMMDD).');
+        $this->parser['fundsType'];
+    }
 
     // TODO(zmd): public function testFundsTypeValueTimeValid(): void {}
     // TODO(zmd): public function testFundsTypeValueTimeOptional(): void {}
