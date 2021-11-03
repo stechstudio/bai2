@@ -960,9 +960,46 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser['summaryAndStatusInformation'];
     }
 
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeSOneDayAvailabilityValid(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeSOneDayAvailabilityMissing(): void {}
-    // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeSOneDayAvailabilityInvalid(): void {}
+    /**
+     * @testWith ["03,0975312468,,190,70000000,4,S,150000,100000,90000/", 100000]
+     *           ["03,0975312468,,190,70000000,4,S,150000,+100000,90000/", 100000]
+     *           ["03,0975312468,,190,70000000,4,S,150000,-100000,90000/", -100000]
+     */
+    public function testSummaryAndStatusInformationSummaryFundsTypeSOneDayAvailabilityValid(
+        string $line,
+        int $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertEquals(
+            $expected,
+            $this->parser['summaryAndStatusInformation'][0]['fundsType']['availability'][1]
+        );
+    }
+
+    public function testSummaryAndStatusInformationSummaryFundsTypeSOneDayAvailabilityMissing(): void
+    {
+        $this->parser->pushLine('03,0975312468,,190,70000000,4,S,150000,,90000/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "One-day Availability" cannot be omitted.');
+        $this->parser['summaryAndStatusInformation'];
+    }
+
+    /**
+     * @testWith ["03,0975312468,,190,70000000,4,S,150000,a100000,90000/"]
+     *           ["03,0975312468,,190,70000000,4,S,150000,100000b,90000/"]
+     *           ["03,0975312468,,190,70000000,4,S,150000,100_000,90000/"]
+     *           ["03,0975312468,,190,70000000,4,S,150000,100000.00,90000/"]
+     */
+    public function testSummaryAndStatusInformationSummaryFundsTypeSOneDayAvailabilityInvalid(
+        string $line
+    ): void {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "One-day Availability" must a signed or unsigned integer value.');
+        $this->parser['summaryAndStatusInformation'];
+    }
 
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeSTwoOrMoreDayAvailabilityValid(): void {}
     // TODO(zmd): public function testSummaryAndStatusInformationSummaryFundsTypeSTwoOrMoreDayAvailabilityMissing(): void {}

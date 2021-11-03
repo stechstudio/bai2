@@ -43,10 +43,10 @@ trait FundsTypeFieldParserTrait
                          ->match(...$signedIntConstraint)
                          ->int();
 
-                // TODO(zmd): validate format & default/optional
                 $fundsType['availability'][1] =
                     $this->shiftAndParseField('One-day Availability')
-                         ->int(default: null);
+                         ->match(...$signedIntConstraint)
+                         ->int();
 
                 // TODO(zmd): validate format & default/optional
                 $fundsType['availability'][2] =
