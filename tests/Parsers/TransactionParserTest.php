@@ -335,9 +335,7 @@ final class TransactionParserTest extends RecordParserTestCase
     public function testFundsTypeDistributionOfAvailabilityOptional(): void
     {
         $this->parser->pushLine('16,003,10000,,123456789,987654321,TEXT OF SUCH IMPORT');
-        $this->assertNull(
-            $this->parser['fundsType']['distributionOfAvailability']
-        );
+        $this->assertNull($this->parser['fundsType']['distributionOfAvailability']);
     }
 
     /**
@@ -433,9 +431,42 @@ final class TransactionParserTest extends RecordParserTestCase
         $this->parser['fundsType'];
     }
 
-    // TODO(zmd): public function testFundsTypeSAvailabilityImmediateValid(): void {}
-    // TODO(zmd): public function testFundsTypeSAvailabilityImmediateMissing(): void {}
-    // TODO(zmd): public function testFundsTypeSImmediateAvailabilityInvalid(): void {}
+    /**
+     * @testWith ["16,003,10000,S,150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", 150000]
+     *           ["16,003,10000,S,+150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", 150000]
+     *           ["16,003,10000,S,-150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", -150000]
+     */
+    public function testFundsTypeSImmediateAvailabilityValid(
+        string $line,
+        int $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['fundsType']['availability'][0]);
+    }
+
+    public function testFundsTypeSImmediateAvailabilityMissing(): void
+    {
+        $this->parser->pushLine('16,003,10000,S,,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Immediate Availability" cannot be omitted.');
+        $this->parser['summaryAndStatusInformation'];
+    }
+
+    /**
+     * @testWith ["16,003,10000,S,a150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,S,150000b,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,S,150_000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,S,150000.00,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     */
+    public function testFundsTypeSImmediateAvailabilityInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Immediate Availability" must be a signed or unsigned integer value.');
+        $this->parser['fundsType'];
+    }
 
     // TODO(zmd): public function testFundsTypeSOneDayAvailabilityValid(): void {}
     // TODO(zmd): public function testFundsTypeSOneDayAvailabilityMissing(): void {}

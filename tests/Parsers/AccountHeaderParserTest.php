@@ -928,7 +928,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
      *           ["03,0975312468,,190,70000000,4,S,+150000,100000,90000/", 150000]
      *           ["03,0975312468,,190,70000000,4,S,-150000,100000,90000/", -150000]
      */
-    public function testSummaryAndStatusInformationSummaryFundsTypeSAvailabilityImmediateValid(
+    public function testSummaryAndStatusInformationSummaryFundsTypeSImmediateAvailabilityValid(
         string $line,
         int $expected
     ): void {
@@ -939,7 +939,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         );
     }
 
-    public function testSummaryAndStatusInformationSummaryFundsTypeSAvailabilityImmediateMissing(): void
+    public function testSummaryAndStatusInformationSummaryFundsTypeSImmediateAvailabilityMissing(): void
     {
         $this->parser->pushLine('03,0975312468,,190,70000000,4,S,,100000,90000/');
 
