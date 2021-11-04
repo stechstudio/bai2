@@ -167,10 +167,8 @@ final class GroupHeaderParserTest extends RecordParserTestCase
      *           ["02,ABC123,XYZ789,3,211027,0800,USD,2/", "3"]
      *           ["02,ABC123,XYZ789,4,211027,0800,USD,2/", "4"]
      */
-    public function testGroupStatusValid(
-        string $line,
-        string $expected
-    ): void {
+    public function testGroupStatusValid(string $line, string $expected): void
+    {
         $this->parser->pushLine($line);
         $this->assertEquals($expected, $this->parser['groupStatus']);
     }
@@ -200,9 +198,41 @@ final class GroupHeaderParserTest extends RecordParserTestCase
         $this->parser['groupStatus'];
     }
 
-    // TODO(zmd): public function testAsOfDateValid(): void {}
-    // TODO(zmd): public function testAsOfDateMissing(): void {}
-    // TODO(zmd): public function testAsOfDateInvalid(): void {}
+    /**
+     * @testWith ["02,ABC123,XYZ789,1,211027,0800,USD,2/", "211027"]
+     *           ["02,ABC123,XYZ789,1,000000,0800,USD,2/", "000000"]
+     *           ["02,ABC123,XYZ789,1,999999,0800,USD,2/", "999999"]
+     */
+    public function testAsOfDateValid(string $line, string $expected): void
+    {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['asOfDate']);
+    }
+
+    public function testAsOfDateMissing(): void
+    {
+        $this->parser->pushLine('02,ABC123,XYZ789,1,,0800,USD,2/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "As-of-Date" cannot be omitted.');
+        $this->parser['asOfDate'];
+    }
+
+    /**
+     * @testWith ["02,ABC123,XYZ789,1,a211027,0800,USD,2/"]
+     *           ["02,ABC123,XYZ789,1,211027b,0800,USD,2/"]
+     *           ["02,ABC123,XYZ789,1,20211027,0800,USD,2/"]
+     *           ["02,ABC123,XYZ789,1,21-10-27,0800,USD,2/"]
+     *           ["02,ABC123,XYZ789,1,27-Oct 21,0800,USD,2/"]
+     */
+    public function testAsOfDateInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "As-of-Date" must be exactly 6 numerals (YYMMDD).');
+        $this->parser['asOfDate'];
+    }
 
     // TODO(zmd): public function testAsOfTimeValid(): void {}
     // TODO(zmd): public function testAsOfTimeOptional(): void {}
