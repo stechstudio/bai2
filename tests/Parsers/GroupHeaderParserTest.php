@@ -267,9 +267,39 @@ final class GroupHeaderParserTest extends RecordParserTestCase
         $this->parser['asOfTime'];
     }
 
-    // TODO(zmd): public function testCurrencyCodeValid(): void {}
-    // TODO(zmd): public function testCurrencyCodeOptional(): void {}
-    // TODO(zmd): public function testCurrencyCodeInvalid(): void {}
+    /**
+     * @testWith ["02,ABC123,XYZ789,1,211027,0800,USD,2/", "USD"]
+     *           ["02,ABC123,XYZ789,1,211027,0000,ABC,2/", "ABC"]
+     *           ["02,ABC123,XYZ789,1,211027,2400,XYZ,2/", "XYZ"]
+     */
+    public function testCurrencyCodeValid(string $line, string $expected): void
+    {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['currencyCode']);
+    }
+
+    public function testCurrencyCodeOptional(): void
+    {
+        $this->parser->pushLine('02,ABC123,XYZ789,1,211027,0800,,2/');
+        $this->assertNull($this->parser['currencyCode']);
+    }
+
+    /**
+     * @testWith ["02,ABC123,XYZ789,1,211027,0800, USD,2/"]
+     *           ["02,ABC123,XYZ789,1,211027,0800,USD ,2/"]
+     *           ["02,ABC123,XYZ789,1,211027,0800,AUSD,2/"]
+     *           ["02,ABC123,XYZ789,1,211027,0800,UD,2/"]
+     *           ["02,ABC123,XYZ789,1,211027,0800,123,2/"]
+     *           ["02,ABC123,XYZ789,1,211027,0800,$$$,2/"]
+     */
+    public function testCurrencyCodeInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Currency Code" must be exactly 3 uppercase letters when provided.');
+        $this->parser['currencyCode'];
+    }
 
     // TODO(zmd): public function testAsOfDateModifierValid(): void {}
     // TODO(zmd): public function testAsOfDateModifierOptional(): void {}

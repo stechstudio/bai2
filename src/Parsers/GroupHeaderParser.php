@@ -44,9 +44,9 @@ final class GroupHeaderParser extends AbstractRecordParser
                  ->match('/^\d{4}$/', 'must be exactly 4 numerals (HHMM) when provided')
                  ->string(default: null);
 
-        // TODO(zmd): validate format & default/optional
         $this->parsed['currencyCode'] =
             $this->shiftAndParseField('Currency Code')
+                 ->match('/^[A-Z]{3}$/', 'must be exactly 3 uppercase letters when provided')
                  ->string(default: null);
 
         // TODO(zmd): validate format & default/optional
