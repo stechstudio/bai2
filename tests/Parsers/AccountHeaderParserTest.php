@@ -634,9 +634,39 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser['customerAccountNumber'];
     }
 
-    // TODO(zmd): public function testCurrencyCodeValid(): void {}
-    // TODO(zmd): public function testCurrencyCodeOptional(): void {}
-    // TODO(zmd): public function testCurrencyCodeInvalid(): void {}
+    /**
+     * @testWith ["03,123456,USD,190,70000000,4,0/", "USD"]
+     *           ["03,123456,ABC,190,70000000,4,0/", "ABC"]
+     *           ["03,123456,XYZ,190,70000000,4,0/", "XYZ"]
+     */
+    public function testCurrencyCodeValid(string $line, string $expected): void
+    {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['currencyCode']);
+    }
+
+    public function testCurrencyCodeOptional(): void
+    {
+        $this->parser->pushLine('03,123456,,190,70000000,4,0/');
+        $this->assertNull($this->parser['currencyCode']);
+    }
+
+    /**
+     * @testWith ["03,123456, USD,190,70000000,4,0/"]
+     *           ["03,123456,USD ,190,70000000,4,0/"]
+     *           ["03,123456,AUSD,190,70000000,4,0/"]
+     *           ["03,123456,UD,190,70000000,4,0/"]
+     *           ["03,123456,123,190,70000000,4,0/"]
+     *           ["03,123456,$$$,190,70000000,4,0/"]
+     */
+    public function testCurrencyCodeInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Currency Code" must be exactly 3 uppercase letters when provided.');
+        $this->parser['currencyCode'];
+    }
 
     /**
      * @testWith ["03,0975312468,,010,500000,,/", "010"]

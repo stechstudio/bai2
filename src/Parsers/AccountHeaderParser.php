@@ -115,9 +115,9 @@ final class AccountHeaderParser extends AbstractRecordParser
                  ->match('/^[[:alnum:]]+$/', 'must be composed of one or more letters and/or numbers')
                  ->string();
 
-        // TODO(zmd): validate format & default/optional
         $this->parsed['currencyCode'] =
             $this->shiftAndParseField('Currency Code')
+                 ->match('/^[A-Z]{3}$/', 'must be exactly 3 uppercase letters when provided')
                  ->string(default: null);
 
         $this->parsed['summaryAndStatusInformation'] = $this->shiftAndParseSummaryAndStatusInformation();
