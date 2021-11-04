@@ -4,6 +4,8 @@ namespace STS\Bai2\Parsers;
 
 use STS\Bai2\Parsers\AccountSummaryOrStatusTypeCode as TypeCode;
 
+use STS\Bai2\Exceptions\InvalidTypeException;
+
 /**
  * # Account Identifier and Summary Status
  *
@@ -144,8 +146,7 @@ final class AccountHeaderParser extends AbstractRecordParser
                     $summaryAndStatusInformation[] = $this->shiftAndParseAccountSummary($typeCode);
                     break;
                 default:
-                    // TODO(zmd): validate if encountering an *obviously*
-                    //   invalid type code range?
+                    throw new InvalidTypeException('Invalid field type: "Type Code" was out outside the valid range for summary or status data.');
                     break;
             }
         }

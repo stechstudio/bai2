@@ -635,6 +635,20 @@ final class AccountHeaderParserTest extends RecordParserTestCase
     }
 
     /**
+     * @testWith ["03,0975312468,,800,500000,,/"]
+     *           ["03,0975312468,,825,500000,,/"]
+     *           ["03,0975312468,,899,500000,,/"]
+     */
+    public function testSummaryAndStatusInformationTypeCodeOutOfRange(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Type Code" was out outside the valid range for summary or status data.');
+        $this->parser['summaryAndStatusInformation'];
+    }
+
+    /**
      * @testWith ["03,0975312468,,,5000,,/", "Amount"]
      *           ["03,0975312468,,,,4,/", "Item Count"]
      *           ["03,0975312468,,,,,0/", "Funds Type"]
