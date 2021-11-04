@@ -100,7 +100,8 @@ final class GroupHeaderParserTest extends RecordParserTestCase
 
     /**
      * @testWith ["02,ABC 123,XYZ789,1,211027,0800,USD,2/"]
-     *           ["02, ABC123 ,XYZ789,1,211027,0800,USD,2/"]
+     *           ["02, ABC123,XYZ789,1,211027,0800,USD,2/"]
+     *           ["02,ABC123 ,XYZ789,1,211027,0800,USD,2/"]
      *           ["02,ABC_123,XYZ789,1,211027,0800,USD,2/"]
      *           ["02,ABC-123,XYZ789,1,211027,0800,USD,2/"]
      *           ["02,ABC+123,XYZ789,1,211027,0800,USD,2/"]
@@ -112,13 +113,53 @@ final class GroupHeaderParserTest extends RecordParserTestCase
         $this->parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Ultimate Receiver Identification" must be alpha-numeric.');
+        $this->expectExceptionMessage('Invalid field type: "Ultimate Receiver Identification" must be alpha-numeric when provided.');
         $this->parser['ultimateReceiverIdentification'];
     }
 
-    // TODO(zmd): public function testOriginatorIdentificationValid(): void {}
-    // TODO(zmd): public function testOriginatorIdentificationMissing(): void {}
-    // TODO(zmd): public function testOriginatorIdentificationInvalid(): void {}
+    /**
+     * @testWith ["02,ABC123,XYZ789,1,211027,0800,USD,2/", "XYZ789"]
+     *           ["02,ABC123,789XYZ,1,211027,0800,USD,2/", "789XYZ"]
+     *           ["02,ABC123,xyz789,1,211027,0800,USD,2/", "xyz789"]
+     *           ["02,ABC123,789xyz,1,211027,0800,USD,2/", "789xyz"]
+     *           ["02,ABC123,stwxyz,1,211027,0800,USD,2/", "stwxyz"]
+     *           ["02,ABC123,456789,1,211027,0800,USD,2/", "456789"]
+     */
+    public function testOriginatorIdentificationValid(
+        string $line,
+        string $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['originatorIdentification']);
+    }
+
+    public function testOriginatorIdentificationMissing(): void
+    {
+        $this->parser->pushLine("02,ABC123,,1,211027,0800,USD,2/");
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Originator Identification" cannot be omitted.');
+        $this->parser['originatorIdentification'];
+    }
+
+    /**
+     * @testWith ["02,ABC123,XYZ 789,1,211027,0800,USD,2/"]
+     *           ["02,ABC123, XYZ789,1,211027,0800,USD,2/"]
+     *           ["02,ABC123,XYZ789 ,1,211027,0800,USD,2/"]
+     *           ["02,ABC123,XYZ_789,1,211027,0800,USD,2/"]
+     *           ["02,ABC123,XYZ-789,1,211027,0800,USD,2/"]
+     *           ["02,ABC123,XYZ+789,1,211027,0800,USD,2/"]
+     *           ["02,ABC123,)(*&^%,1,211027,0800,USD,2/"]
+     *           ["02,ABC123, ,1,211027,0800,USD,2/"]
+     */
+    public function testOriginatorIdentificationInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Originator Identification" must be alpha-numeric.');
+        $this->parser['originatorIdentification'];
+    }
 
     // TODO(zmd): public function testGroupStatusValid(): void {}
     // TODO(zmd): public function testGroupStatusMissing(): void {}

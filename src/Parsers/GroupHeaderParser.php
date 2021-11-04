@@ -21,13 +21,13 @@ final class GroupHeaderParser extends AbstractRecordParser
 
         $this->parsed['ultimateReceiverIdentification'] =
             $this->shiftAndParseField('Ultimate Receiver Identification')
-                 ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric')
+                 ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric when provided')
                  ->string(default: null);
 
-        // TODO(zmd): validate format & default/optional
         $this->parsed['originatorIdentification'] =
             $this->shiftAndParseField('Originator Identification')
-                 ->string(default: null);
+                 ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric')
+                 ->string();
 
         // TODO(zmd): validate format & default/optional
         $this->parsed['groupStatus'] =
