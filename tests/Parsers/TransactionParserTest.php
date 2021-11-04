@@ -505,9 +505,42 @@ final class TransactionParserTest extends RecordParserTestCase
         $this->parser['summaryAndStatusInformation'];
     }
 
-    // TODO(zmd): public function testFundsTypeSTwoOrMoreDayAvailabilityValid(): void {}
-    // TODO(zmd): public function testFundsTypeSTwoOrMoreDayAvailabilityMissing(): void {}
-    // TODO(zmd): public function testFundsTypeSTwoOrMoreDayAvailabilityInvalid(): void {}
+    /**
+     * @testWith ["16,003,10000,S,150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", 90000]
+     *           ["16,003,10000,S,150000,100000,+90000,123456789,987654321,TEXT OF SUCH IMPORT", 90000]
+     *           ["16,003,10000,S,150000,100000,-90000,123456789,987654321,TEXT OF SUCH IMPORT", -90000]
+     */
+    public function testFundsTypeSTwoOrMoreDayAvailabilityValid(
+        string $line,
+        int $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['fundsType']['availability'][2]);
+    }
+
+    public function testFundsTypeSTwoOrMoreDayAvailabilityMissing(): void
+    {
+        $this->parser->pushLine('16,003,10000,S,150000,100000,,123456789,987654321,TEXT OF SUCH IMPORT');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Two-or-more Day Availability" cannot be omitted.');
+        $this->parser['summaryAndStatusInformation'];
+    }
+
+    /**
+     * @testWith ["16,003,10000,S,150000,100000,a90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,S,150000,100000,90000b,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,S,150000,100000,90_000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,S,150000,100000,90000.00,123456789,987654321,TEXT OF SUCH IMPORT"]
+     */
+    public function testFundsTypeSTwoOrMoreDayAvailabilityInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Two-or-more Day Availability" must be a signed or unsigned integer value.');
+        $this->parser['summaryAndStatusInformation'];
+    }
 
     // TODO(zmd): public function testFundsTypeDLengthValid(): void {}
     // TODO(zmd): public function testFundsTypeDLengthMissing(): void {}
