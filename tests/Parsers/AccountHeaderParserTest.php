@@ -919,7 +919,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Value Dated Time" must be exactly 4 numerals (HHMM).');
+        $this->expectExceptionMessage('Invalid field type: "Value Dated Time" must be exactly 4 numerals (HHMM) when provided.');
         $this->parser['summaryAndStatusInformation'];
     }
 

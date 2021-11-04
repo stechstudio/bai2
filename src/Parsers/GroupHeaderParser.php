@@ -39,9 +39,9 @@ final class GroupHeaderParser extends AbstractRecordParser
                  ->match('/^\d{6}$/', 'must be exactly 6 numerals (YYMMDD)')
                  ->string();
 
-        // TODO(zmd): validate format & default/optional
         $this->parsed['asOfTime'] =
             $this->shiftAndParseField('As-of-Time')
+                 ->match('/^\d{4}$/', 'must be exactly 4 numerals (HHMM) when provided')
                  ->string(default: null);
 
         // TODO(zmd): validate format & default/optional

@@ -234,9 +234,38 @@ final class GroupHeaderParserTest extends RecordParserTestCase
         $this->parser['asOfDate'];
     }
 
-    // TODO(zmd): public function testAsOfTimeValid(): void {}
-    // TODO(zmd): public function testAsOfTimeOptional(): void {}
-    // TODO(zmd): public function testAsOfTimeInvalid(): void {}
+    /**
+     * @testWith ["02,ABC123,XYZ789,1,211027,0800,USD,2/", "0800"]
+     *           ["02,ABC123,XYZ789,1,211027,0000,USD,2/", "0000"]
+     *           ["02,ABC123,XYZ789,1,211027,2400,USD,2/", "2400"]
+     *           ["02,ABC123,XYZ789,1,211027,9999,USD,2/", "9999"]
+     */
+    public function testAsOfTimeValid(string $line, string $expected): void
+    {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['asOfTime']);
+    }
+
+    public function testAsOfTimeOptional(): void
+    {
+        $this->parser->pushLine('02,ABC123,XYZ789,1,211027,,USD,2/');
+        $this->assertNull($this->parser['asOfTime']);
+    }
+
+    /**
+     * @testWith ["02,ABC123,XYZ789,1,211027, 0800,USD,2/"]
+     *           ["02,ABC123,XYZ789,1,211027,0800 ,USD,2/"]
+     *           ["02,ABC123,XYZ789,1,211027,08:00,USD,2/"]
+     *           ["02,ABC123,XYZ789,1,211027,800,USD,2/"]
+     */
+    public function testAsOfTimeInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "As-of-Time" must be exactly 4 numerals (HHMM) when provided.');
+        $this->parser['asOfTime'];
+    }
 
     // TODO(zmd): public function testCurrencyCodeValid(): void {}
     // TODO(zmd): public function testCurrencyCodeOptional(): void {}

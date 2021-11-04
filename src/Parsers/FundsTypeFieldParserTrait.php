@@ -30,7 +30,7 @@ trait FundsTypeFieldParserTrait
 
                 $fundsType['valueTime'] =
                     $this->shiftAndParseField('Value Dated Time')
-                         ->match('/^\d{4}$/', 'must be exactly 4 numerals (HHMM)')
+                         ->match('/^\d{4}$/', 'must be exactly 4 numerals (HHMM) when provided')
                          ->string(default: null);
 
                 break;
