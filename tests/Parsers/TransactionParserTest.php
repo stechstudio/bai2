@@ -542,9 +542,46 @@ final class TransactionParserTest extends RecordParserTestCase
         $this->parser['summaryAndStatusInformation'];
     }
 
-    // TODO(zmd): public function testFundsTypeDLengthValid(): void {}
-    // TODO(zmd): public function testFundsTypeDLengthMissing(): void {}
-    // TODO(zmd): public function testFundsTypeDLengthInvalid(): void {}
+    /**
+     * @testWith ["16,003,10000,D,0,123456789,987654321,TEXT OF SUCH IMPORT", 0]
+     *           ["16,003,10000,D,1,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 1]
+     *           ["16,003,10000,D,3,0,50000000,1,15000000,2,5000000,123456789,987654321,TEXT OF SUCH IMPORT", 3]
+     *           ["16,003,10000,D,5,0,150000,1,100000,3,90000,5,70000,7,50000,123456789,987654321,TEXT OF SUCH IMPORT", 5]
+     *           ["16,003,10000,D,30,5,150000,10,145000,15,140000,20,135000,25,130000,30,125000,35,120000,40,125000,45,120000,50,115000,55,110000,60,105000,65,100000,70,95000,75,90000,80,85000,85,80000,90,75000,95,70000,100,65000,105,60000,110,55000,115,50000,120,45000,125,40000,130,35000,135,30000,140,25000,145,20000,150,15000,123456789,987654321,TEXT OF SUCH IMPORT", 30]
+     */
+    public function testFundsTypeDLengthValid(string $line, int $expected): void
+    {
+        $this->parser->pushLine($line);
+        $this->assertEquals(
+            $expected,
+            count($this->parser['fundsType']['availability'])
+        );
+    }
+
+    public function testFundsTypeDLengthMissing(): void
+    {
+        $this->parser->pushLine('16,003,10000,D,,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Number of Distributions" cannot be omitted.');
+        $this->parser['summaryAndStatusInformation'];
+    }
+
+    /**
+     * @testWith ["16,003,10000,D,a1,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,D,1b,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,D,-1,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,D,+1,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,D,1.0,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     */
+    public function testFundsTypeDLengthInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Number of Distributions" should be an unsigned integer.');
+        $this->parser['summaryAndStatusInformation'];
+    }
 
     // TODO(zmd): public function testFundsTypeDAvailabilityDayValid(): void {}
     // TODO(zmd): public function testFundsTypeDAvailabilityDayMissing(): void {}
