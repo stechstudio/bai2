@@ -4,6 +4,8 @@ namespace STS\Bai2\Parsers;
 
 use STS\Bai2\Tests\Parsers\RecordParserTestCase;
 
+use STS\Bai2\Exceptions\InvalidTypeException;
+
 /**
  * @group RecordParserTests
  */
@@ -74,9 +76,45 @@ final class GroupHeaderParserTest extends RecordParserTestCase
 
     // ----- record-specific field validation ----------------------------------
 
-    // TODO(zmd): public function testUltimateReceiverIdentificationValid(): void {}
-    // TODO(zmd): public function testUltimateReceiverIdentificationMissing(): void {}
-    // TODO(zmd): public function testUltimateReceiverIdentificationInvalid(): void {}
+    /**
+     * @testWith ["02,ABC123,XYZ789,1,211027,0800,USD,2/", "ABC123"]
+     *           ["02,123ABC,XYZ789,1,211027,0800,USD,2/", "123ABC"]
+     *           ["02,abc123,XYZ789,1,211027,0800,USD,2/", "abc123"]
+     *           ["02,123abc,XYZ789,1,211027,0800,USD,2/", "123abc"]
+     *           ["02,abcdef,XYZ789,1,211027,0800,USD,2/", "abcdef"]
+     *           ["02,123456,XYZ789,1,211027,0800,USD,2/", "123456"]
+     */
+    public function testUltimateReceiverIdentificationValid(
+        string $line,
+        string $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['ultimateReceiverIdentification']);
+    }
+
+    public function testUltimateReceiverIdentificationOptional(): void
+    {
+        $this->parser->pushLine('02,,XYZ789,1,211027,0800,USD,2/');
+        $this->assertNull($this->parser['ultimateReceiverIdentification']);
+    }
+
+    /**
+     * @testWith ["02,ABC 123,XYZ789,1,211027,0800,USD,2/"]
+     *           ["02, ABC123 ,XYZ789,1,211027,0800,USD,2/"]
+     *           ["02,ABC_123,XYZ789,1,211027,0800,USD,2/"]
+     *           ["02,ABC-123,XYZ789,1,211027,0800,USD,2/"]
+     *           ["02,ABC+123,XYZ789,1,211027,0800,USD,2/"]
+     *           ["02,!@#$%^,XYZ789,1,211027,0800,USD,2/"]
+     *           ["02, ,XYZ789,1,211027,0800,USD,2/"]
+     */
+    public function testUltimateReceiverIdentificationInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Ultimate Receiver Identification" must be alpha-numeric.');
+        $this->parser['ultimateReceiverIdentification'];
+    }
 
     // TODO(zmd): public function testOriginatorIdentificationValid(): void {}
     // TODO(zmd): public function testOriginatorIdentificationMissing(): void {}
@@ -91,15 +129,15 @@ final class GroupHeaderParserTest extends RecordParserTestCase
     // TODO(zmd): public function testAsOfDateInvalid(): void {}
 
     // TODO(zmd): public function testAsOfTimeValid(): void {}
-    // TODO(zmd): public function testAsOfTimeMissing(): void {}
+    // TODO(zmd): public function testAsOfTimeOptional(): void {}
     // TODO(zmd): public function testAsOfTimeInvalid(): void {}
 
     // TODO(zmd): public function testCurrencyCodeValid(): void {}
-    // TODO(zmd): public function testCurrencyCodeMissing(): void {}
+    // TODO(zmd): public function testCurrencyCodeOptional(): void {}
     // TODO(zmd): public function testCurrencyCodeInvalid(): void {}
 
     // TODO(zmd): public function testAsOfDateModifierValid(): void {}
-    // TODO(zmd): public function testAsOfDateModifierMissing(): void {}
+    // TODO(zmd): public function testAsOfDateModifierOptional(): void {}
     // TODO(zmd): public function testAsOfDateModifierInvalid(): void {}
 
 }

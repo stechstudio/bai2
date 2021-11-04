@@ -19,9 +19,9 @@ final class GroupHeaderParser extends AbstractRecordParser
     {
         $this->parsed['recordCode'] = $this->shiftField();
 
-        // TODO(zmd): validate format & default/optional
         $this->parsed['ultimateReceiverIdentification'] =
             $this->shiftAndParseField('Ultimate Receiver Identification')
+                 ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric')
                  ->string(default: null);
 
         // TODO(zmd): validate format & default/optional
