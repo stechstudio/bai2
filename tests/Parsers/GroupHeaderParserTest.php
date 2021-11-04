@@ -135,7 +135,7 @@ final class GroupHeaderParserTest extends RecordParserTestCase
 
     public function testOriginatorIdentificationMissing(): void
     {
-        $this->parser->pushLine("02,ABC123,,1,211027,0800,USD,2/");
+        $this->parser->pushLine('02,ABC123,,1,211027,0800,USD,2/');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Originator Identification" cannot be omitted.');
@@ -161,9 +161,44 @@ final class GroupHeaderParserTest extends RecordParserTestCase
         $this->parser['originatorIdentification'];
     }
 
-    // TODO(zmd): public function testGroupStatusValid(): void {}
-    // TODO(zmd): public function testGroupStatusMissing(): void {}
-    // TODO(zmd): public function testGroupStatusInvalid(): void {}
+    /**
+     * @testWith ["02,ABC123,XYZ789,1,211027,0800,USD,2/", "1"]
+     *           ["02,ABC123,XYZ789,2,211027,0800,USD,2/", "2"]
+     *           ["02,ABC123,XYZ789,3,211027,0800,USD,2/", "3"]
+     *           ["02,ABC123,XYZ789,4,211027,0800,USD,2/", "4"]
+     */
+    public function testGroupStatusValid(
+        string $line,
+        string $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['groupStatus']);
+    }
+
+    public function testGroupStatusMissing(): void
+    {
+        $this->parser->pushLine('02,ABC123,XYZ789,,211027,0800,USD,2/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Group Status" cannot be omitted.');
+        $this->parser['groupStatus'];
+    }
+
+    /**
+     * @testWith ["02,ABC123,XYZ789, 1,211027,0800,USD,2/"]
+     *           ["02,ABC123,XYZ789,1 ,211027,0800,USD,2/"]
+     *           ["02,ABC123,XYZ789,0,211027,0800,USD,2/"]
+     *           ["02,ABC123,XYZ789,5,211027,0800,USD,2/"]
+     *           ["02,ABC123,XYZ789,A,211027,0800,USD,2/"]
+     */
+    public function testGroupStatusInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Group Status" must be one of 1, 2, 3, or 4.');
+        $this->parser['groupStatus'];
+    }
 
     // TODO(zmd): public function testAsOfDateValid(): void {}
     // TODO(zmd): public function testAsOfDateMissing(): void {}

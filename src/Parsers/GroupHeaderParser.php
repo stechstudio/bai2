@@ -29,10 +29,10 @@ final class GroupHeaderParser extends AbstractRecordParser
                  ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric')
                  ->string();
 
-        // TODO(zmd): validate format & default/optional
         $this->parsed['groupStatus'] =
             $this->shiftAndParseField('Group Status')
-                 ->string(default: null);
+                 ->match('/^[1-4]$/', 'must be one of 1, 2, 3, or 4')
+                 ->string();
 
         // TODO(zmd): validate format & default/optional
         $this->parsed['asOfDate'] =
