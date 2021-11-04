@@ -589,12 +589,53 @@ final class AccountHeaderParserTest extends RecordParserTestCase
 
     // ----- record-specific field validation ----------------------------------
 
-    // TODO(zmd): public function testCustomerAccountNumberValid(): void {}
-    // TODO(zmd): public function testCustomerAccountNumberMissing(): void {}
-    // TODO(zmd): public function testCustomerAccountNumberInvalid(): void {}
+    /**
+     * @testWith ["03,123456,,190,70000000,4,0/", "123456"]
+     *           ["03,000001,,190,70000000,4,0/", "000001"]
+     *           ["03,abc123,,190,70000000,4,0/", "abc123"]
+     *           ["03,123abc,,190,70000000,4,0/", "123abc"]
+     *           ["03,abcxyz,,190,70000000,4,0/", "abcxyz"]
+     */
+    public function testCustomerAccountNumberValid(
+        string $line,
+        string $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertEquals(
+            $expected,
+            $this->parser['customerAccountNumber']
+        );
+    }
+
+    public function testCustomerAccountNumberMissing(): void
+    {
+        $this->parser->pushLine('03,,,190,70000000,4,0/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Customer Account Number" cannot be omitted.');
+        $this->parser['customerAccountNumber'];
+    }
+
+    /**
+     * @testWith ["03, 123456,,190,70000000,4,0/"]
+     *           ["03,123456 ,,190,70000000,4,0/"]
+     *           ["03,123_456,,190,70000000,4,0/"]
+     *           ["03,123+456,,190,70000000,4,0/"]
+     *           ["03,123-456,,190,70000000,4,0/"]
+     *           ["03,!@#$%^&,,190,70000000,4,0/"]
+     *           ["03, ,,190,70000000,4,0/", "123456"]
+     */
+    public function testCustomerAccountNumberInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Customer Account Number" must be composed of one or more letters and/or numbers.');
+        $this->parser['customerAccountNumber'];
+    }
 
     // TODO(zmd): public function testCurrencyCodeValid(): void {}
-    // TODO(zmd): public function testCurrencyCodeMissing(): void {}
+    // TODO(zmd): public function testCurrencyCodeOptional(): void {}
     // TODO(zmd): public function testCurrencyCodeInvalid(): void {}
 
     /**

@@ -110,10 +110,10 @@ final class AccountHeaderParser extends AbstractRecordParser
     {
         $this->parsed['recordCode'] = $this->shiftField();
 
-        // TODO(zmd): validate format & default/optional
         $this->parsed['customerAccountNumber'] =
             $this->shiftAndParseField('Customer Account Number')
-                 ->string(default: null);
+                 ->match('/^[[:alnum:]]+$/', 'must be composed of one or more letters and/or numbers')
+                 ->string();
 
         // TODO(zmd): validate format & default/optional
         $this->parsed['currencyCode'] =
