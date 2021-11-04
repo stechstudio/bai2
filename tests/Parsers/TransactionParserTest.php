@@ -629,9 +629,50 @@ final class TransactionParserTest extends RecordParserTestCase
         $this->parser['fundsType'];
     }
 
-    // TODO(zmd): public function testFundsTypeDAvailabilityAmountValid(): void {}
-    // TODO(zmd): public function testFundsTypeDAvailabilityAmountMissing(): void {}
-    // TODO(zmd): public function testFundsTypeDAvailabilityAmountInvalid(): void {}
+    /**
+     * @testWith ["16,003,10000,D,1,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 70000000]
+     *           ["16,003,10000,D,1,0,+70000000,123456789,987654321,TEXT OF SUCH IMPORT", 70000000]
+     *           ["16,003,10000,D,1,0,-70000000,123456789,987654321,TEXT OF SUCH IMPORT", -70000000]
+     *           ["16,003,10000,D,1,0,0,123456789,987654321,TEXT OF SUCH IMPORT", 0]
+     */
+    public function testFundsTypeDAvailabilityAmountValid(
+        string $line,
+        int $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertEquals(
+            $expected,
+            $this->parser['fundsType']['availability'][0]
+        );
+    }
+
+    public function testFundsTypeDAvailabilityAmountMissing(): void
+    {
+        $this->parser->pushLine('16,003,10000,D,1,0,,123456789,987654321,TEXT OF SUCH IMPORT');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Available Amount" cannot be omitted.');
+        $this->parser['fundsType'];
+    }
+
+    /**
+     * @testWith ["16,003,10000,D,1,0,foo,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,D,1,0,a70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,D,1,0,70000000b,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,D,1,0,70000 000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,D,1,0,700_00000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,D,1,0,70000000.00,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,D,1,0,7+0000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,D,1,0,70-000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     */
+    public function testFundsTypeDAvailabilityAmountInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Available Amount" must be a signed or unsigned integer value.');
+        $this->parser['fundsType'];
+    }
 
     // TODO(zmd): public function testBankReferenceNumberValid(): void {}
     // TODO(zmd): public function testBankReferenceNumberMissing(): void {}

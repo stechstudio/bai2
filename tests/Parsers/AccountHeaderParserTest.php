@@ -1138,9 +1138,9 @@ final class AccountHeaderParserTest extends RecordParserTestCase
 
     /**
      * @testWith ["03,0975312468,,190,70000000,4,D,1,0,70000000/", 70000000]
-     * @testWith ["03,0975312468,,190,70000000,4,D,1,0,+70000000/", 70000000]
-     * @testWith ["03,0975312468,,190,70000000,4,D,1,0,-70000000/", -70000000]
-     * @testWith ["03,0975312468,,190,70000000,4,D,1,0,0/", 0]
+     *           ["03,0975312468,,190,70000000,4,D,1,0,+70000000/", 70000000]
+     *           ["03,0975312468,,190,70000000,4,D,1,0,-70000000/", -70000000]
+     *           ["03,0975312468,,190,70000000,4,D,1,0,0/", 0]
      */
     public function testSummaryAndStatusInformationSummaryFundsTypeDAvailabilityAmountValid(
         string $line,
