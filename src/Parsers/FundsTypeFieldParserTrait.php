@@ -65,11 +65,11 @@ trait FundsTypeFieldParserTrait
                          ->int();
 
                 for (; $numDistributions > 0; --$numDistributions) {
-                    $days = $this->shiftAndParseField('Number of Days')
+                    $days = $this->shiftAndParseField('Availability in Days')
                                  ->match(...$unsignedIntConstraint)
                                  ->int();
 
-                    $amount = $this->shiftAndParseField('Distribution Amount')
+                    $amount = $this->shiftAndParseField('Available Amount')
                                    ->match(...$signedIntConstraint)
                                    ->int();
 

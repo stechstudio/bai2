@@ -450,7 +450,7 @@ final class TransactionParserTest extends RecordParserTestCase
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Immediate Availability" cannot be omitted.');
-        $this->parser['summaryAndStatusInformation'];
+        $this->parser['fundsType'];
     }
 
     /**
@@ -487,7 +487,7 @@ final class TransactionParserTest extends RecordParserTestCase
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "One-day Availability" cannot be omitted.');
-        $this->parser['summaryAndStatusInformation'];
+        $this->parser['fundsType'];
     }
 
     /**
@@ -502,7 +502,7 @@ final class TransactionParserTest extends RecordParserTestCase
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "One-day Availability" must be a signed or unsigned integer value.');
-        $this->parser['summaryAndStatusInformation'];
+        $this->parser['fundsType'];
     }
 
     /**
@@ -524,7 +524,7 @@ final class TransactionParserTest extends RecordParserTestCase
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Two-or-more Day Availability" cannot be omitted.');
-        $this->parser['summaryAndStatusInformation'];
+        $this->parser['fundsType'];
     }
 
     /**
@@ -539,7 +539,7 @@ final class TransactionParserTest extends RecordParserTestCase
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Two-or-more Day Availability" must be a signed or unsigned integer value.');
-        $this->parser['summaryAndStatusInformation'];
+        $this->parser['fundsType'];
     }
 
     /**
@@ -564,7 +564,7 @@ final class TransactionParserTest extends RecordParserTestCase
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Number of Distributions" cannot be omitted.');
-        $this->parser['summaryAndStatusInformation'];
+        $this->parser['fundsType'];
     }
 
     /**
@@ -580,12 +580,54 @@ final class TransactionParserTest extends RecordParserTestCase
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Number of Distributions" should be an unsigned integer.');
-        $this->parser['summaryAndStatusInformation'];
+        $this->parser['fundsType'];
     }
 
-    // TODO(zmd): public function testFundsTypeDAvailabilityDayValid(): void {}
-    // TODO(zmd): public function testFundsTypeDAvailabilityDayMissing(): void {}
-    // TODO(zmd): public function testFundsTypeDAvailabilityDayInvalid(): void {}
+    /**
+     * @testWith ["16,003,10000,D,1,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 0]
+     *           ["16,003,10000,D,1,1,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 1]
+     *           ["16,003,10000,D,1,3,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 3]
+     *           ["16,003,10000,D,1,5,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 5]
+     *           ["16,003,10000,D,1,30,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 30]
+     *           ["16,003,10000,D,1,365,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 365]
+     */
+    public function testFundsTypeDAvailabilityDayValid(
+        string $line,
+        int $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertTrue(
+            array_key_exists(
+                $expected,
+                $this->parser['fundsType']['availability']
+            )
+        );
+    }
+
+    public function testFundsTypeDAvailabilityDayMissing(): void
+    {
+        $this->parser->pushLine('16,003,10000,D,1,,70000000,123456789,987654321,TEXT OF SUCH IMPORT');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Availability in Days" cannot be omitted.');
+        $this->parser['fundsType'];
+    }
+
+    /**
+     * @testWith ["16,003,10000,D,1,a0,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,D,1,0b,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,D,1,-1,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,D,1,+1,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,D,1,0.5,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     */
+    public function testFundsTypeDAvailabilityDayInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Availability in Days" should be an unsigned integer.');
+        $this->parser['fundsType'];
+    }
 
     // TODO(zmd): public function testFundsTypeDAvailabilityAmountValid(): void {}
     // TODO(zmd): public function testFundsTypeDAvailabilityAmountMissing(): void {}

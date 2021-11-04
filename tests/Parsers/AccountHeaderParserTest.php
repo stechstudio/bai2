@@ -1115,7 +1115,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser->pushLine('03,0975312468,,190,70000000,4,D,1,,70000000/');
 
         $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Number of Days" cannot be omitted.');
+        $this->expectExceptionMessage('Invalid field type: "Availability in Days" cannot be omitted.');
         $this->parser['summaryAndStatusInformation'];
     }
 
@@ -1132,7 +1132,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Number of Days" should be an unsigned integer.');
+        $this->expectExceptionMessage('Invalid field type: "Availability in Days" should be an unsigned integer.');
         $this->parser['summaryAndStatusInformation'];
     }
 
@@ -1158,7 +1158,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser->pushLine('03,0975312468,,190,70000000,4,D,1,0,/');
 
         $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Distribution Amount" cannot be omitted.');
+        $this->expectExceptionMessage('Invalid field type: "Available Amount" cannot be omitted.');
         $this->parser['summaryAndStatusInformation'];
     }
 
@@ -1177,7 +1177,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Distribution Amount" must be a signed or unsigned integer value.');
+        $this->expectExceptionMessage('Invalid field type: "Available Amount" must be a signed or unsigned integer value.');
         $this->parser['summaryAndStatusInformation'];
     }
 
