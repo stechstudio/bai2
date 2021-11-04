@@ -468,9 +468,42 @@ final class TransactionParserTest extends RecordParserTestCase
         $this->parser['fundsType'];
     }
 
-    // TODO(zmd): public function testFundsTypeSOneDayAvailabilityValid(): void {}
-    // TODO(zmd): public function testFundsTypeSOneDayAvailabilityMissing(): void {}
-    // TODO(zmd): public function testFundsTypeSOneDayAvailabilityInvalid(): void {}
+    /**
+     * @testWith ["16,003,10000,S,150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", 100000]
+     *           ["16,003,10000,S,150000,+100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", 100000]
+     *           ["16,003,10000,S,150000,-100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", -100000]
+     */
+    public function testFundsTypeSOneDayAvailabilityValid(
+        string $line,
+        int $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['fundsType']['availability'][1]);
+    }
+
+    public function testFundsTypeSOneDayAvailabilityMissing(): void
+    {
+        $this->parser->pushLine('16,003,10000,S,150000,,90000,123456789,987654321,TEXT OF SUCH IMPORT');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "One-day Availability" cannot be omitted.');
+        $this->parser['summaryAndStatusInformation'];
+    }
+
+    /**
+     * @testWith ["16,003,10000,S,150000,a100000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,S,150000,100000b,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,S,150000,100_000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,003,10000,S,150000,100000.00,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     */
+    public function testFundsTypeSOneDayAvailabilityInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "One-day Availability" must be a signed or unsigned integer value.');
+        $this->parser['summaryAndStatusInformation'];
+    }
 
     // TODO(zmd): public function testFundsTypeSTwoOrMoreDayAvailabilityValid(): void {}
     // TODO(zmd): public function testFundsTypeSTwoOrMoreDayAvailabilityMissing(): void {}
