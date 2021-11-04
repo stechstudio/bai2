@@ -49,9 +49,9 @@ final class GroupHeaderParser extends AbstractRecordParser
                  ->match('/^[A-Z]{3}$/', 'must be exactly 3 uppercase letters when provided')
                  ->string(default: null);
 
-        // TODO(zmd): validate format & default/optional
         $this->parsed['asOfDateModifier'] =
             $this->shiftAndParseField('As-of-Date Modifier')
+                 ->match('/^[1-4]$/', 'must be one of 1, 2, 3, or 4 when provided')
                  ->string(default: null);
 
         return $this;

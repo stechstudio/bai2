@@ -186,6 +186,7 @@ final class GroupHeaderParserTest extends RecordParserTestCase
      * @testWith ["02,ABC123,XYZ789, 1,211027,0800,USD,2/"]
      *           ["02,ABC123,XYZ789,1 ,211027,0800,USD,2/"]
      *           ["02,ABC123,XYZ789,0,211027,0800,USD,2/"]
+     *           ["02,ABC123,XYZ789,11,211027,0800,USD,2/"]
      *           ["02,ABC123,XYZ789,5,211027,0800,USD,2/"]
      *           ["02,ABC123,XYZ789,A,211027,0800,USD,2/"]
      */
@@ -301,8 +302,41 @@ final class GroupHeaderParserTest extends RecordParserTestCase
         $this->parser['currencyCode'];
     }
 
-    // TODO(zmd): public function testAsOfDateModifierValid(): void {}
-    // TODO(zmd): public function testAsOfDateModifierOptional(): void {}
-    // TODO(zmd): public function testAsOfDateModifierInvalid(): void {}
+    /**
+     * @testWith ["02,ABC123,XYZ789,1,211027,0800,USD,1/", "1"]
+     *           ["02,ABC123,XYZ789,1,211027,0800,USD,2/", "2"]
+     *           ["02,ABC123,XYZ789,1,211027,0800,USD,3/", "3"]
+     *           ["02,ABC123,XYZ789,1,211027,0800,USD,4/", "4"]
+     */
+    public function testAsOfDateModifierValid(
+        string $line,
+        string $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['asOfDateModifier']);
+    }
+
+    public function testAsOfDateModifierOptional(): void
+    {
+        $this->parser->pushLine('02,ABC123,XYZ789,1,211027,0800,USD,/');
+        $this->assertNull($this->parser['asOfDateModifier']);
+    }
+
+    /**
+     * @testWith ["02,ABC123,XYZ789,1,211027,0800,USD, 1/"]
+     * @testWith ["02,ABC123,XYZ789,1,211027,0800,USD,1 /"]
+     * @testWith ["02,ABC123,XYZ789,1,211027,0800,USD,0/"]
+     * @testWith ["02,ABC123,XYZ789,1,211027,0800,USD,11/"]
+     * @testWith ["02,ABC123,XYZ789,1,211027,0800,USD,5/"]
+     * @testWith ["02,ABC123,XYZ789,1,211027,0800,USD,A/"]
+     */
+    public function testAsOfDateModifierInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "As-of-Date Modifier" must be one of 1, 2, 3, or 4 when provided.');
+        $this->parser['asOfDateModifier'];
+    }
 
 }
