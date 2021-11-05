@@ -20,10 +20,12 @@ final class TransactionParser extends AbstractRecordParser
     {
         $this->parsed['recordCode'] = $this->shiftField();
 
-        // TODO(zmd): validate format & default/optional
         $this->parsed['typeCode'] =
             $this->shiftAndParseField('Type Code')
-                 ->string(default: null);
+                 ->string();
+
+        // TODO(zmd): if typeCode was 890, then amount and fundsType should be
+        //   defaulted; should we enforce that?
 
         // TODO(zmd): validate format & default/optional
         $this->parsed['amount'] =

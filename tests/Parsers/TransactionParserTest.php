@@ -18,9 +18,9 @@ final class TransactionParserTest extends RecordParserTestCase
 
     protected static string $recordCode = '16';
 
-    protected static string $fullRecordLine = "16,003,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321,The following character is, of all the path separation characters I've ever used, my absolute favorite: /";
+    protected static string $fullRecordLine = "16,409,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321,The following character is, of all the path separation characters I've ever used, my absolute favorite: /";
 
-    protected static string $partialRecordLine = '16,003,10000,D,3/';
+    protected static string $partialRecordLine = '16,409,10000,D,3/';
 
     protected static string $continuedRecordLine = "88,1,1000,5,10000,30,25000,123456789,987654321,The following character is, of all the path separation characters I've ever used, my absolute favorite: /";
 
@@ -31,7 +31,7 @@ final class TransactionParserTest extends RecordParserTestCase
         $this->parser->pushLine(self::$fullRecordLine);
 
         $this->assertEquals('16', $this->parser['recordCode']);
-        $this->assertEquals('003', $this->parser['typeCode']);
+        $this->assertEquals('409', $this->parser['typeCode']);
         $this->assertEquals(10000, $this->parser['amount']);
         $this->assertEquals(
             [
@@ -58,7 +58,7 @@ final class TransactionParserTest extends RecordParserTestCase
         $this->parser->pushLine(self::$continuedRecordLine);
 
         $this->assertEquals('16', $this->parser['recordCode']);
-        $this->assertEquals('003', $this->parser['typeCode']);
+        $this->assertEquals('409', $this->parser['typeCode']);
         $this->assertEquals(10000, $this->parser['amount']);
         $this->assertEquals(
             [
@@ -85,7 +85,7 @@ final class TransactionParserTest extends RecordParserTestCase
         $this->assertEquals(
             [
                 'recordCode' => '16',
-                'typeCode' => '003',
+                'typeCode' => '409',
                 'amount' => 10000,
                 'fundsType' => [
                     'distributionOfAvailability' => 'D',
@@ -107,31 +107,31 @@ final class TransactionParserTest extends RecordParserTestCase
     {
         return [
             [
-                '16,003,10000,,123456789,987654321,SOME TEXT FTW/',
+                '16,409,10000,,123456789,987654321,SOME TEXT FTW/',
                 [
                     'distributionOfAvailability' => null,
                 ]
             ],
             [
-                '16,003,10000,0,123456789,987654321,SOME TEXT FTW/',
+                '16,409,10000,0,123456789,987654321,SOME TEXT FTW/',
                 [
                     'distributionOfAvailability' => '0',
                 ]
             ],
             [
-                '16,003,10000,1,123456789,987654321,SOME TEXT FTW/',
+                '16,409,10000,1,123456789,987654321,SOME TEXT FTW/',
                 [
                     'distributionOfAvailability' => '1',
                 ]
             ],
             [
-                '16,003,10000,2,123456789,987654321,SOME TEXT FTW/',
+                '16,409,10000,2,123456789,987654321,SOME TEXT FTW/',
                 [
                     'distributionOfAvailability' => '2',
                 ]
             ],
             [
-                '16,003,10000,V,210909,0800,123456789,987654321,SOME TEXT FTW/',
+                '16,409,10000,V,210909,0800,123456789,987654321,SOME TEXT FTW/',
                 [
                     'distributionOfAvailability' => 'V',
                     'valueDate' => '210909',
@@ -139,7 +139,7 @@ final class TransactionParserTest extends RecordParserTestCase
                 ]
             ],
             [
-                '16,003,10000,V,210909,0000,123456789,987654321,SOME TEXT FTW/',
+                '16,409,10000,V,210909,0000,123456789,987654321,SOME TEXT FTW/',
                 [
                     'distributionOfAvailability' => 'V',
                     'valueDate' => '210909',
@@ -147,7 +147,7 @@ final class TransactionParserTest extends RecordParserTestCase
                 ]
             ],
             [
-                '16,003,10000,V,210909,2400,123456789,987654321,SOME TEXT FTW/',
+                '16,409,10000,V,210909,2400,123456789,987654321,SOME TEXT FTW/',
                 [
                     'distributionOfAvailability' => 'V',
                     'valueDate' => '210909',
@@ -155,7 +155,7 @@ final class TransactionParserTest extends RecordParserTestCase
                 ]
             ],
             [
-                '16,003,10000,V,210909,9999,123456789,987654321,SOME TEXT FTW/',
+                '16,409,10000,V,210909,9999,123456789,987654321,SOME TEXT FTW/',
                 [
                     'distributionOfAvailability' => 'V',
                     'valueDate' => '210909',
@@ -163,7 +163,7 @@ final class TransactionParserTest extends RecordParserTestCase
                 ]
             ],
             [
-                '16,003,10000,V,210909,,123456789,987654321,SOME TEXT FTW/',
+                '16,409,10000,V,210909,,123456789,987654321,SOME TEXT FTW/',
                 [
                     'distributionOfAvailability' => 'V',
                     'valueDate' => '210909',
@@ -171,7 +171,7 @@ final class TransactionParserTest extends RecordParserTestCase
                 ]
             ],
             [
-                '16,003,10000,S,150000,100000,90000,123456789,987654321,SOME TEXT FTW/',
+                '16,409,10000,S,150000,100000,90000,123456789,987654321,SOME TEXT FTW/',
                 [
                     'distributionOfAvailability' => 'S',
                     'availability' => [
@@ -182,7 +182,7 @@ final class TransactionParserTest extends RecordParserTestCase
                 ]
             ],
             [
-                '16,003,10000,S,-150000,+100000,90000,123456789,987654321,SOME TEXT FTW/',
+                '16,409,10000,S,-150000,+100000,90000,123456789,987654321,SOME TEXT FTW/',
                 [
                     'distributionOfAvailability' => 'S',
                     'availability' => [
@@ -193,7 +193,7 @@ final class TransactionParserTest extends RecordParserTestCase
                 ]
             ],
             [
-                '16,003,10000,D,3,0,150000,1,100000,2,90000,123456789,987654321,SOME TEXT FTW/',
+                '16,409,10000,D,3,0,150000,1,100000,2,90000,123456789,987654321,SOME TEXT FTW/',
                 [
                     'distributionOfAvailability' => 'D',
                     'availability' => [
@@ -204,7 +204,7 @@ final class TransactionParserTest extends RecordParserTestCase
                 ]
             ],
             [
-                '16,003,10000,D,5,0,150000,1,100000,3,90000,5,70000,7,50000,123456789,987654321,SOME TEXT FTW/',
+                '16,409,10000,D,5,0,150000,1,100000,3,90000,5,70000,7,50000,123456789,987654321,SOME TEXT FTW/',
                 [
                     'distributionOfAvailability' => 'D',
                     'availability' => [
@@ -217,7 +217,7 @@ final class TransactionParserTest extends RecordParserTestCase
                 ]
             ],
             [
-                '16,003,10000,D,30,'
+                '16,409,10000,D,30,'
                     . '5,150000,'
                     . '10,145000,'
                     . '15,140000,'
@@ -305,21 +305,48 @@ final class TransactionParserTest extends RecordParserTestCase
 
     // ----- record-specific field validation ----------------------------------
 
-    // TODO(zmd): public function testTypeCodeValid(): void {}
-    // TODO(zmd): public function testTypeCodeMissing(): void {}
-    // TODO(zmd): public function testTypeCodeInvalid(): void {}
+    /**
+     * @testWith ["16,101,10000,0,123456789,987654321,TEXT OF SUCH IMPORT", "101"]
+     *           ["16,399,10000,0,123456789,987654321,TEXT OF SUCH IMPORT", "399"]
+     *           ["16,401,10000,0,123456789,987654321,TEXT OF SUCH IMPORT", "401"]
+     *           ["16,699,10000,0,123456789,987654321,TEXT OF SUCH IMPORT", "699"]
+     *           ["16,700,10000,0,123456789,987654321,TEXT OF SUCH IMPORT", "700"]
+     *           ["16,799,10000,0,123456789,987654321,TEXT OF SUCH IMPORT", "799"]
+     *           ["16,890,,,,,TEXT OF SUCH IMPORT", "890"]
+     *           ["16,900,,,,,TEXT OF SUCH IMPORT", "900"]
+     *           ["16,999,,,,,TEXT OF SUCH IMPORT", "999"]
+     */
+    public function testTypeCodeValid(string $line, string $expected): void
+    {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['typeCode']);
+    }
+
+    public function testTypeCodeMissing(): void
+    {
+        $this->parser->pushLine('16,,10000,0,123456789,987654321,TEXT OF SUCH IMPORT');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Type Code" cannot be omitted.');
+        $this->parser['typeCode'];
+    }
+
+    public function testTypeCodeInvalid(): void
+    {
+        // TODO(zmd): implement me
+    }
 
     // TODO(zmd): public function testAmountValid(): void {}
     // TODO(zmd): public function testAmountMissing(): void {}
     // TODO(zmd): public function testAmountInvalid(): void {}
 
     /**
-     * @testWith ["16,003,10000,0,123456789,987654321,TEXT OF SUCH IMPORT", "0"]
-     *           ["16,003,10000,1,123456789,987654321,TEXT OF SUCH IMPORT", "1"]
-     *           ["16,003,10000,2,123456789,987654321,TEXT OF SUCH IMPORT", "2"]
-     *           ["16,003,10000,V,210909,0800,123456789,987654321,TEXT OF SUCH IMPORT", "V"]
-     *           ["16,003,10000,S,150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", "S"]
-     *           ["16,003,10000,D,3,0,150000,1,100000,2,90000,123456789,987654321,TEXT OF SUCH IMPORT", "D"]
+     * @testWith ["16,409,10000,0,123456789,987654321,TEXT OF SUCH IMPORT", "0"]
+     *           ["16,409,10000,1,123456789,987654321,TEXT OF SUCH IMPORT", "1"]
+     *           ["16,409,10000,2,123456789,987654321,TEXT OF SUCH IMPORT", "2"]
+     *           ["16,409,10000,V,210909,0800,123456789,987654321,TEXT OF SUCH IMPORT", "V"]
+     *           ["16,409,10000,S,150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", "S"]
+     *           ["16,409,10000,D,3,0,150000,1,100000,2,90000,123456789,987654321,TEXT OF SUCH IMPORT", "D"]
      */
     public function testFundsTypeDistributionOfAvailabilityValid(
         string $line,
@@ -334,22 +361,22 @@ final class TransactionParserTest extends RecordParserTestCase
 
     public function testFundsTypeDistributionOfAvailabilityOptional(): void
     {
-        $this->parser->pushLine('16,003,10000,,123456789,987654321,TEXT OF SUCH IMPORT');
+        $this->parser->pushLine('16,409,10000,,123456789,987654321,TEXT OF SUCH IMPORT');
         $this->assertNull($this->parser['fundsType']['distributionOfAvailability']);
     }
 
     /**
-     * @testWith ["16,003,10000,-1,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,3,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,X,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,_,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,one,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,00,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,01,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,02,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,v,210909,0800,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,s,150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,d,3,0,150000,1,100000,2,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     * @testWith ["16,409,10000,-1,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,3,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,X,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,_,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,one,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,00,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,01,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,02,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,v,210909,0800,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,s,150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,d,3,0,150000,1,100000,2,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
      */
     public function testFundsTypeDistributionOfAvailabilityInvalid(string $line): void
     {
@@ -363,9 +390,9 @@ final class TransactionParserTest extends RecordParserTestCase
     }
 
     /**
-     * @testWith ["16,003,10000,V,210909,0800,123456789,987654321,TEXT OF SUCH IMPORT", "210909"]
-     *           ["16,003,10000,V,000000,0800,123456789,987654321,TEXT OF SUCH IMPORT", "000000"]
-     *           ["16,003,10000,V,999999,0800,123456789,987654321,TEXT OF SUCH IMPORT", "999999"]
+     * @testWith ["16,409,10000,V,210909,0800,123456789,987654321,TEXT OF SUCH IMPORT", "210909"]
+     *           ["16,409,10000,V,000000,0800,123456789,987654321,TEXT OF SUCH IMPORT", "000000"]
+     *           ["16,409,10000,V,999999,0800,123456789,987654321,TEXT OF SUCH IMPORT", "999999"]
      */
     public function testFundsTypeValueDateValid(string $line, string $expected): void
     {
@@ -375,7 +402,7 @@ final class TransactionParserTest extends RecordParserTestCase
 
     public function testFundsTypeValueDateMissing(): void
     {
-        $this->parser->pushLine('16,003,10000,V,,0800,123456789,987654321,TEXT OF SUCH IMPORT');
+        $this->parser->pushLine('16,409,10000,V,,0800,123456789,987654321,TEXT OF SUCH IMPORT');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Value Dated Date" cannot be omitted.');
@@ -383,11 +410,11 @@ final class TransactionParserTest extends RecordParserTestCase
     }
 
     /**
-     * @testWith ["16,003,10000,V,a10909,0800,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,V,21090b,0800,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,V,20210909,0800,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,V,21-09-09,0800,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,V,9-Sep 2021,0800,123456789,987654321,TEXT OF SUCH IMPORT"]
+     * @testWith ["16,409,10000,V,a10909,0800,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,V,21090b,0800,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,V,20210909,0800,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,V,21-09-09,0800,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,V,9-Sep 2021,0800,123456789,987654321,TEXT OF SUCH IMPORT"]
      */
     public function testFundsTypeValueDateInvalid(string $line): void
     {
@@ -399,10 +426,10 @@ final class TransactionParserTest extends RecordParserTestCase
     }
 
     /**
-     * @testWith ["16,003,10000,V,210909,0800,123456789,987654321,TEXT OF SUCH IMPORT", "0800"]
-     *           ["16,003,10000,V,210909,0000,123456789,987654321,TEXT OF SUCH IMPORT", "0000"]
-     *           ["16,003,10000,V,210909,2400,123456789,987654321,TEXT OF SUCH IMPORT", "2400"]
-     *           ["16,003,10000,V,210909,9999,123456789,987654321,TEXT OF SUCH IMPORT", "9999"]
+     * @testWith ["16,409,10000,V,210909,0800,123456789,987654321,TEXT OF SUCH IMPORT", "0800"]
+     *           ["16,409,10000,V,210909,0000,123456789,987654321,TEXT OF SUCH IMPORT", "0000"]
+     *           ["16,409,10000,V,210909,2400,123456789,987654321,TEXT OF SUCH IMPORT", "2400"]
+     *           ["16,409,10000,V,210909,9999,123456789,987654321,TEXT OF SUCH IMPORT", "9999"]
      */
     public function testFundsTypeValueTimeValid(string $line, string $expected): void
     {
@@ -412,15 +439,15 @@ final class TransactionParserTest extends RecordParserTestCase
 
     public function testFundsTypeValueTimeOptional(): void
     {
-        $this->parser->pushLine('16,003,10000,V,210909,,123456789,987654321,TEXT OF SUCH IMPORT');
+        $this->parser->pushLine('16,409,10000,V,210909,,123456789,987654321,TEXT OF SUCH IMPORT');
         $this->assertNull($this->parser['fundsType']['valueTime']);
     }
 
     /**
-     * @testWith ["16,003,10000,V,210909,a800,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,V,210909,080b,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,V,210909,08:00,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,V,210909,800,123456789,987654321,TEXT OF SUCH IMPORT"]
+     * @testWith ["16,409,10000,V,210909,a800,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,V,210909,080b,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,V,210909,08:00,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,V,210909,800,123456789,987654321,TEXT OF SUCH IMPORT"]
      */
     public function testFundsTypeValueTimeInvalid(string $line): void
     {
@@ -432,9 +459,9 @@ final class TransactionParserTest extends RecordParserTestCase
     }
 
     /**
-     * @testWith ["16,003,10000,S,150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", 150000]
-     *           ["16,003,10000,S,+150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", 150000]
-     *           ["16,003,10000,S,-150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", -150000]
+     * @testWith ["16,409,10000,S,150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", 150000]
+     *           ["16,409,10000,S,+150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", 150000]
+     *           ["16,409,10000,S,-150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", -150000]
      */
     public function testFundsTypeSImmediateAvailabilityValid(
         string $line,
@@ -446,7 +473,7 @@ final class TransactionParserTest extends RecordParserTestCase
 
     public function testFundsTypeSImmediateAvailabilityMissing(): void
     {
-        $this->parser->pushLine('16,003,10000,S,,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT');
+        $this->parser->pushLine('16,409,10000,S,,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Immediate Availability" cannot be omitted.');
@@ -454,10 +481,10 @@ final class TransactionParserTest extends RecordParserTestCase
     }
 
     /**
-     * @testWith ["16,003,10000,S,a150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,S,150000b,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,S,150_000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,S,150000.00,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     * @testWith ["16,409,10000,S,a150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,S,150000b,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,S,150_000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,S,150000.00,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
      */
     public function testFundsTypeSImmediateAvailabilityInvalid(string $line): void
     {
@@ -469,9 +496,9 @@ final class TransactionParserTest extends RecordParserTestCase
     }
 
     /**
-     * @testWith ["16,003,10000,S,150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", 100000]
-     *           ["16,003,10000,S,150000,+100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", 100000]
-     *           ["16,003,10000,S,150000,-100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", -100000]
+     * @testWith ["16,409,10000,S,150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", 100000]
+     *           ["16,409,10000,S,150000,+100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", 100000]
+     *           ["16,409,10000,S,150000,-100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", -100000]
      */
     public function testFundsTypeSOneDayAvailabilityValid(
         string $line,
@@ -483,7 +510,7 @@ final class TransactionParserTest extends RecordParserTestCase
 
     public function testFundsTypeSOneDayAvailabilityMissing(): void
     {
-        $this->parser->pushLine('16,003,10000,S,150000,,90000,123456789,987654321,TEXT OF SUCH IMPORT');
+        $this->parser->pushLine('16,409,10000,S,150000,,90000,123456789,987654321,TEXT OF SUCH IMPORT');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "One-day Availability" cannot be omitted.');
@@ -491,10 +518,10 @@ final class TransactionParserTest extends RecordParserTestCase
     }
 
     /**
-     * @testWith ["16,003,10000,S,150000,a100000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,S,150000,100000b,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,S,150000,100_000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,S,150000,100000.00,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     * @testWith ["16,409,10000,S,150000,a100000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,S,150000,100000b,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,S,150000,100_000,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,S,150000,100000.00,90000,123456789,987654321,TEXT OF SUCH IMPORT"]
      */
     public function testFundsTypeSOneDayAvailabilityInvalid(string $line): void
     {
@@ -506,9 +533,9 @@ final class TransactionParserTest extends RecordParserTestCase
     }
 
     /**
-     * @testWith ["16,003,10000,S,150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", 90000]
-     *           ["16,003,10000,S,150000,100000,+90000,123456789,987654321,TEXT OF SUCH IMPORT", 90000]
-     *           ["16,003,10000,S,150000,100000,-90000,123456789,987654321,TEXT OF SUCH IMPORT", -90000]
+     * @testWith ["16,409,10000,S,150000,100000,90000,123456789,987654321,TEXT OF SUCH IMPORT", 90000]
+     *           ["16,409,10000,S,150000,100000,+90000,123456789,987654321,TEXT OF SUCH IMPORT", 90000]
+     *           ["16,409,10000,S,150000,100000,-90000,123456789,987654321,TEXT OF SUCH IMPORT", -90000]
      */
     public function testFundsTypeSTwoOrMoreDayAvailabilityValid(
         string $line,
@@ -520,7 +547,7 @@ final class TransactionParserTest extends RecordParserTestCase
 
     public function testFundsTypeSTwoOrMoreDayAvailabilityMissing(): void
     {
-        $this->parser->pushLine('16,003,10000,S,150000,100000,,123456789,987654321,TEXT OF SUCH IMPORT');
+        $this->parser->pushLine('16,409,10000,S,150000,100000,,123456789,987654321,TEXT OF SUCH IMPORT');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Two-or-more Day Availability" cannot be omitted.');
@@ -528,10 +555,10 @@ final class TransactionParserTest extends RecordParserTestCase
     }
 
     /**
-     * @testWith ["16,003,10000,S,150000,100000,a90000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,S,150000,100000,90000b,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,S,150000,100000,90_000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,S,150000,100000,90000.00,123456789,987654321,TEXT OF SUCH IMPORT"]
+     * @testWith ["16,409,10000,S,150000,100000,a90000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,S,150000,100000,90000b,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,S,150000,100000,90_000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,S,150000,100000,90000.00,123456789,987654321,TEXT OF SUCH IMPORT"]
      */
     public function testFundsTypeSTwoOrMoreDayAvailabilityInvalid(string $line): void
     {
@@ -543,11 +570,11 @@ final class TransactionParserTest extends RecordParserTestCase
     }
 
     /**
-     * @testWith ["16,003,10000,D,0,123456789,987654321,TEXT OF SUCH IMPORT", 0]
-     *           ["16,003,10000,D,1,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 1]
-     *           ["16,003,10000,D,3,0,50000000,1,15000000,2,5000000,123456789,987654321,TEXT OF SUCH IMPORT", 3]
-     *           ["16,003,10000,D,5,0,150000,1,100000,3,90000,5,70000,7,50000,123456789,987654321,TEXT OF SUCH IMPORT", 5]
-     *           ["16,003,10000,D,30,5,150000,10,145000,15,140000,20,135000,25,130000,30,125000,35,120000,40,125000,45,120000,50,115000,55,110000,60,105000,65,100000,70,95000,75,90000,80,85000,85,80000,90,75000,95,70000,100,65000,105,60000,110,55000,115,50000,120,45000,125,40000,130,35000,135,30000,140,25000,145,20000,150,15000,123456789,987654321,TEXT OF SUCH IMPORT", 30]
+     * @testWith ["16,409,10000,D,0,123456789,987654321,TEXT OF SUCH IMPORT", 0]
+     *           ["16,409,10000,D,1,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 1]
+     *           ["16,409,10000,D,3,0,50000000,1,15000000,2,5000000,123456789,987654321,TEXT OF SUCH IMPORT", 3]
+     *           ["16,409,10000,D,5,0,150000,1,100000,3,90000,5,70000,7,50000,123456789,987654321,TEXT OF SUCH IMPORT", 5]
+     *           ["16,409,10000,D,30,5,150000,10,145000,15,140000,20,135000,25,130000,30,125000,35,120000,40,125000,45,120000,50,115000,55,110000,60,105000,65,100000,70,95000,75,90000,80,85000,85,80000,90,75000,95,70000,100,65000,105,60000,110,55000,115,50000,120,45000,125,40000,130,35000,135,30000,140,25000,145,20000,150,15000,123456789,987654321,TEXT OF SUCH IMPORT", 30]
      */
     public function testFundsTypeDLengthValid(string $line, int $expected): void
     {
@@ -560,7 +587,7 @@ final class TransactionParserTest extends RecordParserTestCase
 
     public function testFundsTypeDLengthMissing(): void
     {
-        $this->parser->pushLine('16,003,10000,D,,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT');
+        $this->parser->pushLine('16,409,10000,D,,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Number of Distributions" cannot be omitted.');
@@ -568,11 +595,11 @@ final class TransactionParserTest extends RecordParserTestCase
     }
 
     /**
-     * @testWith ["16,003,10000,D,a1,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,D,1b,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,D,-1,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,D,+1,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,D,1.0,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     * @testWith ["16,409,10000,D,a1,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,D,1b,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,D,-1,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,D,+1,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,D,1.0,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
      */
     public function testFundsTypeDLengthInvalid(string $line): void
     {
@@ -584,12 +611,12 @@ final class TransactionParserTest extends RecordParserTestCase
     }
 
     /**
-     * @testWith ["16,003,10000,D,1,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 0]
-     *           ["16,003,10000,D,1,1,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 1]
-     *           ["16,003,10000,D,1,3,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 3]
-     *           ["16,003,10000,D,1,5,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 5]
-     *           ["16,003,10000,D,1,30,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 30]
-     *           ["16,003,10000,D,1,365,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 365]
+     * @testWith ["16,409,10000,D,1,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 0]
+     *           ["16,409,10000,D,1,1,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 1]
+     *           ["16,409,10000,D,1,3,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 3]
+     *           ["16,409,10000,D,1,5,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 5]
+     *           ["16,409,10000,D,1,30,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 30]
+     *           ["16,409,10000,D,1,365,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 365]
      */
     public function testFundsTypeDAvailabilityDayValid(
         string $line,
@@ -606,7 +633,7 @@ final class TransactionParserTest extends RecordParserTestCase
 
     public function testFundsTypeDAvailabilityDayMissing(): void
     {
-        $this->parser->pushLine('16,003,10000,D,1,,70000000,123456789,987654321,TEXT OF SUCH IMPORT');
+        $this->parser->pushLine('16,409,10000,D,1,,70000000,123456789,987654321,TEXT OF SUCH IMPORT');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Availability in Days" cannot be omitted.');
@@ -614,11 +641,11 @@ final class TransactionParserTest extends RecordParserTestCase
     }
 
     /**
-     * @testWith ["16,003,10000,D,1,a0,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,D,1,0b,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,D,1,-1,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,D,1,+1,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,D,1,0.5,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     * @testWith ["16,409,10000,D,1,a0,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,D,1,0b,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,D,1,-1,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,D,1,+1,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,D,1,0.5,70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
      */
     public function testFundsTypeDAvailabilityDayInvalid(string $line): void
     {
@@ -630,10 +657,10 @@ final class TransactionParserTest extends RecordParserTestCase
     }
 
     /**
-     * @testWith ["16,003,10000,D,1,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 70000000]
-     *           ["16,003,10000,D,1,0,+70000000,123456789,987654321,TEXT OF SUCH IMPORT", 70000000]
-     *           ["16,003,10000,D,1,0,-70000000,123456789,987654321,TEXT OF SUCH IMPORT", -70000000]
-     *           ["16,003,10000,D,1,0,0,123456789,987654321,TEXT OF SUCH IMPORT", 0]
+     * @testWith ["16,409,10000,D,1,0,70000000,123456789,987654321,TEXT OF SUCH IMPORT", 70000000]
+     *           ["16,409,10000,D,1,0,+70000000,123456789,987654321,TEXT OF SUCH IMPORT", 70000000]
+     *           ["16,409,10000,D,1,0,-70000000,123456789,987654321,TEXT OF SUCH IMPORT", -70000000]
+     *           ["16,409,10000,D,1,0,0,123456789,987654321,TEXT OF SUCH IMPORT", 0]
      */
     public function testFundsTypeDAvailabilityAmountValid(
         string $line,
@@ -648,7 +675,7 @@ final class TransactionParserTest extends RecordParserTestCase
 
     public function testFundsTypeDAvailabilityAmountMissing(): void
     {
-        $this->parser->pushLine('16,003,10000,D,1,0,,123456789,987654321,TEXT OF SUCH IMPORT');
+        $this->parser->pushLine('16,409,10000,D,1,0,,123456789,987654321,TEXT OF SUCH IMPORT');
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Available Amount" cannot be omitted.');
@@ -656,14 +683,14 @@ final class TransactionParserTest extends RecordParserTestCase
     }
 
     /**
-     * @testWith ["16,003,10000,D,1,0,foo,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,D,1,0,a70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,D,1,0,70000000b,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,D,1,0,70000 000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,D,1,0,700_00000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,D,1,0,70000000.00,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,D,1,0,7+0000000,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,003,10000,D,1,0,70-000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     * @testWith ["16,409,10000,D,1,0,foo,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,D,1,0,a70000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,D,1,0,70000000b,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,D,1,0,70000 000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,D,1,0,700_00000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,D,1,0,70000000.00,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,D,1,0,7+0000000,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000,D,1,0,70-000000,123456789,987654321,TEXT OF SUCH IMPORT"]
      */
     public function testFundsTypeDAvailabilityAmountInvalid(string $line): void
     {
