@@ -893,7 +893,6 @@ final class TransactionParserTest extends RecordParserTestCase
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Text" mustn\'t begin with slash, and MUST end with slash if defaulted.');
-        var_dump($this->parser['text']);
     }
 
 }

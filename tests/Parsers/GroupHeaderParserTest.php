@@ -324,11 +324,11 @@ final class GroupHeaderParserTest extends RecordParserTestCase
 
     /**
      * @testWith ["02,ABC123,XYZ789,1,211027,0800,USD, 1/"]
-     * @testWith ["02,ABC123,XYZ789,1,211027,0800,USD,1 /"]
-     * @testWith ["02,ABC123,XYZ789,1,211027,0800,USD,0/"]
-     * @testWith ["02,ABC123,XYZ789,1,211027,0800,USD,11/"]
-     * @testWith ["02,ABC123,XYZ789,1,211027,0800,USD,5/"]
-     * @testWith ["02,ABC123,XYZ789,1,211027,0800,USD,A/"]
+     *           ["02,ABC123,XYZ789,1,211027,0800,USD,1 /"]
+     *           ["02,ABC123,XYZ789,1,211027,0800,USD,0/"]
+     *           ["02,ABC123,XYZ789,1,211027,0800,USD,11/"]
+     *           ["02,ABC123,XYZ789,1,211027,0800,USD,5/"]
+     *           ["02,ABC123,XYZ789,1,211027,0800,USD,A/"]
      */
     public function testAsOfDateModifierInvalid(string $line): void
     {

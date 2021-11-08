@@ -29,7 +29,6 @@ final class GroupTrailerParser extends AbstractRecordParser
             $this->shiftAndParseField('Number of Accounts')
                  ->match(...$unsignedIntConstraint)
                  ->int();
-        var_dump($this->parsed['numberOfAccounts']);
 
         $this->parsed['numberOfRecords'] =
             $this->shiftAndParseField('Number of Records')
