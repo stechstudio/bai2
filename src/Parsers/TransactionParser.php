@@ -5,6 +5,7 @@ namespace STS\Bai2\Parsers;
 use STS\Bai2\Parsers\TransactionDetailTypeCode as TypeCode;
 
 use STS\Bai2\Exceptions\InvalidTypeException;
+use STS\Bai2\Exceptions\ParseException;
 
 final class TransactionParser extends AbstractRecordParser
 {
@@ -70,9 +71,11 @@ final class TransactionParser extends AbstractRecordParser
                  ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric when provided')
                  ->string(default: null);
 
-        // TODO(zmd): validate format & default/optional
-        $this->parsed['text'] =
-            $this->getParser()->shiftText();
+        try {
+            $this->parsed['text'] = $this->getParser()->shiftText();
+        } catch (ParseException) {
+            throw new InvalidTypeException('Invalid field type: "Text" mustn\'t begin with slash, and MUST end with slash if defaulted.');
+        }
 
         return $this;
     }

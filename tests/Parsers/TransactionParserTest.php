@@ -869,8 +869,30 @@ final class TransactionParserTest extends RecordParserTestCase
         $this->parser['customerReferenceNumber'];
     }
 
-    // TODO(zmd): public function testTextValid(): void {}
-    // TODO(zmd): public function testTextMissing(): void {}
-    // TODO(zmd): public function testTextInvalid(): void {}
+    /**
+     * @testWith ["16,409,,,123456789,987654321,TEXT OF SUCH IMPORT", "TEXT OF SUCH IMPORT"]
+     *           ["16,409,,,123456789,987654321,,TEXT OF SUCH IMPORT", ",TEXT OF SUCH IMPORT"]
+     *           ["16,409,,,123456789,987654321,TEXT OF SUCH IMPORT/", "TEXT OF SUCH IMPORT/"]
+     *           ["16,409,,,123456789,987654321,TEXT, OF/SUCH IMPORT", "TEXT, OF/SUCH IMPORT"]
+     */
+    public function testTextValid(string $line, string $expected): void {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['text']);
+    }
+
+    public function testTextOptional(): void
+    {
+        $this->parser->pushLine('16,409,,0,123456789,,/');
+        $this->assertNull($this->parser['customerReferenceNumber']);
+    }
+
+    public function testTextInvalid(): void
+    {
+        $this->parser->pushLine('16,409,,,123456789,987654321,');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Text" mustn\'t begin with slash, and MUST end with slash if defaulted.');
+        var_dump($this->parser['text']);
+    }
 
 }
