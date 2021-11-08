@@ -18,6 +18,7 @@ final class GroupTrailerParser extends AbstractRecordParser
     protected function parseFields(): self
     {
         $this->parsed['recordCode'] = $this->shiftField();
+        $unsignedIntConstraint = ['/^\d+$/', 'should be unsigned integer'];
 
         $this->parsed['groupControlTotal'] =
             $this->shiftAndParseField('Group Control Total')
@@ -26,14 +27,14 @@ final class GroupTrailerParser extends AbstractRecordParser
 
         $this->parsed['numberOfAccounts'] =
             $this->shiftAndParseField('Number of Accounts')
-                 ->match('/^\d+$/', 'should be unsigned integer')
+                 ->match(...$unsignedIntConstraint)
                  ->int();
         var_dump($this->parsed['numberOfAccounts']);
 
-        // TODO(zmd): validate format & default/optional
         $this->parsed['numberOfRecords'] =
             $this->shiftAndParseField('Number of Records')
-                 ->int(default: null);
+                 ->match(...$unsignedIntConstraint)
+                 ->int();
 
         return $this;
     }
