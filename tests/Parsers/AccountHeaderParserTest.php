@@ -922,7 +922,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage(
-            'Invalid field type: "Distribution of Availability" for "Funds Type" must be one of "0", "1", "2", "V", "S", "D", or "Z".'
+            'Invalid field type: "Distribution of Availability" for "Funds Type" must be one of "0", "1", "2", "V", "S", "D", or "Z" when provided.'
         );
         $this->parser['summaryAndStatusInformation'];
     }

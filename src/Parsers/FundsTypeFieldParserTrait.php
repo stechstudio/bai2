@@ -12,7 +12,7 @@ trait FundsTypeFieldParserTrait
 
         $fundsType['distributionOfAvailability'] =
             $this->shiftAndParseField('Distribution of Availability')
-                 ->match('/^(0|1|2|V|S|D|Z)$/', 'for "Funds Type" must be one of "0", "1", "2", "V", "S", "D", or "Z"')
+                 ->match('/^(0|1|2|V|S|D|Z)$/', 'for "Funds Type" must be one of "0", "1", "2", "V", "S", "D", or "Z" when provided')
                  ->string(default: null);
 
         switch ($fundsType['distributionOfAvailability']) {
