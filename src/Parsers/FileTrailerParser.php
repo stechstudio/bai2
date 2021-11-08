@@ -19,10 +19,10 @@ final class FileTrailerParser extends AbstractRecordParser
     {
         $this->parsed['recordCode'] = $this->shiftField();
 
-        // TODO(zmd): validate format & default/optional
         $this->parsed['fileControlTotal'] =
             $this->shiftAndParseField('File Control Total')
-                 ->int(default: null);
+                 ->match('/^[-+]?\d+$/', 'must be signed or unsigned integer')
+                 ->int();
 
         // TODO(zmd): validate format & default/optional
         $this->parsed['numberOfGroups'] =

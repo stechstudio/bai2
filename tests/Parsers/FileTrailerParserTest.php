@@ -4,6 +4,8 @@ namespace STS\Bai2\Parsers;
 
 use STS\Bai2\Tests\Parsers\RecordParserTestCase;
 
+use STS\Bai2\Exceptions\InvalidTypeException;
+
 /**
  * @group RecordParserTests
  */
@@ -62,9 +64,47 @@ final class FileTrailerParserTest extends RecordParserTestCase
 
     // ----- record-specific field validation ----------------------------------
 
-    // TODO(zmd): public function testGroupControlTotalValid(): void {}
-    // TODO(zmd): public function testGroupControlTotalMissing(): void {}
-    // TODO(zmd): public function testGroupControlTotalInvalid(): void {}
+    /**
+     * @testWith ["99,123456789,5,42/", 123456789]
+     *           ["99,+123456789,5,42/", 123456789]
+     *           ["99,-123456789,5,42/", -123456789]
+     *           ["99,000000001,5,42/", 1]
+     *           ["99,0,5,42/", 0]
+     *           ["99,1,5,42/", 1]
+     */
+    public function testFileControlTotalValid(
+        string $line,
+        int $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['fileControlTotal']);
+    }
+
+    public function testFileControlTotalMissing(): void
+    {
+        $this->parser->pushLine('99,,5,42/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "File Control Total" cannot be omitted.');
+        $this->parser['fileControlTotal'];
+    }
+
+    /**
+     * @testWith ["99, 123456789,5,42/"]
+     *           ["99,123456789 ,5,42/"]
+     *           ["99,a123456789,5,42/"]
+     *           ["99,123456789b,5,42/"]
+     *           ["99,123_456_789,5,42/"]
+     *           ["99,123+456+789,5,42/"]
+     */
+    public function testFileControlTotalInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "File Control Total" must be signed or unsigned integer.');
+        $this->parser['fileControlTotal'];
+    }
 
     // TODO(zmd): public function testNumberOfGroupsValid(): void {}
     // TODO(zmd): public function testNumberOfGroupsMissing(): void {}
