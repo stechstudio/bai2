@@ -812,13 +812,13 @@ final class TransactionParserTest extends RecordParserTestCase
     }
 
     /**
-     * @testWith ["16,409,,, 123456789,987654321,TEXT OF SUCH IMPORT", "123456789"]
-     *           ["16,409,,,123456789 ,987654321,TEXT OF SUCH IMPORT", "123456789"]
-     *           ["16,409,,,1234_56789,987654321,TEXT OF SUCH IMPORT", "123456789"]
-     *           ["16,409,,,1234+56789,987654321,TEXT OF SUCH IMPORT", "123456789"]
-     *           ["16,409,,,1234-56789,987654321,TEXT OF SUCH IMPORT", "123456789"]
-     *           ["16,409,,,!@#$%^&*(),987654321,TEXT OF SUCH IMPORT", "123456789"]
-     *           ["16,409,,, ,987654321,TEXT OF SUCH IMPORT", "123456789"]
+     * @testWith ["16,409,,, 123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,,,123456789 ,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,,,1234_56789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,,,1234+56789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,,,1234-56789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,,,!@#$%^&*(),987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,,, ,987654321,TEXT OF SUCH IMPORT"]
      */
     public function testBankReferenceNumberInvalid(string $line): void
     {
@@ -826,12 +826,48 @@ final class TransactionParserTest extends RecordParserTestCase
 
         $this->expectException(InvalidTypeException::class);
         $this->expectExceptionMessage('Invalid field type: "Bank Reference Number" must be alpha-numeric when provided.');
-        $this->parser['typeCode'];
+        $this->parser['bankReferenceNumber'];
     }
 
-    // TODO(zmd): public function testCustomerReferenceNumberValid(): void {}
-    // TODO(zmd): public function testCustomerReferenceNumberMissing(): void {}
-    // TODO(zmd): public function testCustomerReferenceNumberInvalid(): void {}
+    /**
+     * @testWith ["16,409,,,123456789,987654321,TEXT OF SUCH IMPORT", "987654321"]
+     *           ["16,409,,,123456789,rstuvwxyz,TEXT OF SUCH IMPORT", "rstuvwxyz"]
+     *           ["16,409,,,123456789,98765wxyz,TEXT OF SUCH IMPORT", "98765wxyz"]
+     *           ["16,409,,,123456789,wxyz98765,TEXT OF SUCH IMPORT", "wxyz98765"]
+     *           ["16,409,,,123456789,000000009,TEXT OF SUCH IMPORT", "000000009"]
+     *           ["16,409,,,123456789,thelengthofthecustomerreferencenumberisnotlimitedbutshouldprobablybenotmorethan76charactersbecausewhywouldyoueverneedmorethanthatquestionmark,TEXT OF SUCH IMPORT", "thelengthofthecustomerreferencenumberisnotlimitedbutshouldprobablybenotmorethan76charactersbecausewhywouldyoueverneedmorethanthatquestionmark"]
+     */
+    public function testCustomerReferenceNumberValid(
+        string $line,
+        string $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['customerReferenceNumber']);
+    }
+
+    public function testCustomerReferenceNumberOptional(): void
+    {
+        $this->parser->pushLine('16,409,,0,123456789,,TEXT OF SUCH IMPORT');
+        $this->assertNull($this->parser['customerReferenceNumber']);
+    }
+
+    /**
+     * @testWith ["16,409,,,123456789, 987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,,,123456789,987654321 ,TEXT OF SUCH IMPORT"]
+     *           ["16,409,,,123456789,9876_54321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,,,123456789,9876+54321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,,,123456789,9876-54321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,,,123456789,+_)(*&^%$,TEXT OF SUCH IMPORT"]
+     *           ["16,409,,,123456789, ,TEXT OF SUCH IMPORT"]
+     */
+    public function testCustomerReferenceNumberInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Customer Reference Number" must be alpha-numeric when provided.');
+        $this->parser['customerReferenceNumber'];
+    }
 
     // TODO(zmd): public function testTextValid(): void {}
     // TODO(zmd): public function testTextMissing(): void {}
