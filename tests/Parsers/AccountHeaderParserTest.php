@@ -623,7 +623,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
      *           ["03,123+456,,190,70000000,4,0/"]
      *           ["03,123-456,,190,70000000,4,0/"]
      *           ["03,!@#$%^&,,190,70000000,4,0/"]
-     *           ["03, ,,190,70000000,4,0/", "123456"]
+     *           ["03, ,,190,70000000,4,0/"]
      */
     public function testCustomerAccountNumberInvalid(string $line): void
     {

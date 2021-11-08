@@ -60,9 +60,9 @@ final class TransactionParser extends AbstractRecordParser
                 break;
         }
 
-        // TODO(zmd): validate format & default/optional
         $this->parsed['bankReferenceNumber'] =
             $this->shiftAndParseField('Bank Reference Number')
+                 ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric when provided')
                  ->string(default: null);
 
         // TODO(zmd): validate format & default/optional

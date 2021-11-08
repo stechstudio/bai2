@@ -405,7 +405,7 @@ final class TransactionParserTest extends RecordParserTestCase
         $this->assertEquals($expected, $this->parser['amount']);
     }
 
-    public function testAmountOmitted(): void
+    public function testAmountOptional(): void
     {
         $this->parser->pushLine('16,409,,0,123456789,987654321,TEXT OF SUCH IMPORT');
         $this->assertNull($this->parser['amount']);
@@ -424,7 +424,7 @@ final class TransactionParserTest extends RecordParserTestCase
         $this->parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Amount" should be an unsigned integer.');
+        $this->expectExceptionMessage('Invalid field type: "Amount" should be an unsigned integer when provided.');
         $this->parser['amount'];
     }
 
@@ -789,9 +789,45 @@ final class TransactionParserTest extends RecordParserTestCase
         $this->parser['fundsType'];
     }
 
-    // TODO(zmd): public function testBankReferenceNumberValid(): void {}
-    // TODO(zmd): public function testBankReferenceNumberMissing(): void {}
-    // TODO(zmd): public function testBankReferenceNumberInvalid(): void {}
+    /**
+     * @testWith ["16,409,,,123456789,987654321,TEXT OF SUCH IMPORT", "123456789"]
+     *           ["16,409,,,abcdefghi,987654321,TEXT OF SUCH IMPORT", "abcdefghi"]
+     *           ["16,409,,,abcd12345,987654321,TEXT OF SUCH IMPORT", "abcd12345"]
+     *           ["16,409,,,12345abcd,987654321,TEXT OF SUCH IMPORT", "12345abcd"]
+     *           ["16,409,,,000000001,987654321,TEXT OF SUCH IMPORT", "000000001"]
+     *           ["16,409,,,thelengthofthebankreferencenumberisnotlimitedbutshouldprobablybenotmorethan76charactersbecausewhywouldyoueverneedmorethanthatquestionmark,987654321,TEXT OF SUCH IMPORT", "thelengthofthebankreferencenumberisnotlimitedbutshouldprobablybenotmorethan76charactersbecausewhywouldyoueverneedmorethanthatquestionmark"]
+     */
+    public function testBankReferenceNumberValid(
+        string $line,
+        string $expected
+    ): void {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['bankReferenceNumber']);
+    }
+
+    public function testBankReferenceNumberOptional(): void
+    {
+        $this->parser->pushLine('16,409,,0,,987654321,TEXT OF SUCH IMPORT');
+        $this->assertNull($this->parser['bankReferenceNumber']);
+    }
+
+    /**
+     * @testWith ["16,409,,, 123456789,987654321,TEXT OF SUCH IMPORT", "123456789"]
+     *           ["16,409,,,123456789 ,987654321,TEXT OF SUCH IMPORT", "123456789"]
+     *           ["16,409,,,1234_56789,987654321,TEXT OF SUCH IMPORT", "123456789"]
+     *           ["16,409,,,1234+56789,987654321,TEXT OF SUCH IMPORT", "123456789"]
+     *           ["16,409,,,1234-56789,987654321,TEXT OF SUCH IMPORT", "123456789"]
+     *           ["16,409,,,!@#$%^&*(),987654321,TEXT OF SUCH IMPORT", "123456789"]
+     *           ["16,409,,, ,987654321,TEXT OF SUCH IMPORT", "123456789"]
+     */
+    public function testBankReferenceNumberInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Bank Reference Number" must be alpha-numeric when provided.');
+        $this->parser['typeCode'];
+    }
 
     // TODO(zmd): public function testCustomerReferenceNumberValid(): void {}
     // TODO(zmd): public function testCustomerReferenceNumberMissing(): void {}
