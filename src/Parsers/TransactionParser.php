@@ -2,6 +2,10 @@
 
 namespace STS\Bai2\Parsers;
 
+use STS\Bai2\Parsers\TransactionDetailTypeCode as TypeCode;
+
+use STS\Bai2\Exceptions\InvalidTypeException;
+
 final class TransactionParser extends AbstractRecordParser
 {
     use RecordParserTrait;
@@ -22,10 +26,26 @@ final class TransactionParser extends AbstractRecordParser
 
         $this->parsed['typeCode'] =
             $this->shiftAndParseField('Type Code')
+                 ->match('/^\d{3}$/', 'was out outside the valid range for transaction detail data')
                  ->string();
 
-        // TODO(zmd): if typeCode was 890, then amount and fundsType should be
-        //   defaulted; should we enforce that?
+        switch (TypeCode::detect($this->parsed['typeCode'])) {
+            case TypeCode::NON_MONETARY:
+                // TODO(zmd): if typeCode was 890, then amount and fundsType
+                //   should be defaulted
+                break;
+
+            case TypeCode::CREDIT:
+            case TypeCode::DEBIT:
+            case TypeCode::LOAN:
+            case TypeCode::CUSTOM:
+                // TODO(zmd)
+                break;
+
+            default:
+                throw new InvalidTypeException('Invalid field type: "Type Code" was out outside the valid range for transaction detail data.');
+                break;
+        }
 
         // TODO(zmd): validate format & default/optional
         $this->parsed['amount'] =
