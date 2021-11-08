@@ -107,9 +107,45 @@ final class GroupTrailerParserTest extends RecordParserTestCase
         $this->parser['groupControlTotal'];
     }
 
-    // TODO(zmd): public function testNumberOfAccountsValid(): void {}
-    // TODO(zmd): public function testNumberOfAccountsMissing(): void {}
-    // TODO(zmd): public function testNumberOfAccountsInvalid(): void {}
+    /**
+     * @testWith ["98,11800000,2,6/", 2]
+     *           ["98,11800000,200,6/", 200]
+     *           ["98,11800000,0,6/", 0]
+     *           ["98,11800000,002,6/", 2]
+     */
+    public function testNumberOfAccountsValid(string $line, int $expected): void
+    {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['numberOfAccounts']);
+    }
+
+    public function testNumberOfAccountsMissing(): void
+    {
+        $this->parser->pushLine('98,11800000,,6/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Number of Accounts" cannot be omitted.');
+        $this->parser['numberOfAccounts'];
+    }
+
+    /**
+     * @testWith ["98,11800000,-2,6/"]
+     *           ["98,11800000,+2,6/"]
+     *           ["98,11800000, 2,6/"]
+     *           ["98,11800000,2 ,6/"]
+     *           ["98,11800000,a2,6/"]
+     *           ["98,11800000,2b,6/"]
+     *           ["98,11800000,1_000,6/"]
+     *           ["98,11800000,1+000,6/"]
+     */
+    public function testNumberOfAccountsInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Number of Accounts" should be unsigned integer.');
+        $this->parser['numberOfAccounts'];
+    }
 
     // TODO(zmd): public function testNumberOfRecordsValid(): void {}
     // TODO(zmd): public function testNumberOfRecordsMissing(): void {}
