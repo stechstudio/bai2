@@ -64,11 +64,11 @@ final class AccountTrailerParserTest extends RecordParserTestCase
 
     /**
      * @testWith ["49,18650000,3/", 18650000]
-     * @testWith ["49,+18650000,3/", 18650000]
-     * @testWith ["49,-18650000,3/", -18650000]
-     * @testWith ["49,00000001,3/", 1]
-     * @testWith ["49,0,3/", 0]
-     * @testWith ["49,1,3/", 1]
+     *           ["49,+18650000,3/", 18650000]
+     *           ["49,-18650000,3/", -18650000]
+     *           ["49,00000001,3/", 1]
+     *           ["49,0,3/", 0]
+     *           ["49,1,3/", 1]
      */
     public function testAccountControlTotalValid(string $line, int $expected): void
     {
@@ -102,8 +102,44 @@ final class AccountTrailerParserTest extends RecordParserTestCase
         $this->parser['accountControlTotal'];
     }
 
-    // TODO(zmd): public function testNumberOfRecordsValid(): void {}
-    // TODO(zmd): public function testNumberOfRecordsMissing(): void {}
-    // TODO(zmd): public function testNumberOfRecordsInvalid(): void {}
+    /**
+     * @testWith ["49,18650000,3/", 3]
+     *           ["49,18650000,100/", 100]
+     *           ["49,18650000,0/", 0]
+     *           ["49,18650000,001/", 1]
+     */
+    public function testNumberOfRecordsValid(string $line, int $expected): void
+    {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['numberOfRecords']);
+    }
+
+    public function testNumberOfRecordsMissing(): void
+    {
+        $this->parser->pushLine('49,18650000,/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Number of Records" cannot be omitted.');
+        $this->parser['numberOfRecords'];
+    }
+
+    /**
+     * @testWith ["49,18650000,-3/"]
+     *           ["49,18650000,+3/"]
+     *           ["49,18650000, 3/"]
+     *           ["49,18650000,3 /"]
+     *           ["49,18650000,a3/"]
+     *           ["49,18650000,3b/"]
+     *           ["49,18650000,2_000/"]
+     *           ["49,18650000,2+000/"]
+     */
+    public function testNumberOfRecordsInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Number of Records" should be unsigned integer.');
+        $this->parser['numberOfRecords'];
+    }
 
 }

@@ -24,10 +24,10 @@ final class AccountTrailerParser extends AbstractRecordParser
                  ->match('/^[-+]?\d+$/', 'must be signed or unsigned integer')
                  ->int();
 
-        // TODO(zmd): validate format & default/optional
         $this->parsed['numberOfRecords'] =
             $this->shiftAndParseField('Number of Records')
-                 ->int(default: null);
+                 ->match('/^\d+$/', 'should be unsigned integer')
+                 ->int();
 
         return $this;
     }
