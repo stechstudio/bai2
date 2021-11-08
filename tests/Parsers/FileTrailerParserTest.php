@@ -106,9 +106,45 @@ final class FileTrailerParserTest extends RecordParserTestCase
         $this->parser['fileControlTotal'];
     }
 
-    // TODO(zmd): public function testNumberOfGroupsValid(): void {}
-    // TODO(zmd): public function testNumberOfGroupsMissing(): void {}
-    // TODO(zmd): public function testNumberOfGroupsInvalid(): void {}
+    /**
+     * @testWith ["99,123456789,5,42/", 5]
+     *           ["99,123456789,500,42/", 500]
+     *           ["99,123456789,0,42/", 0]
+     *           ["99,123456789,005,42/", 5]
+     */
+    public function testNumberOfGroupsValid(string $line, int $expected): void
+    {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['numberOfGroups']);
+    }
+
+    public function testNumberOfGroupsMissing(): void
+    {
+        $this->parser->pushLine('99,123456789,,42/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Number of Groups" cannot be omitted.');
+        $this->parser['numberOfGroups'];
+    }
+
+    /**
+     * @testWith ["99,123456789,-5,42/", 5]
+     *           ["99,123456789,+5,42/", 5]
+     *           ["99,123456789, 5,42/", 5]
+     *           ["99,123456789,5 ,42/", 5]
+     *           ["99,123456789,a5,42/", 5]
+     *           ["99,123456789,5b,42/", 5]
+     *           ["99,123456789,4_000,42/", 5]
+     *           ["99,123456789,4+000,42/", 5]
+     */
+    public function testNumberOfGroupsInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Number of Groups" should be unsigned integer.');
+        $this->parser['numberOfGroups'];
+    }
 
     // TODO(zmd): public function testNumberOfRecordsdValid(): void {}
     // TODO(zmd): public function testNumberOfRecordsdMissing(): void {}
