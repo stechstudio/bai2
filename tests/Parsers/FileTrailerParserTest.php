@@ -128,14 +128,14 @@ final class FileTrailerParserTest extends RecordParserTestCase
     }
 
     /**
-     * @testWith ["99,123456789,-5,42/", 5]
-     *           ["99,123456789,+5,42/", 5]
-     *           ["99,123456789, 5,42/", 5]
-     *           ["99,123456789,5 ,42/", 5]
-     *           ["99,123456789,a5,42/", 5]
-     *           ["99,123456789,5b,42/", 5]
-     *           ["99,123456789,4_000,42/", 5]
-     *           ["99,123456789,4+000,42/", 5]
+     * @testWith ["99,123456789,-5,42/"]
+     *           ["99,123456789,+5,42/"]
+     *           ["99,123456789, 5,42/"]
+     *           ["99,123456789,5 ,42/"]
+     *           ["99,123456789,a5,42/"]
+     *           ["99,123456789,5b,42/"]
+     *           ["99,123456789,4_000,42/"]
+     *           ["99,123456789,4+000,42/"]
      */
     public function testNumberOfGroupsInvalid(string $line): void
     {
@@ -146,8 +146,44 @@ final class FileTrailerParserTest extends RecordParserTestCase
         $this->parser['numberOfGroups'];
     }
 
-    // TODO(zmd): public function testNumberOfRecordsdValid(): void {}
-    // TODO(zmd): public function testNumberOfRecordsdMissing(): void {}
-    // TODO(zmd): public function testNumberOfRecordsdInvalid(): void {}
+    /**
+     * @testWith ["99,123456789,5,42/", 42]
+     *           ["99,123456789,5,4200/", 4200]
+     *           ["99,123456789,5,0/", 0]
+     *           ["99,123456789,5,042/", 42]
+     */
+    public function testNumberOfRecordsdValid(string $line, int $expected): void
+    {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['numberOfRecords']);
+    }
+
+    public function testNumberOfRecordsdMissing(): void
+    {
+        $this->parser->pushLine('99,123456789,5,/');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Number of Records" cannot be omitted.');
+        $this->parser['numberOfRecords'];
+    }
+
+    /**
+     * @testWith ["99,123456789,5,-42/"]
+     *           ["99,123456789,5,+42/"]
+     *           ["99,123456789,5, 42/"]
+     *           ["99,123456789,5,42 /"]
+     *           ["99,123456789,5,a42/"]
+     *           ["99,123456789,5,42b/"]
+     *           ["99,123456789,5,41_000/"]
+     *           ["99,123456789,5,41+000/"]
+     */
+    public function testNumberOfRecordsdInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Number of Records" should be unsigned integer.');
+        $this->parser['numberOfRecords'];
+    }
 
 }
