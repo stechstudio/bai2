@@ -31,26 +31,29 @@ final class TransactionParser extends AbstractRecordParser
 
         switch (TypeCode::detect($this->parsed['typeCode'])) {
             case TypeCode::NON_MONETARY:
-                // TODO(zmd): if typeCode was 890, then amount and fundsType
-                //   should be defaulted
+                $this->parsed['amount'] =
+                    $this->shiftAndParseField('Amount')
+                         ->is('', 'should be defaulted since "Type Code" was non-monetary')
+                         ->int(default: null);
+
+                // TODO(zmd): if typeCode was 890, then fundsType should be
+                //   defaulted
                 break;
 
             case TypeCode::CREDIT:
             case TypeCode::DEBIT:
             case TypeCode::LOAN:
             case TypeCode::CUSTOM:
-                // TODO(zmd)
+                // TODO(zmd): validate format & default/optional
+                $this->parsed['amount'] =
+                    $this->shiftAndParseField('Amount')
+                         ->int(default: null);
                 break;
 
             default:
                 throw new InvalidTypeException('Invalid field type: "Type Code" was out outside the valid range for transaction detail data.');
                 break;
         }
-
-        // TODO(zmd): validate format & default/optional
-        $this->parsed['amount'] =
-            $this->shiftAndParseField('Amount')
-                 ->int(default: null);
 
         $this->parsed['fundsType'] = $this->shiftAndParseFundsType();
 
