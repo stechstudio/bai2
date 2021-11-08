@@ -155,17 +155,11 @@ class LineBuffer
     protected function regexNeedle(array $needles): string
     {
         $quoted = array_map(
-            fn ($needle) => preg_quote($needle),
+            fn ($needle) => preg_quote($needle, '/'),
             $needles
         );
 
-        // TODO(zmd): this is working, but deceptive; here the "(" and ")" are
-        //   serving as regex delimeters, not grouping; we don't need grouping
-        //   for this to work right, but we probably should switch to "/" to
-        //   make it obvious what's going on.
-        $needle = '(' . implode('|', $quoted) . ')';
-
-        return $needle;
+        return '/' . implode('|', $quoted) . '/';
     }
 
     protected function readTo(int $endIndex = null): string
