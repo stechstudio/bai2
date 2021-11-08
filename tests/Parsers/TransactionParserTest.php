@@ -378,8 +378,20 @@ final class TransactionParserTest extends RecordParserTestCase
         $this->parser['amount'];
     }
 
-    // TODO(zmd): public function testNonMonetaryFundsTypeValid(): void {}
-    // TODO(zmd): public function testNonMonetaryFundsTypeInvalid(): void {}
+    public function testNonMonetaryFundsTypeValid(): void
+    {
+        $this->parser->pushLine('16,890,,,123456789,987654321,TEXT OF SUCH IMPORT');
+        $this->assertNull($this->parser['fundsType']['distributionOfAvailability']);
+    }
+
+    public function testNonMonetaryFundsTypeInvalid(): void
+    {
+        $this->parser->pushLine('16,890,,0,123456789,987654321,TEXT OF SUCH IMPORT');
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Funds Type" should be defaulted since "Type Code" was non-monetary.');
+        $this->parser['fundsType'];
+    }
 
     // TODO(zmd): public function testAmountValid(): void {}
     // TODO(zmd): public function testAmountMissing(): void {}

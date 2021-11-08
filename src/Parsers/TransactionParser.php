@@ -36,8 +36,11 @@ final class TransactionParser extends AbstractRecordParser
                          ->is('', 'should be defaulted since "Type Code" was non-monetary')
                          ->int(default: null);
 
-                // TODO(zmd): if typeCode was 890, then fundsType should be
-                //   defaulted
+                    $this->parsed['fundsType'] = [];
+                    $this->parsed['fundsType']['distributionOfAvailability'] =
+                        $this->shiftAndParseField('Funds Type')
+                             ->is('', 'should be defaulted since "Type Code" was non-monetary')
+                             ->int(default: null);
                 break;
 
             case TypeCode::CREDIT:
@@ -48,14 +51,14 @@ final class TransactionParser extends AbstractRecordParser
                 $this->parsed['amount'] =
                     $this->shiftAndParseField('Amount')
                          ->int(default: null);
+
+                $this->parsed['fundsType'] = $this->shiftAndParseFundsType();
                 break;
 
             default:
                 throw new InvalidTypeException('Invalid field type: "Type Code" was out outside the valid range for transaction detail data.');
                 break;
         }
-
-        $this->parsed['fundsType'] = $this->shiftAndParseFundsType();
 
         // TODO(zmd): validate format & default/optional
         $this->parsed['bankReferenceNumber'] =
