@@ -32,28 +32,14 @@ final class TransactionParser extends AbstractRecordParser
 
         switch (TypeCode::detect($this->parsed['typeCode'])) {
             case TypeCode::NON_MONETARY:
-                $this->parsed['amount'] =
-                    $this->shiftAndParseField('Amount')
-                         ->is('', 'should be defaulted since "Type Code" was non-monetary')
-                         ->int(default: null);
-
-                    $this->parsed['fundsType'] = [];
-                    $this->parsed['fundsType']['distributionOfAvailability'] =
-                        $this->shiftAndParseField('Funds Type')
-                             ->is('', 'should be defaulted since "Type Code" was non-monetary')
-                             ->int(default: null);
+                $this->parseNonMonetaryAmountAndFundsType();
                 break;
 
             case TypeCode::CREDIT:
             case TypeCode::DEBIT:
             case TypeCode::LOAN:
             case TypeCode::CUSTOM:
-                $this->parsed['amount'] =
-                    $this->shiftAndParseField('Amount')
-                         ->match('/^\d+$/', 'should be an unsigned integer when provided')
-                         ->int(default: null);
-
-                $this->parsed['fundsType'] = $this->shiftAndParseFundsType();
+                $this->parseMonetaryAmountAndFundsType();
                 break;
 
             default:
@@ -78,6 +64,30 @@ final class TransactionParser extends AbstractRecordParser
         }
 
         return $this;
+    }
+
+    protected function parseNonMonetaryAmountAndFundsType(): void
+    {
+        $this->parsed['amount'] =
+            $this->shiftAndParseField('Amount')
+                 ->is('', 'should be defaulted since "Type Code" was non-monetary')
+                 ->int(default: null);
+
+            $this->parsed['fundsType'] = [];
+            $this->parsed['fundsType']['distributionOfAvailability'] =
+                $this->shiftAndParseField('Funds Type')
+                     ->is('', 'should be defaulted since "Type Code" was non-monetary')
+                     ->int(default: null);
+    }
+
+    protected function parseMonetaryAmountAndFundsType(): void
+    {
+        $this->parsed['amount'] =
+            $this->shiftAndParseField('Amount')
+                 ->match('/^\d+$/', 'should be an unsigned integer when provided')
+                 ->int(default: null);
+
+        $this->parsed['fundsType'] = $this->shiftAndParseFundsType();
     }
 
 }
