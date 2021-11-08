@@ -875,7 +875,8 @@ final class TransactionParserTest extends RecordParserTestCase
      *           ["16,409,,,123456789,987654321,TEXT OF SUCH IMPORT/", "TEXT OF SUCH IMPORT/"]
      *           ["16,409,,,123456789,987654321,TEXT, OF/SUCH IMPORT", "TEXT, OF/SUCH IMPORT"]
      */
-    public function testTextValid(string $line, string $expected): void {
+    public function testTextValid(string $line, string $expected): void
+    {
         $this->parser->pushLine($line);
         $this->assertEquals($expected, $this->parser['text']);
     }
