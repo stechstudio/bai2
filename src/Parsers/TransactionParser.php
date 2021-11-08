@@ -47,9 +47,9 @@ final class TransactionParser extends AbstractRecordParser
             case TypeCode::DEBIT:
             case TypeCode::LOAN:
             case TypeCode::CUSTOM:
-                // TODO(zmd): validate format & default/optional
                 $this->parsed['amount'] =
                     $this->shiftAndParseField('Amount')
+                         ->match('/^\d+$/', 'should be an unsigned integer when provided')
                          ->int(default: null);
 
                 $this->parsed['fundsType'] = $this->shiftAndParseFundsType();

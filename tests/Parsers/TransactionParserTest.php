@@ -393,9 +393,40 @@ final class TransactionParserTest extends RecordParserTestCase
         $this->parser['fundsType'];
     }
 
-    // TODO(zmd): public function testAmountValid(): void {}
-    // TODO(zmd): public function testAmountMissing(): void {}
-    // TODO(zmd): public function testAmountInvalid(): void {}
+    /**
+     * @testWith ["16,409,0,0,123456789,987654321,TEXT OF SUCH IMPORT", 0]
+     *           ["16,409,1,0,123456789,987654321,TEXT OF SUCH IMPORT", 1]
+     *           ["16,409,10000,0,123456789,987654321,TEXT OF SUCH IMPORT", 10000]
+     *           ["16,409,010000,0,123456789,987654321,TEXT OF SUCH IMPORT", 10000]
+     */
+    public function testAmountValid(string $line, int $expected): void
+    {
+        $this->parser->pushLine($line);
+        $this->assertEquals($expected, $this->parser['amount']);
+    }
+
+    public function testAmountOmitted(): void
+    {
+        $this->parser->pushLine('16,409,,0,123456789,987654321,TEXT OF SUCH IMPORT');
+        $this->assertNull($this->parser['amount']);
+    }
+
+    /**
+     * @testWith ["16,409,a10000,0,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10000b,0,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10_000,0,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,10+000,0,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,+10000,0,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,409,-10000,0,123456789,987654321,TEXT OF SUCH IMPORT"]
+     */
+    public function testAmountInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Amount" should be an unsigned integer.');
+        $this->parser['amount'];
+    }
 
     /**
      * @testWith ["16,409,10000,0,123456789,987654321,TEXT OF SUCH IMPORT", "0"]
