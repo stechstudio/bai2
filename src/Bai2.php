@@ -31,8 +31,9 @@ class Bai2
 
         try {
             while ($line = fgets($fileStream)) {
-                // trim off \r and any other lingering whitespace
-                if ($line = trim($line)) {
+                // trim off \r and \n (but not other whitespace that may be
+                // legit part of a record)
+                if ($line = trim($line, "\r\n")) {
                     $fileRecord->parseLine($line);
                 }
             }
