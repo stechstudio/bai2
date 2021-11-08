@@ -19,10 +19,10 @@ final class GroupTrailerParser extends AbstractRecordParser
     {
         $this->parsed['recordCode'] = $this->shiftField();
 
-        // TODO(zmd): validate format & default/optional
         $this->parsed['groupControlTotal'] =
             $this->shiftAndParseField('Group Control Total')
-                 ->int(default: null);
+                 ->match('/^[-+]?\d+$/', 'must be signed or unsigned integer')
+                 ->int();
 
         // TODO(zmd): validate format & default/optional
         $this->parsed['numberOfAccounts'] =
