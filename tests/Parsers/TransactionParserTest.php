@@ -332,16 +332,29 @@ final class TransactionParserTest extends RecordParserTestCase
     }
 
     /**
+     * @testWith ["16,ABC,10000,0,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,99,10000,0,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,0401,10000,0,123456789,987654321,TEXT OF SUCH IMPORT"]
+     *           ["16,4-1,10000,0,123456789,987654321,TEXT OF SUCH IMPORT"]
+     */
+    public function testTypeCodeInvalid(string $line): void
+    {
+        $this->parser->pushLine($line);
+
+        $this->expectException(InvalidTypeException::class);
+        $this->expectExceptionMessage('Invalid field type: "Type Code" must be composed of exactly three numerals.');
+        $this->parser['typeCode'];
+    }
+
+    /**
      * @testWith ["16,001,10000,0,123456789,987654321,TEXT OF SUCH IMPORT"]
      *           ["16,100,10000,0,123456789,987654321,TEXT OF SUCH IMPORT"]
      *           ["16,400,10000,0,123456789,987654321,TEXT OF SUCH IMPORT"]
      *           ["16,800,10000,0,123456789,987654321,TEXT OF SUCH IMPORT"]
      *           ["16,891,10000,0,123456789,987654321,TEXT OF SUCH IMPORT"]
      *           ["16,899,10000,0,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,99,10000,0,123456789,987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,0401,10000,0,123456789,987654321,TEXT OF SUCH IMPORT"]
      */
-    public function testTypeCodeInvalid(string $line): void
+    public function testTypeCodeOutOfRange(string $line): void
     {
         $this->parser->pushLine($line);
 
@@ -350,8 +363,7 @@ final class TransactionParserTest extends RecordParserTestCase
         $this->parser['typeCode'];
     }
 
-    // TODO(zmd): public function testNonMonetaryAmountValid(): void {}
-    // TODO(zmd): public function testNonMonetaryAmountMissing(): void {}
+    // TODO(zmd): public function testNonMonetaryAmountMustBeOmitted(): void {}
     // TODO(zmd): public function testNonMonetaryAmountInvalid(): void {}
 
     // TODO(zmd): public function testNonMonetaryFundsTypeValid(): void {}

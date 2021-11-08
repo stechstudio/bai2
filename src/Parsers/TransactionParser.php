@@ -26,7 +26,7 @@ final class TransactionParser extends AbstractRecordParser
 
         $this->parsed['typeCode'] =
             $this->shiftAndParseField('Type Code')
-                 ->match('/^\d{3}$/', 'was out outside the valid range for transaction detail data')
+                 ->match('/^\d{3}$/', 'must be composed of exactly three numerals')
                  ->string();
 
         switch (TypeCode::detect($this->parsed['typeCode'])) {
