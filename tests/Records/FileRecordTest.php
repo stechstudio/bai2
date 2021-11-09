@@ -45,6 +45,8 @@ final class FileRecordTest extends TestCase
         $callable($record);
     }
 
+    // -- test field getters ---------------------------------------------------
+
     /**
      * @dataProvider inputLinesProducer
      */
@@ -54,6 +56,8 @@ final class FileRecordTest extends TestCase
             $this->assertEquals('SENDR1', $fileRecord->getSenderIdentification());
         });
     }
+
+    // TODO(zmd): public function testGetSenderIdentifiationMissing(): void {}
 
     /**
      * @dataProvider inputLinesProducer
@@ -65,6 +69,8 @@ final class FileRecordTest extends TestCase
         });
     }
 
+    // TODO(zmd): public function testGetReceiverIdentifiationMissing(): void {}
+
     /**
      * @dataProvider inputLinesProducer
      */
@@ -74,6 +80,8 @@ final class FileRecordTest extends TestCase
             $this->assertEquals('210616', $fileRecord->getFileCreationDate());
         });
     }
+
+    // TODO(zmd): public function testGetFileCreationDateMissing(): void {}
 
     /**
      * @dataProvider inputLinesProducer
@@ -85,6 +93,8 @@ final class FileRecordTest extends TestCase
         });
     }
 
+    // TODO(zmd): public function testGetFileCreationTimeMissing(): void {}
+
     /**
      * @dataProvider inputLinesProducer
      */
@@ -94,6 +104,8 @@ final class FileRecordTest extends TestCase
             $this->assertEquals('01', $fileRecord->getFileIdentificationNumber());
         });
     }
+
+    // TODO(zmd): public function testGetFileIdentificationNumberMissing(): void {}
 
     /**
      * @dataProvider inputLinesProducer
@@ -105,6 +117,8 @@ final class FileRecordTest extends TestCase
         });
     }
 
+    // TODO(zmd): public function testGetPhysicalRecordLengthDefaulted(): void {}
+
     /**
      * @dataProvider inputLinesProducer
      */
@@ -114,6 +128,8 @@ final class FileRecordTest extends TestCase
             $this->assertEquals(10, $fileRecord->getBlockSize());
         });
     }
+
+    // TODO(zmd): public function testGetBlockSizeDefaulted(): void {}
 
     /**
      * @dataProvider inputLinesProducer
@@ -125,6 +141,8 @@ final class FileRecordTest extends TestCase
         });
     }
 
+    // TODO(zmd): public function testGetVersionNumberMissing(): void {}
+
     /**
      * @dataProvider inputLinesProducer
      */
@@ -134,6 +152,8 @@ final class FileRecordTest extends TestCase
             $this->assertEquals(1337, $fileRecord->getFileControlTotal());
         });
     }
+
+    // TODO(zmd): public function testGetFileControlTotalMissing(): void {}
 
     /**
      * @dataProvider inputLinesProducer
@@ -145,6 +165,8 @@ final class FileRecordTest extends TestCase
         });
     }
 
+    // TODO(zmd): public function testGetNumberOfGroupsMissing(): void {}
+
     /**
      * @dataProvider inputLinesProducer
      */
@@ -154,5 +176,39 @@ final class FileRecordTest extends TestCase
             $this->assertEquals(42, $fileRecord->getNumberOfRecords());
         });
     }
+
+    // TODO(zmd): public function testGetNumberOfRecordsMissing(): void {}
+
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetGroups(array $inputLines): void
+    {
+        $this->withRecord($inputLines, function ($fileRecord) {
+            $this->assertEquals(2, count($fileRecord->getGroups()));
+        });
+    }
+
+    // -- test overall functionality -------------------------------------------
+
+    // TODO(zmd): test ::toArray()
+
+    // -- test overall error handling ------------------------------------------
+
+    // TODO(zmd): test when input lines exceed length of physicalRecordLength
+
+    // TODO(zmd): test field access when header line never encountered
+
+    // TODO(zmd): test field access when trailer line never encountered
+
+    // TODO(zmd): test when continuation encountered before other kind of line
+
+    // TODO(zmd): test when child-destined line encountered before file header
+
+    // TODO(zmd): test when header malformed (e.g. missing field)
+
+    // TODO(zmd): test when trailer malformed (e.g. missing field)
+
+    // TODO(zmd): test when direct child malformed (e.g. missing field)
 
 }

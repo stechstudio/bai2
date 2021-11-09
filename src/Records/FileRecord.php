@@ -30,6 +30,8 @@ class FileRecord
         };
     }
 
+    // -- getters --------------------------------------------------------------
+
     public function getSenderIdentification(): string
     {
         return $this->headerParser['senderIdentification'];
@@ -90,7 +92,7 @@ class FileRecord
         return $this->groups;
     }
 
-    // -------------------------------------------------------------------------
+    // -- helper methods -------------------------------------------------------
 
     protected function processFileHeader(string $recordCode, string $line): void
     {
