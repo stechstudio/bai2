@@ -4,129 +4,134 @@ namespace STS\Bai2\Records;
 
 use STS\Bai2\Bai2;
 
-use STS\Bai2\Exceptions\ExtantAssertionException;
-
 use STS\Bai2\Parsers\FileHeaderParser;
 use STS\Bai2\Parsers\FileTrailerParser;
 
-class FileRecord extends AbstractEnvelopeRecord
+class FileRecord
 {
 
-    protected ?FileHeaderParser $headerParser = null;
+    protected string $currentRecordCode;
 
-    protected ?FileTrailerParser $trailerParser = null;
+    protected FileHeaderParser $headerParser;
+
+    protected FileTrailerParser $trailerParser;
+
+    protected array $groups = [];
+
+    protected GroupRecord $currentChild;
 
     public function parseLine(string $line): void
     {
-        switch (Bai2::recordTypeCode($line)) {
-            case '01':
-                ($this->headerParser ??= new FileHeaderParser())->pushLine($line);
-                break;
-            case '88':
-                $this->parseOrDelegateContinuation($line);
-                break;
-            case '99':
-                ($this->trailerParser ??= new FileTrailerParser())->pushLine($line);
-                break;
-            default:
-                $this->delegateToChild($line);
-                break;
-        }
+        match ($recordCode = Bai2::recordTypeCode($line)) {
+            '01' => $this->processFileHeader($recordCode, $line),
+            '88' => $this->processContinuation($line),
+            '99' => $this->processFileTrailer($recordCode, $line),
+            default => $this->processChildRecord($recordCode, $line)
+        };
     }
 
     public function getSenderIdentification(): string
     {
-        return $this->extantHeaderParser()['senderIdentification'];
+        return $this->headerParser['senderIdentification'];
     }
 
     public function getReceiverIdentification(): string
     {
-        return $this->extantHeaderParser()['receiverIdentification'];
+        return $this->headerParser['receiverIdentification'];
     }
 
     public function getFileCreationDate(): string
     {
-        return $this->extantHeaderParser()['fileCreationDate'];
+        return $this->headerParser['fileCreationDate'];
     }
 
     public function getFileCreationTime(): string
     {
-        return $this->extantHeaderParser()['fileCreationTime'];
+        return $this->headerParser['fileCreationTime'];
     }
 
     public function getFileIdentificationNumber(): string
     {
-        return $this->extantHeaderParser()['fileIdentificationNumber'];
+        return $this->headerParser['fileIdentificationNumber'];
     }
 
     public function getPhysicalRecordLength(): ?int
     {
-        return $this->extantHeaderParser()['physicalRecordLength'];
+        return $this->headerParser['physicalRecordLength'];
     }
 
     public function getBlockSize(): ?int
     {
-        return $this->extantHeaderParser()['blockSize'];
+        return $this->headerParser['blockSize'];
     }
 
     public function getVersionNumber(): string
     {
-        return $this->extantHeaderParser()['versionNumber'];
+        return $this->headerParser['versionNumber'];
     }
 
     public function getFileControlTotal(): int
     {
-        return $this->extantTrailerParser()['fileControlTotal'];
+        return $this->trailerParser['fileControlTotal'];
     }
 
     public function getNumberOfGroups(): int
     {
-        return $this->extantTrailerParser()['numberOfGroups'];
+        return $this->trailerParser['numberOfGroups'];
     }
 
     public function getNumberOfRecords(): int
     {
-        return $this->extantTrailerParser()['numberOfRecords'];
+        return $this->trailerParser['numberOfRecords'];
     }
 
-    public function groups(): array
+    public function getGroups(): array
     {
-        // TODO(zmd): implement me
-        return [];
+        return $this->groups;
     }
 
-    protected function extantHeaderParser(): FileHeaderParser
-    {
-        if ($this->headerParser) {
-            return $this->headerParser;
-        }
+    // -------------------------------------------------------------------------
 
-        throw new ExtantAssertionException('Tried to read File Header fields before File Header lines processed.');
+    protected function processFileHeader(string $recordCode, string $line): void
+    {
+        $this->currentRecordCode = $recordCode;
+        $this->headerParser = new FileHeaderParser();
+        $this->headerParser->pushLine($line);
     }
 
-    protected function extantTrailerParser(): FileTrailerParser
+    protected function processFileTrailer(string $recordCode, string $line): void
     {
-        if ($this->trailerParser) {
-            return $this->trailerParser;
-        }
-
-        throw new ExtantAssertionException('Tried to read File Trailer fields before File Trailer lines processed.');
+        $this->currentRecordCode = $recordCode;
+        $this->trailerParser = new FileTrailerParser();
+        $this->trailerParser->pushLine($line);
     }
 
-    protected function newChild(): void
+    protected function processContinuation(string $line): void
     {
-        $this->currentChild = new GroupRecord();
-        $this->records[] = $this->currentChild;
+        match ($this->currentRecordCode) {
+            '01' => $this->headerParser->pushLine($line),
+            '99' => $this->trailerParser->pushLine($line),
+            default => $this->currentChild->parseLine($line)
+        };
     }
 
-    protected function parseContinuation(string $line): void
+    protected function processChildRecord(string $recordCode, string $line): void
     {
-        // TODO(zmd): error handling if $headerTrailer and/or $trailerParser
-        //   never get initialized?
-        if ($this->trailerParser) {
-            $this->trailerParser->pushLine($line);
-        } else {
-            $this->headerParser->pushLine($line);
+        $this->currentRecordCode = $recordCode;
+
+        switch ($recordCode) {
+
+            case '02':
+                // TODO(zmd): propagate fileRecordLength, if appropriate
+                $this->currentChild = new GroupRecord();
+                $this->groups[] = $this->currentChild;
+                $this->currentChild->parseLine($line);
+                break;
+
+            default:
+                $this->currentChild->parseLine($line);
+                break;
+
         }
     }
 

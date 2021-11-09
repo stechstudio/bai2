@@ -7,208 +7,152 @@ use PHPUnit\Framework\TestCase;
 final class FileRecordTest extends TestCase
 {
 
-    private static string $headerLine = '01,SENDR1,RECVR1,210616,1700,01,80,10,2/';
-
-    private static string $headerLineWithDefaultedBlockSize = '01,SENDR1,RECVR1,210616,1700,01,80,,2/';
-
-    private static string $partialHeaderLine = '01,SENDR1,RECVR1,210616/';
-
-    private static string $partialHeaderContinuationLine = '88,1700,01,80,10,2/';
-
-    private static string $trailerLine = '99,1337,1,42/';
-
-    private static string $partialTrailerLine = '99,1337/';
-
-    private static string $partialTrailerContinuationLine = '88,1,42/';
-
-    public function testParseLineSetsCorrectSenderIdentification(): void
+    public function inputLinesProducer(): array
     {
-        $fileRecord = new FileRecord();
-        $fileRecord->parseLine(self::$headerLine);
-
-        $this->assertEquals('SENDR1', $fileRecord->getSenderIdentification());
+        return [
+            [[
+                '01,SENDR1,RECVR1,210616,1700,01,80,10,2/',
+                '02,abc,def,1,212209,,,/',
+                '98,10000,0,1/',
+                '02,uvw,xyz,1,212209,,,/',
+                '98,5000,0,1/',
+                '99,1337,2,42/',
+            ]],
+            [[
+                '01,SENDR1,RECVR1/',
+                '88,210616,1700,01,80,10,2/',
+                '02,abc,def/',
+                '88,1,212209,,,/',
+                '98,10000/',
+                '88,0,1/',
+                '02,uvw/',
+                '88,xyz,1,212209,,,/',
+                '98,5000,0,1/',
+                '99,1337/',
+                '88,2,42/',
+            ]],
+        ];
     }
 
-    public function testParseLineSetsCorrectReceiverIdentification(): void
+    protected function withRecord(array $input, callable $callable): void
     {
-        $fileRecord = new FileRecord();
-        $fileRecord->parseLine(self::$headerLine);
+        $record = new FileRecord();
 
-        $this->assertEquals('RECVR1', $fileRecord->getReceiverIdentification());
+        foreach ($input as $line) {
+            $record->parseLine($line);
+        }
+
+        $callable($record);
     }
 
-    public function testParseLineSetsCorrectFileCreationDate(): void
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetSenderIdentification(array $inputLines): void
     {
-        $fileRecord = new FileRecord();
-        $fileRecord->parseLine(self::$headerLine);
-
-        $this->assertEquals('210616', $fileRecord->getFileCreationDate());
+        $this->withRecord($inputLines, function ($fileRecord) {
+            $this->assertEquals('SENDR1', $fileRecord->getSenderIdentification());
+        });
     }
 
-    public function testParseLineSetsCorrectFileCreationTime(): void
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetReceiverIdentification(array $inputLines): void
     {
-        $fileRecord = new FileRecord();
-        $fileRecord->parseLine(self::$headerLine);
-
-        $this->assertEquals('1700', $fileRecord->getFileCreationTime());
+        $this->withRecord($inputLines, function ($fileRecord) {
+            $this->assertEquals('RECVR1', $fileRecord->getReceiverIdentification());
+        });
     }
 
-    public function testParseLineSetsCorrectFileIdentificationNumber(): void
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetFileCreationDate(array $inputLines): void
     {
-        $fileRecord = new FileRecord();
-        $fileRecord->parseLine(self::$headerLine);
-
-        $this->assertEquals('01', $fileRecord->getFileIdentificationNumber());
+        $this->withRecord($inputLines, function ($fileRecord) {
+            $this->assertEquals('210616', $fileRecord->getFileCreationDate());
+        });
     }
 
-    public function testParseLineSetsCorrectPhysicalRecordLength(): void
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetFileCreationTime(array $inputLines): void
     {
-        $fileRecord = new FileRecord();
-        $fileRecord->parseLine(self::$headerLine);
-
-        $this->assertEquals(80, $fileRecord->getPhysicalRecordLength());
+        $this->withRecord($inputLines, function ($fileRecord) {
+            $this->assertEquals('1700', $fileRecord->getFileCreationTime());
+        });
     }
 
-    public function testParseLineSetsCorrectBlockSize(): void
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetFileIdentificationNumber(array $inputLines): void
     {
-        $fileRecord = new FileRecord();
-        $fileRecord->parseLine(self::$headerLine);
-
-        $this->assertEquals(10, $fileRecord->getBlockSize());
+        $this->withRecord($inputLines, function ($fileRecord) {
+            $this->assertEquals('01', $fileRecord->getFileIdentificationNumber());
+        });
     }
 
-    public function testParseLineSetsCorrectVersionNumber(): void
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetPhysicalRecordLength(array $inputLines): void
     {
-        $fileRecord = new FileRecord();
-        $fileRecord->parseLine(self::$headerLine);
-
-        $this->assertEquals('2', $fileRecord->getVersionNumber());
+        $this->withRecord($inputLines, function ($fileRecord) {
+            $this->assertEquals(80, $fileRecord->getPhysicalRecordLength());
+        });
     }
 
-    public function testParseLineAllowsDefaultedPhysicalRecordLength(): void
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetBlockSize(array $inputLines): void
     {
-        $headerLine = '01,SENDR1,RECVR1,210616,1700,01,,10,2/';
-        $fileRecord = new FileRecord();
-        $fileRecord->parseLine($headerLine);
-
-        $this->assertNull($fileRecord->getPhysicalRecordLength());
+        $this->withRecord($inputLines, function ($fileRecord) {
+            $this->assertEquals(10, $fileRecord->getBlockSize());
+        });
     }
 
-    public function testParseLineAllowsDefaultedBlockSize(): void
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetVersionNumber(array $inputLines): void
     {
-        $headerLine = '01,SENDR1,RECVR1,210616,1700,01,80,,2/';
-        $fileRecord = new FileRecord();
-        $fileRecord->parseLine($headerLine);
-
-        $this->assertNull($fileRecord->getBlockSize());
+        $this->withRecord($inputLines, function ($fileRecord) {
+            $this->assertEquals('2', $fileRecord->getVersionNumber());
+        });
     }
 
-    public function testParseLineSetsCorrectFileControlTotal(): void
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetFileControlTotal(array $inputLines): void
     {
-        $fileRecord = new FileRecord();
-        $fileRecord->parseLine(self::$trailerLine);
-
-        $this->assertEquals(1337, $fileRecord->getFileControlTotal());
+        $this->withRecord($inputLines, function ($fileRecord) {
+            $this->assertEquals(1337, $fileRecord->getFileControlTotal());
+        });
     }
 
-    public function testParseLineSetsCorrectNumberOfGroups(): void
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetNumberOfGroups(array $inputLines): void
     {
-        $fileRecord = new FileRecord();
-        $fileRecord->parseLine(self::$trailerLine);
-
-        $this->assertEquals(1, $fileRecord->getNumberOfGroups());
+        $this->withRecord($inputLines, function ($fileRecord) {
+            $this->assertEquals(2, $fileRecord->getNumberOfGroups());
+        });
     }
 
-    public function testParseLineSetsCorrectNumberOfRecords(): void
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetNumberOfRecords(array $inputLines): void
     {
-        $fileRecord = new FileRecord();
-        $fileRecord->parseLine(self::$trailerLine);
-
-        $this->assertEquals(42, $fileRecord->getNumberOfRecords());
-    }
-
-    public function testParseLineCanHandleAPartialHeaderContinuationRecord(): void
-    {
-        $fileRecord = new FileRecord();
-        $fileRecord->parseLine(self::$partialHeaderLine);
-        $fileRecord->parseLine(self::$partialHeaderContinuationLine);
-
-        $this->assertEquals('SENDR1', $fileRecord->getSenderIdentification());
-        $this->assertEquals('RECVR1', $fileRecord->getReceiverIdentification());
-        $this->assertEquals('210616', $fileRecord->getFileCreationDate());
-        $this->assertEquals('1700', $fileRecord->getFileCreationTime());
-        $this->assertEquals('01', $fileRecord->getFileIdentificationNumber());
-        $this->assertEquals(80, $fileRecord->getPhysicalRecordLength());
-        $this->assertEquals(10, $fileRecord->getBlockSize());
-        $this->assertEquals('2', $fileRecord->getVersionNumber());
-    }
-
-    public function testParseLineCanHandleAPartialTrailerContinuationRecord(): void
-    {
-        $fileRecord = new FileRecord();
-        $fileRecord->parseLine(self::$partialTrailerLine);
-        $fileRecord->parseLine(self::$partialTrailerContinuationLine);
-
-        $this->assertEquals('1337', $fileRecord->getFileControlTotal());
-        $this->assertEquals('1', $fileRecord->getNumberOfGroups());
-        $this->assertEquals('42', $fileRecord->getNumberOfRecords());
-    }
-
-    public function testAccessingDefaultedField(): void
-    {
-        $fileRecord = new FileRecord();
-        $fileRecord->parseLine(self::$headerLineWithDefaultedBlockSize);
-
-        $this->assertEquals('', $fileRecord->getBlockSize());
-    }
-
-    public function testAccessingDefaultedFieldAfterAccessingPreviousField(): void
-    {
-        $fileRecord = new FileRecord();
-        $fileRecord->parseLine(self::$headerLineWithDefaultedBlockSize);
-
-        $this->assertEquals(80, $fileRecord->getPhysicalRecordLength());
-        $this->assertEquals('', $fileRecord->getBlockSize());
-    }
-
-    public function testAccessingFullRecord(): void
-    {
-        $fileRecord = new FileRecord();
-        $fileRecord->parseLine(self::$headerLine);
-        $fileRecord->parseLine(self::$trailerLine);
-
-        $this->assertEquals('SENDR1', $fileRecord->getSenderIdentification());
-        $this->assertEquals('RECVR1', $fileRecord->getReceiverIdentification());
-        $this->assertEquals('210616', $fileRecord->getFileCreationDate());
-        $this->assertEquals('1700', $fileRecord->getFileCreationTime());
-        $this->assertEquals('01', $fileRecord->getFileIdentificationNumber());
-        $this->assertEquals(80, $fileRecord->getPhysicalRecordLength());
-        $this->assertEquals(10, $fileRecord->getBlockSize());
-        $this->assertEquals('2', $fileRecord->getVersionNumber());
-
-        $this->assertEquals('1337', $fileRecord->getFileControlTotal());
-        $this->assertEquals('1', $fileRecord->getNumberOfGroups());
-        $this->assertEquals('42', $fileRecord->getNumberOfRecords());
-    }
-
-    public function testAccessingFullRecordWithDefaultedField(): void
-    {
-        $fileRecord = new FileRecord();
-        $fileRecord->parseLine(self::$headerLineWithDefaultedBlockSize);
-        $fileRecord->parseLine(self::$trailerLine);
-
-        $this->assertEquals('SENDR1', $fileRecord->getSenderIdentification());
-        $this->assertEquals('RECVR1', $fileRecord->getReceiverIdentification());
-        $this->assertEquals('210616', $fileRecord->getFileCreationDate());
-        $this->assertEquals('1700', $fileRecord->getFileCreationTime());
-        $this->assertEquals('01', $fileRecord->getFileIdentificationNumber());
-        $this->assertEquals(80, $fileRecord->getPhysicalRecordLength());
-        $this->assertEquals('', $fileRecord->getBlockSize());
-        $this->assertEquals('2', $fileRecord->getVersionNumber());
-
-        $this->assertEquals('1337', $fileRecord->getFileControlTotal());
-        $this->assertEquals('1', $fileRecord->getNumberOfGroups());
-        $this->assertEquals('42', $fileRecord->getNumberOfRecords());
+        $this->withRecord($inputLines, function ($fileRecord) {
+            $this->assertEquals(42, $fileRecord->getNumberOfRecords());
+        });
     }
 
 }
