@@ -23,9 +23,9 @@ class FileRecord
     public function parseLine(string $line): void
     {
         match ($recordCode = Bai2::recordTypeCode($line)) {
-            '01' => $this->processFileHeader($recordCode, $line),
+            '01' => $this->processHeader($recordCode, $line),
             '88' => $this->processContinuation($line),
-            '99' => $this->processFileTrailer($recordCode, $line),
+            '99' => $this->processTrailer($recordCode, $line),
             default => $this->processChildRecord($recordCode, $line)
         };
     }
@@ -94,17 +94,19 @@ class FileRecord
 
     // -- helper methods -------------------------------------------------------
 
-    protected function processFileHeader(string $recordCode, string $line): void
+    protected function processHeader(string $recordCode, string $line): void
     {
         $this->currentRecordCode = $recordCode;
         $this->headerParser = new FileHeaderParser();
         $this->headerParser->pushLine($line);
     }
 
-    protected function processFileTrailer(string $recordCode, string $line): void
+    protected function processTrailer(string $recordCode, string $line): void
     {
         $this->currentRecordCode = $recordCode;
-        $this->trailerParser = new FileTrailerParser();
+        $this->trailerParser = new FileTrailerParser(
+            physicalRecordLength: $this->getPhysicalRecordLength()
+        );
         $this->trailerParser->pushLine($line);
     }
 
@@ -124,8 +126,9 @@ class FileRecord
         switch ($recordCode) {
 
             case '02':
-                // TODO(zmd): propagate fileRecordLength, if appropriate
-                $this->currentChild = new GroupRecord();
+                $this->currentChild = new GroupRecord(
+                    physicalRecordLength: $this->getPhysicalRecordLength()
+                );
                 $this->groups[] = $this->currentChild;
                 $this->currentChild->parseLine($line);
                 break;

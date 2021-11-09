@@ -4,6 +4,8 @@ namespace STS\Bai2\Records;
 
 use PHPUnit\Framework\TestCase;
 
+use STS\Bai2\Exceptions\MalformedInputException;
+
 final class FileRecordTest extends TestCase
 {
 
@@ -30,6 +32,62 @@ final class FileRecordTest extends TestCase
                 '98,5000,0,1/',
                 '99,1337/',
                 '88,2,42/',
+            ]],
+        ];
+    }
+
+    public function inputLinesTooLongProducer(): array
+    {
+        return [
+            [[
+                '01,SENDR1,RECVR1,210616,1700,01,80,10,2/-----------------------------------------',
+                '02,abc,def,1,212209,,,/',
+                '98,10000,0,1/',
+                '02,uvw,xyz,1,212209,,,/',
+                '98,5000,0,1/',
+                '99,1337,2,42/',
+            ]],
+            [[
+                '01,SENDR1,RECVR1,210616,1700,01,80,10,2/',
+                '02,abc,def,1,212209,,,/',
+                '98,10000,0,1/',
+                '02,uvw,xyz,1,212209,,,/',
+                '98,5000,0,1/',
+                '99,1337,2,42/--------------------------------------------------------------------',
+            ]],
+            [[
+                '01,SENDR1,RECVR1/',
+                '88,210616,1700,01,80,10,2/-------------------------------------------------------',
+                '02,abc,def,1,212209,,,/',
+                '98,10000,0,1/',
+                '02,uvw,xyz,1,212209,,,/',
+                '98,5000,0,1/',
+                '99,1337,2,42/',
+            ]],
+            [[
+                '01,SENDR1,RECVR1,210616,1700,01,80,10,2/',
+                '02,abc,def,1,212209,,,/',
+                '98,10000,0,1/',
+                '02,uvw,xyz,1,212209,,,/',
+                '98,5000,0,1/',
+                '99,1337,2/',
+                '88,42/---------------------------------------------------------------------------',
+            ]],
+            [[
+                '01,SENDR1,RECVR1,210616,1700,01,80,10,2/',
+                '02,abc,def,1,212209,,,/',
+                '98,10000,0,1/',
+                '02,uvw,xyz,1,212209,,,/----------------------------------------------------------',
+                '98,5000,0,1/',
+                '99,1337,2,42/',
+            ]],
+            [[
+                '01,SENDR1,RECVR1,210616,1700,01,80,10,2/',
+                '02,abc,def,1,212209,,,/',
+                '98,10000,0,1/',
+                '02,uvw,xyz,1,212209,,,/',
+                '98,5000,0,1/---------------------------------------------------------------------',
+                '99,1337,2,42/',
             ]],
         ];
     }
@@ -195,7 +253,15 @@ final class FileRecordTest extends TestCase
 
     // -- test overall error handling ------------------------------------------
 
-    // TODO(zmd): test when input lines exceed length of physicalRecordLength
+    /**
+     * @dataProvider inputLinesTooLongProducer
+     */
+    public function testPhysicalRecordLengthEnforced(array $inputLines): void
+    {
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
+        $this->withRecord($inputLines, function ($fileRecord) {});
+    }
 
     // TODO(zmd): test field access when header line never encountered
 
@@ -203,7 +269,7 @@ final class FileRecordTest extends TestCase
 
     // TODO(zmd): test when continuation encountered before other kind of line
 
-    // TODO(zmd): test when child-destined line encountered before file header
+    // TODO(zmd): test when child-destined line encountered before full file header
 
     // TODO(zmd): test when header malformed (e.g. missing field)
 
