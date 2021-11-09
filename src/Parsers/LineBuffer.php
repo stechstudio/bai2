@@ -155,13 +155,11 @@ class LineBuffer
     protected function regexNeedle(array $needles): string
     {
         $quoted = array_map(
-            fn ($needle) => preg_quote($needle),
+            fn ($needle) => preg_quote($needle, '/'),
             $needles
         );
 
-        $needle = '(' . implode('|', $quoted) . ')';
-
-        return $needle;
+        return '/' . implode('|', $quoted) . '/';
     }
 
     protected function readTo(int $endIndex = null): string

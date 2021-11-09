@@ -4,6 +4,10 @@ namespace STS\Bai2\Parsers;
 
 use PHPUnit\Framework\TestCase;
 
+use STS\Bai2\Exceptions\InvalidUseException;
+use STS\Bai2\Exceptions\MalformedInputException;
+use STS\Bai2\Exceptions\ParseException;
+
 final class MultilineParserTest extends TestCase
 {
 
@@ -79,9 +83,9 @@ final class MultilineParserTest extends TestCase
     public function transactionInputProducer(): array
     {
         return [
-            ["16,003,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321,The following character is, of all the path separation characters I've ever used, my absolute favorite: /"],
+            ["16,409,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321,The following character is, of all the path separation characters I've ever used, my absolute favorite: /"],
             [[
-                '16,003,10000,D/',
+                '16,409,10000,D/',
                 '88,3,1,1000,5,10000,30/',
                 '88,25000,123456789,987654321,The following ',
                 '88,character is, of all the path separation ',
@@ -89,7 +93,7 @@ final class MultilineParserTest extends TestCase
             ]],
             [[
                 '16/',
-                '88,003/',
+                '88,409/',
                 '88,10000/',
                 '88,D/',
                 '88,3/',
@@ -114,7 +118,7 @@ final class MultilineParserTest extends TestCase
             ]],
             [[
                 '16/',
-                '88,003/',
+                '88,409/',
                 '88,10000/',
                 '88,D/',
                 '88,3/',
@@ -144,14 +148,14 @@ final class MultilineParserTest extends TestCase
     {
         return [
             [[
-                '16,003,10000,D/                                                                 ',
+                '16,409,10000,D/                                                                 ',
                 '88,3,1,1000,5,10000,30/                                                         ',
                 '88,25000,123456789,987654321,The following                                      ',
                 '88, character is, of all the path separation                                    ',
                 "88, characters I've ever used, my absolute favorite: /                          ",
             ]],
             [[
-                '16,003,10000,D/-----------------------------------------------------------------',
+                '16,409,10000,D/-----------------------------------------------------------------',
                 '88,3,1,1000,5,10000,30/+++++++++++++++++++++++++++++++++++++++++++++++++++++++++',
                 '88,25000,123456789,987654321,The following                                      ',
                 '88, character is, of all the path separation                                    ',
@@ -164,19 +168,19 @@ final class MultilineParserTest extends TestCase
     {
         return [
             [[
-                '16,003,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321,The following chara',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321,The following chara',
                 "88,cter is, of all the path separation characters I've ever used, my absolute fa",
                 '88,vorite: /                                                                    '
             ]],
             [[
-                '16,003,10000,D/                                                                 ',
+                '16,409,10000,D/                                                                 ',
                 '88,3,1,1000,5,10000,30/                                                         ',
                 '88,25000,123456789,987654321,The following                                      ',
                 '88, character is, of all the path separation                                    ',
                 "88, characters I've ever used, my absolute favorite: /                          ",
             ]],
             [[
-                '16,003,10000,D/-----------------------------------------------------------------',
+                '16,409,10000,D/-----------------------------------------------------------------',
                 '88,3,1,1000,5,10000,30/+++++++++++++++++++++++++++++++++++++++++++++++++++++++++',
                 '88,25000,123456789,987654321,The following                                      ',
                 '88, character is, of all the path separation                                    ',
@@ -184,7 +188,7 @@ final class MultilineParserTest extends TestCase
             ]],
             [[
                 '16/                                                                             ',
-                '88,003/                                                                         ',
+                '88,409/                                                                         ',
                 '88,10000/                                                                       ',
                 '88,D/                                                                           ',
                 '88,3/                                                                           ',
@@ -209,7 +213,7 @@ final class MultilineParserTest extends TestCase
             ]],
             [[
                 '16/-----------------------------------------------------------------------------',
-                '88,003/+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++',
+                '88,409/+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++',
                 '88,10000/=======================================================================',
                 '88,D/)))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))',
                 '88,3/(((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((',
@@ -234,7 +238,7 @@ final class MultilineParserTest extends TestCase
             ]],
             [[
                 '16/---------------------------------------------------------',
-                '88,003/+++++++++++++++++++++++++++++++++++++++++++++++++++++',
+                '88,409/+++++++++++++++++++++++++++++++++++++++++++++++++++++',
                 '88,10000/===================================================',
                 '88,D/)))))))))))))))))))))))))))))))))))))))))))))))))))))))',
                 '88,3/(((((((((((((((((((((((((((((((((((((((((((((((((((((((',
@@ -263,9 +267,9 @@ final class MultilineParserTest extends TestCase
     public function transactionWithPaddedInputTooLongProducer(): array
     {
         return [
-            ["16,003,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321,The following character is, of all the path separation characters I've ever used, my absolute favorite: /"],
+            ["16,409,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321,The following character is, of all the path separation characters I've ever used, my absolute favorite: /"],
             [[
-                '16,003,10000,D/                                                                 ',
+                '16,409,10000,D/                                                                 ',
                 '88,3,1,1000,5,10000,30/                                                         ',
                 '88,25000,123456789,987654321,The following                                      ',
                 '88, character is, of all the path separation                                    ',
@@ -277,9 +281,9 @@ final class MultilineParserTest extends TestCase
     public function transactionWithDefaultedTextInputProducer(): array
     {
         return [
-            ['16,003,10000,D,7,1,100,2,1000,3,10000,4,100000,5,1000000,6,10000000,7,100000000,123456789,987654321,/'],
+            ['16,409,10000,D,7,1,100,2,1000,3,10000,4,100000,5,1000000,6,10000000,7,100000000,123456789,987654321,/'],
             [[
-                '16,003,10000/',
+                '16,409,10000/',
                 '88,D,7/',
                 '88,1,100/',
                 '88,2,1000/',
@@ -292,7 +296,7 @@ final class MultilineParserTest extends TestCase
             ]],
             [[
                 '16/',
-                '88,003/',
+                '88,409/',
                 '88,10000/',
                 '88,D/',
                 '88,7/',
@@ -351,7 +355,7 @@ final class MultilineParserTest extends TestCase
             // can shift no more for we did not ::continue() any more
             try {
                 $parser->shift();
-            } catch (\Exception $e) {
+            } catch (ParseException $e) {
                 $this->assertEquals(
                     'Cannot access fields at the end of the buffer.',
                     $e->getMessage()
@@ -434,6 +438,20 @@ final class MultilineParserTest extends TestCase
 
             $this->assertEquals('', $parser->peek());
             $this->assertEquals('', $parser->peek());
+        });
+    }
+
+    /**
+     * @dataProvider headerInputProducer
+     */
+    public function testHasMore(string|array $input): void
+    {
+        $this->withParser($input, function ($parser) {
+            $parser->drop(8);
+            $this->assertTrue($parser->hasMore());
+
+            $parser->shift();
+            $this->assertFalse($parser->hasMore());
         });
     }
 
@@ -536,7 +554,7 @@ final class MultilineParserTest extends TestCase
     {
         $this->withParser($input, function ($parser) {
             $this->assertEquals(
-                ['16', '003', '10000', 'D', '3', '1', '1000', '5', '10000', '30', '25000', '123456789', '987654321'],
+                ['16', '409', '10000', 'D', '3', '1', '1000', '5', '10000', '30', '25000', '123456789', '987654321'],
                 $parser->drop(13)
             );
             $this->assertEquals(
@@ -555,7 +573,7 @@ final class MultilineParserTest extends TestCase
     {
         $this->withPhysicalRecordLengthParser($input, 80, function ($parser) {
             $this->assertEquals(
-                ['16', '003', '10000', 'D', '3', '1', '1000', '5', '10000', '30', '25000', '123456789', '987654321'],
+                ['16', '409', '10000', 'D', '3', '1', '1000', '5', '10000', '30', '25000', '123456789', '987654321'],
                 $parser->drop(13)
             );
             $this->assertEquals(
@@ -574,7 +592,7 @@ final class MultilineParserTest extends TestCase
         $this->withParser($input, function ($parser) {
             $parser->setPhysicalRecordLength(80);
             $this->assertEquals(
-                ['16', '003', '10000', 'D', '3', '1', '1000', '5', '10000', '30', '25000', '123456789', '987654321'],
+                ['16', '409', '10000', 'D', '3', '1', '1000', '5', '10000', '30', '25000', '123456789', '987654321'],
                 $parser->drop(13)
             );
             $this->assertEquals(
@@ -587,7 +605,7 @@ final class MultilineParserTest extends TestCase
 
     public function testSettingPhysicalRecordLengthInBetweenContinuesCorrectlyHandlesPadding(): void
     {
-        $firstLine = '16,003,10000,D/-----------------------------------------------------------------';
+        $firstLine = '16,409,10000,D/-----------------------------------------------------------------';
         $this->withParser($firstLine, function ($parser) {
             $parser->continue('88,3,1,1000,5,10000,30/+++++++++++++++++++++++++++++++++++++++++++++++++++++++++');
             $parser->continue('88,25000,123456789,987654321,The following                                      ');
@@ -598,7 +616,7 @@ final class MultilineParserTest extends TestCase
             $parser->continue("88, characters I've ever used, my absolute favorite: /                          ");
 
             $this->assertEquals(
-                ['16', '003', '10000', 'D', '3', '1', '1000', '5', '10000', '30', '25000', '123456789', '987654321'],
+                ['16', '409', '10000', 'D', '3', '1', '1000', '5', '10000', '30', '25000', '123456789', '987654321'],
                 $parser->drop(13)
             );
             $this->assertEquals(
@@ -617,7 +635,7 @@ final class MultilineParserTest extends TestCase
         $this->withParser($input, function ($parser) {
             $parser->drop(9);
 
-            $this->expectException(\Exception::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $parser->peek();
         });
@@ -639,7 +657,7 @@ final class MultilineParserTest extends TestCase
             $parser->shift();
             $parser->shift();
 
-            $this->expectException(\Exception::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $parser->shift();
         });
@@ -651,7 +669,7 @@ final class MultilineParserTest extends TestCase
     public function testThrowsIfDroppingMoreThanAvailableInBuffer(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
-            $this->expectException(\Exception::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $parser->drop(10);
         });
@@ -670,7 +688,7 @@ final class MultilineParserTest extends TestCase
             $parser->shiftText();
 
             // make it go boom!
-            $this->expectException(\Exception::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $parser->shiftText();
         });
@@ -684,7 +702,7 @@ final class MultilineParserTest extends TestCase
         $this->withParser($input, function ($parser) {
             $parser->shiftText();
 
-            $this->expectException(\Exception::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $parser->peek();
         });
@@ -698,7 +716,7 @@ final class MultilineParserTest extends TestCase
         $this->withParser($input, function ($parser) {
             $parser->shiftText();
 
-            $this->expectException(\Exception::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $parser->shift();
         });
@@ -712,7 +730,7 @@ final class MultilineParserTest extends TestCase
         $this->withParser($input, function ($parser) {
             $parser->shiftText();
 
-            $this->expectException(\Exception::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
             $parser->drop(2);
         });
@@ -726,7 +744,7 @@ final class MultilineParserTest extends TestCase
         $this->withParser($input, function ($parser) {
             $parser->drop(8);
 
-            $this->expectException(\Exception::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access last (non-text) field on unterminated input line.');
             $parser->peek();
         });
@@ -740,7 +758,7 @@ final class MultilineParserTest extends TestCase
         $this->withParser($input, function ($parser) {
             $parser->drop(8);
 
-            $this->expectException(\Exception::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access last (non-text) field on unterminated input line.');
             $parser->shift();
         });
@@ -752,7 +770,7 @@ final class MultilineParserTest extends TestCase
     public function testThrowsIfDroppingAnUnterminatedField(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
-            $this->expectException(\Exception::class);
+            $this->expectException(ParseException::class);
             $this->expectExceptionMessage('Cannot access last (non-text) field on unterminated input line.');
             $parser->drop(9);
         });
@@ -761,9 +779,9 @@ final class MultilineParserTest extends TestCase
     public function testThrowsIfAttemptingToCallContinueWithNonContinuationRecord(): void
     {
         $this->withParser('01,SENDR1,RECVR1/', function ($parser) {
-            $this->expectException(\Exception::class);
+            $this->expectException(InvalidUseException::class);
             $this->expectExceptionMessage('Cannot call ::continue() on non-continuation input.');
-            $parser->continue('16,003,10000,D,3/');
+            $parser->continue('16,409,10000,D,3/');
         });
     }
 
@@ -777,7 +795,7 @@ final class MultilineParserTest extends TestCase
     */
     public function testThrowsIfAttemptingToCallContinueAfterReadingTextField(): void
     {
-        $transactionRecordLine = "16,003,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321/";
+        $transactionRecordLine = "16,409,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321/";
         $this->withParser($transactionRecordLine, function ($parser) {
             // Read regular fields before a continue? Go for it.
             $parser->drop(13);
@@ -794,7 +812,7 @@ final class MultilineParserTest extends TestCase
             );
 
             // YOU SHALL NOT PASS!
-            $this->expectException(\Exception::class);
+            $this->expectException(InvalidUseException::class);
             $this->expectExceptionMessage('Cannot call ::continue() after reading the text field.');
             $parser->continue('88,Why would you even want to do this?');
         });
@@ -805,7 +823,7 @@ final class MultilineParserTest extends TestCase
      */
     public function testThrowsWhenContructWithLineLongerThanPhysicalLength(string|array $input): void
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
         $this->withPhysicalRecordLengthParser($input, 80, function ($parser) {});
     }
@@ -816,9 +834,28 @@ final class MultilineParserTest extends TestCase
     public function testThrowsWhenSetPhysicalRecordLengthExceedingOriginalLineLength(string|array $input): void
     {
         $this->withParser($input, function ($parser) {
-            $this->expectException(\Exception::class);
+            $this->expectException(MalformedInputException::class);
             $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
             $parser->setPhysicalRecordLength(80);
+        });
+    }
+
+    public function testSettingPhysicalRecordLengthStillEnforcedOnPreviouslyConsumedLines(): void
+    {
+        $headerLinePartialTooLong = '01,SENDR1,RECVR1/                                                                ';
+        $headerLinePartialContinued = '88,210616,1700,01,80,10,2/';
+
+        $this->withParser($headerLinePartialTooLong, function ($parser) use ($headerLinePartialContinued) {
+            $parser->drop(3);
+            $parser->continue($headerLinePartialContinued);
+            $parser->drop(3);
+
+            $physicalRecordLength = (int) $parser->shift();
+            $this->assertEquals(80, $physicalRecordLength);
+
+            $this->expectException(MalformedInputException::class);
+            $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
+            $parser->setPhysicalRecordLength($physicalRecordLength);
         });
     }
 

@@ -16,9 +16,9 @@ final class LineParserTest extends TestCase
 
     private static string $headerInputWithUnterminatedVersionFieldProducer = '01,SENDR1,RECVR1,210616,1700,01,80,10,2';
 
-    private static string $transactionLine = "16,003,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321,The following character is, of all the path separation characters I've ever used, my absolute favorite: /";
+    private static string $transactionLine = "16,409,10000,D,3,1,1000,5,10000,30,25000,123456789,987654321,The following character is, of all the path separation characters I've ever used, my absolute favorite: /";
 
-    private static string $transactionLineDefaultedText = '16,003,10000,D,7,1,100,2,1000,3,10000,4,100000,5,1000000,6,10000000,7,100000000,123456789,987654321,/';
+    private static string $transactionLineDefaultedText = '16,409,10000,D,7,1,100,2,1000,3,10000,4,100000,5,1000000,6,10000000,7,100000000,123456789,987654321,/';
 
     private static string $continuationTextLine = '88, and, as I was saying, I have been continued mid-sentence.';
 

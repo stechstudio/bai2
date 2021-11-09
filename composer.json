@@ -12,6 +12,11 @@
             "STS\\Bai2\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "STS\\Bai2\\Tests\\": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "Zeb DeOs",
