@@ -141,21 +141,14 @@ class FileRecord
 
     protected function processChildRecord(string $recordCode, string $line): void
     {
-        switch ($recordCode) {
-
-            case '02':
-                $this->currentChild = new GroupRecord(
-                    physicalRecordLength: $this->getPhysicalRecordLength()
-                );
-                $this->groups[] = $this->currentChild;
-                $this->currentChild->parseLine($line);
-                break;
-
-            default:
-                $this->currentChild->parseLine($line);
-                break;
-
+        if ($recordCode == '02') {
+            $this->currentChild = new GroupRecord(
+                physicalRecordLength: $this->getPhysicalRecordLength()
+            );
+            $this->groups[] = $this->currentChild;
         }
+
+        $this->currentChild->parseLine($line);
     }
 
 }
