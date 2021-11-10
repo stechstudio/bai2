@@ -360,9 +360,34 @@ final class FileRecordTest extends TestCase
         $fileRecord->$trailerGetterMethod();
     }
 
-    // TODO(zmd): public function testTryingToProcessMalformedHeader(): void {}
+    /**
+     * @dataProvider headerGettersProducer
+     */
+    public function testTryingToProcessMalformedHeader(
+        string $headerGetterMethod
+    ): void {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,SENDR1,RECVR1,210616,1700,01,80,10,2');
 
-    // TODO(zmd): public function testTryingToProcessMalformedTrailer(): void {}
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a File Header field from an incomplete or malformed File Header line.');
+        $fileRecord->$headerGetterMethod();
+    }
+
+    /**
+     * @dataProvider trailerGettersProducer
+     */
+    public function testTryingToProcessMalformedTrailer(
+        string $trailerGetterMethod
+    ): void {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,SENDR1,RECVR1,210616,1700,01,,10,2/');
+        $fileRecord->parseLine('99,1337,2,42');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a File Trailer field from an incomplete or malformed File Trailer line.');
+        $fileRecord->$trailerGetterMethod();
+    }
 
     // TODO(zmd): public function testTryingToProcessMalformedChild(): void {}
 
