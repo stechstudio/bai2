@@ -238,7 +238,13 @@ final class FileRecordTest extends TestCase
         });
     }
 
-    // TODO(zmd): public function testGetPhysicalRecordLengthDefaulted(): void {}
+    public function testGetPhysicalRecordLengthDefaulted(): void
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,SENDR1,RECVR1,210616,1700,01,,10,2/');
+
+        $this->assertNull($fileRecord->getPhysicalRecordLength());
+    }
 
     /**
      * @dataProvider inputLinesProducer
