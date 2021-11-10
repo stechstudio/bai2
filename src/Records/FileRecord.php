@@ -115,6 +115,8 @@ class FileRecord
             return $this->trailerParser[$fieldKey];
         } catch (\Error) {
             throw new MalformedInputException('Cannot access a File Trailer field prior to reading an incoming File Trailer line.');
+        } catch (InvalidTypeException $e) {
+            throw new MalformedInputException("Encountered issue trying to parse File Trailer Field. {$e->getMessage()}");
         } catch (ParseException) {
             throw new MalformedInputException('Cannot access a File Trailer field from an incomplete or malformed File Trailer line.');
         }

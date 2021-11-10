@@ -294,7 +294,16 @@ final class FileRecordTest extends TestCase
         });
     }
 
-    // TODO(zmd): public function testGetFileControlTotalMissing(): void {}
+    public function testGetFileControlTotalMissing(): void
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,SENDR1,RECVR1,210616,1700,01,80,10,2/');
+        $fileRecord->parseLine('99,,2,42/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse File Trailer Field. Invalid field type: ');
+        $fileRecord->getFileControlTotal();
+    }
 
     /**
      * @dataProvider inputLinesProducer
