@@ -10,13 +10,12 @@ use STS\Bai2\Parsers\GroupTrailerParser;
 class GroupRecord
 {
 
-    public function __construct(protected int $physicalRecordLength)
+    public function __construct(protected ?int $physicalRecordLength)
     {
     }
 
     public function parseLine(string $line): void
     {
-        // TODO(zmd): finish implementing me
         match ($recordCode = Bai2::recordTypeCode($line)) {
             '02' => $this->processHeader($recordCode, $line),
             '88' => $this->processContinuation($line),
@@ -25,9 +24,40 @@ class GroupRecord
         };
     }
 
+    // -- getters --------------------------------------------------------------
+
+    // TODO(zmd): implement getters
+
+    // -- helper methods -------------------------------------------------------
+
+    protected function headerField(string $fieldKey): null|string|int
+    {
+        try {
+            return $this->headerParser[$fieldKey];
+        } catch (\Error) {
+            throw new MalformedInputException('Cannot access a Group Header field prior to reading an incoming Group Header line.');
+        } catch (InvalidTypeException $e) {
+            throw new MalformedInputException("Encountered issue trying to parse Group Header Field. {$e->getMessage()}");
+        } catch (ParseException) {
+            throw new MalformedInputException('Cannot access a Group Header field from an incomplete or malformed Group Header line.');
+        }
+    }
+
+    protected function trailerField(string $fieldKey): null|string|int
+    {
+        try {
+            return $this->trailerParser[$fieldKey];
+        } catch (\Error) {
+            throw new MalformedInputException('Cannot access a Group Trailer field prior to reading an incoming Group Trailer line.');
+        } catch (InvalidTypeException $e) {
+            throw new MalformedInputException("Encountered issue trying to parse Group Trailer Field. {$e->getMessage()}");
+        } catch (ParseException) {
+            throw new MalformedInputException('Cannot access a Group Trailer field from an incomplete or malformed Group Trailer line.');
+        }
+    }
+
     protected function processHeader(string $recordCode, string $line): void
     {
-        // TODO(zmd): finish implementing me
         $this->headerParser = new GroupHeaderParser(
             physicalRecordLength: $this->physicalRecordLength,
         );
@@ -36,7 +66,6 @@ class GroupRecord
 
     protected function processTrailer(string $recordCode, string $line): void
     {
-        // TODO(zmd): finish implementing me
         $this->trailerParser = new GroupTrailerParser(
             physicalRecordLength: $this->physicalRecordLength,
         );
@@ -45,12 +74,31 @@ class GroupRecord
 
     protected function processContinuation(string $line): void
     {
-        // TODO(zmd): implement me
+        if (isset($this->trailerParser)) {
+            $this->trailerParser->pushLine($line);
+        } else if (isset($this->currentChild)) {
+            $this->currentChild->parseLine($line);
+        } else if (isset($this->headerParser)) {
+            $this->headerParser->pushLine($line);
+        } else {
+            throw new MalformedInputException('Cannot process a continuation without first processing something that can be continued.');
+        }
     }
 
     protected function processChildRecord(string $recordCode, string $line): void
     {
-        // TODO(zmd): implement me
+        if ($recordCode == '03') {
+            $this->currentChild = new AccountRecord(
+                physicalRecordLength: $this->physicalRecordLength
+            );
+            $this->groups[] = $this->currentChild;
+        }
+
+        try {
+            $this->currentChild->parseLine($line);
+        } catch (\Error) {
+            throw new MalformedInputException('Cannot process Account Trailer or Transaction-related line before processing the Account Header line.');
+        }
     }
 
 }
