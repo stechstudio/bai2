@@ -92,7 +92,7 @@ final class AccountRecordTest extends TestCase
 
     // TODO(zmd): public function testTryingToParseContinuationOutOfTurn(): void {}
 
-    // TODO(zmd): public function testTryingToProcessChildLineBeforeChildInitialized(): void {}
+    // TODO(zmd): public function testTryingToProcessUnknownRecordType(): void {}
 
     // TODO(zmd): public function testTryingToProcessIncompleteHeader(): void {}
 
