@@ -273,8 +273,9 @@ final class FileRecordTest extends TestCase
      *           ["getBlockSize"]
      *           ["getVersionNumber"]
      */
-    public function testHeaderFieldAccessWhenHeaderNeverProcessed(string $headerGetterMethod): void
-    {
+    public function testHeaderFieldAccessWhenHeaderNeverProcessed(
+        string $headerGetterMethod
+    ): void {
         $fileRecord = new FileRecord();
 
         $this->expectException(MalformedInputException::class);
@@ -282,7 +283,20 @@ final class FileRecordTest extends TestCase
         $fileRecord->$headerGetterMethod();
     }
 
-    // TODO(zmd): test field access when trailer line never encountered
+    /**
+     * @testWith ["getFileControlTotal"]
+     *           ["getNumberOfGroups"]
+     *           ["getNumberOfRecords"]
+     */
+    public function testTrailerFieldAccessWhenTrailerNeverProcessed(
+        string $trailerGetterMethod
+    ): void {
+        $fileRecord = new FileRecord();
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a File Trailer field prior to reading an incoming File Trailer line.');
+        $fileRecord->$trailerGetterMethod();
+    }
 
     // TODO(zmd): test when continuation encountered before other kind of line
 

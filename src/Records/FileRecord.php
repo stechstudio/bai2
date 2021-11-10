@@ -76,17 +76,17 @@ class FileRecord
 
     public function getFileControlTotal(): int
     {
-        return $this->trailerParser['fileControlTotal'];
+        return $this->trailerField('fileControlTotal');
     }
 
     public function getNumberOfGroups(): int
     {
-        return $this->trailerParser['numberOfGroups'];
+        return $this->trailerField('numberOfGroups');
     }
 
     public function getNumberOfRecords(): int
     {
-        return $this->trailerParser['numberOfRecords'];
+        return $this->trailerField('numberOfRecords');
     }
 
     public function getGroups(): array
@@ -102,6 +102,15 @@ class FileRecord
             return $this->headerParser[$fieldKey];
         } catch (\Error) {
             throw new MalformedInputException('Cannot access a File Header field prior to reading an incoming File Header line.');
+        }
+    }
+
+    protected function trailerField(string $fieldKey): null|string|int
+    {
+        try {
+            return $this->trailerParser[$fieldKey];
+        } catch (\Error) {
+            throw new MalformedInputException('Cannot access a File Trailer field prior to reading an incoming File Trailer line.');
         }
     }
 
