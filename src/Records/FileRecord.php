@@ -8,6 +8,7 @@ use STS\Bai2\Parsers\FileHeaderParser;
 use STS\Bai2\Parsers\FileTrailerParser;
 
 use STS\Bai2\Exceptions\MalformedInputException;
+use STS\Bai2\Exceptions\ParseException;
 
 class FileRecord
 {
@@ -100,6 +101,8 @@ class FileRecord
             return $this->headerParser[$fieldKey];
         } catch (\Error) {
             throw new MalformedInputException('Cannot access a File Header field prior to reading an incoming File Header line.');
+        } catch (ParseException) {
+            throw new MalformedInputException('Cannot access a File Header field from an incomplete or malformed File Header line.');
         }
     }
 
@@ -109,6 +112,8 @@ class FileRecord
             return $this->trailerParser[$fieldKey];
         } catch (\Error) {
             throw new MalformedInputException('Cannot access a File Trailer field prior to reading an incoming File Trailer line.');
+        } catch (ParseException) {
+            throw new MalformedInputException('Cannot access a File Trailer field from an incomplete or malformed File Trailer line.');
         }
     }
 

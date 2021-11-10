@@ -263,6 +263,7 @@ final class FileRecordTest extends TestCase
         $this->withRecord($inputLines, function ($fileRecord) {});
     }
 
+    // TODO(zmd): switch to shared producer
     /**
      * @testWith ["getSenderIdentification"]
      *           ["getReceiverIdentification"]
@@ -283,6 +284,7 @@ final class FileRecordTest extends TestCase
         $fileRecord->$headerGetterMethod();
     }
 
+    // TODO(zmd): switch to shared producer
     /**
      * @testWith ["getFileControlTotal"]
      *           ["getNumberOfGroups"]
@@ -317,10 +319,50 @@ final class FileRecordTest extends TestCase
         $fileRecord->parseLine('98,10000,0,1/');
     }
 
-    // TODO(zmd): test when header malformed (e.g. missing field)
+    // TODO(zmd): switch to shared producer
+    /**
+     * @testWith ["getSenderIdentification"]
+     *           ["getReceiverIdentification"]
+     *           ["getFileCreationDate"]
+     *           ["getFileCreationTime"]
+     *           ["getFileIdentificationNumber"]
+     *           ["getPhysicalRecordLength"]
+     *           ["getBlockSize"]
+     *           ["getVersionNumber"]
+     */
+    public function testTryingToProcessIncompleteHeader(
+        string $headerGetterMethod
+    ): void {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,SENDR1,RECVR1/');
 
-    // TODO(zmd): test when trailer malformed (e.g. missing field)
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a File Header field from an incomplete or malformed File Header line.');
+        $fileRecord->$headerGetterMethod();
+    }
 
-    // TODO(zmd): test when direct child malformed (e.g. missing field)
+    // TODO(zmd): switch to shared producer
+    /**
+     * @testWith ["getFileControlTotal"]
+     *           ["getNumberOfGroups"]
+     *           ["getNumberOfRecords"]
+     */
+    public function testTryingToProcessIncompleteTrailer(
+        string $trailerGetterMethod
+    ): void {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,SENDR1,RECVR1,210616,1700,01,,10,2/');
+        $fileRecord->parseLine('99,1337/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a File Trailer field from an incomplete or malformed File Trailer line.');
+        $fileRecord->$trailerGetterMethod();
+    }
+
+    // TODO(zmd): public function testTryingToProcessMalformedHeader(): void {}
+
+    // TODO(zmd): public function testTryingToProcessMalformedTrailer(): void {}
+
+    // TODO(zmd): public function testTryingToProcessMalformedChild(): void {}
 
 }
