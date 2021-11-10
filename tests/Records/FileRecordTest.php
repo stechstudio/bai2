@@ -307,7 +307,15 @@ final class FileRecordTest extends TestCase
         $fileRecord->parseLine('88,210616,1700,01,80,10,2/');
     }
 
-    // TODO(zmd): test when child-destined line encountered before full file header
+    public function testTryingToProcessChildLineBeforeChildInitialized(): void
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,SENDR1,RECVR1,210616,1700,01,80,10,2/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot process Group Trailer, Account-related, or Transaction-related record before processing the Group Header line.');
+        $fileRecord->parseLine('98,10000,0,1/');
+    }
 
     // TODO(zmd): test when header malformed (e.g. missing field)
 
