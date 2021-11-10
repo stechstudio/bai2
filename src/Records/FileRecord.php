@@ -151,7 +151,7 @@ class FileRecord
         try {
             $this->currentChild->parseLine($line);
         } catch (\Error) {
-            throw new MalformedInputException('Cannot process Group Trailer, Account-related, or Transaction-related record before processing the Group Header line.');
+            throw new MalformedInputException('Cannot process Group Trailer, Account-related, or Transaction-related line before processing the Group Header line.');
         }
     }
 

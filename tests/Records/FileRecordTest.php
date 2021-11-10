@@ -313,7 +313,7 @@ final class FileRecordTest extends TestCase
         $fileRecord->parseLine('01,SENDR1,RECVR1,210616,1700,01,80,10,2/');
 
         $this->expectException(MalformedInputException::class);
-        $this->expectExceptionMessage('Cannot process Group Trailer, Account-related, or Transaction-related record before processing the Group Header line.');
+        $this->expectExceptionMessage('Cannot process Group Trailer, Account-related, or Transaction-related line before processing the Group Header line.');
         $fileRecord->parseLine('98,10000,0,1/');
     }
 
