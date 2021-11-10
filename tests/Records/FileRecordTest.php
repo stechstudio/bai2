@@ -9,6 +9,29 @@ use STS\Bai2\Exceptions\MalformedInputException;
 final class FileRecordTest extends TestCase
 {
 
+    public function headerGettersProducer(): array
+    {
+        return [[
+            'getSenderIdentification',
+            'getReceiverIdentification',
+            'getFileCreationDate',
+            'getFileCreationTime',
+            'getFileIdentificationNumber',
+            'getPhysicalRecordLength',
+            'getBlockSize',
+            'getVersionNumber',
+        ]];
+    }
+
+    public function trailerGettersProducer(): array
+    {
+        return [[
+            'getFileControlTotal',
+            'getNumberOfGroups',
+            'getNumberOfRecords',
+        ]];
+    }
+
     public function inputLinesProducer(): array
     {
         return [
@@ -263,16 +286,8 @@ final class FileRecordTest extends TestCase
         $this->withRecord($inputLines, function ($fileRecord) {});
     }
 
-    // TODO(zmd): switch to shared producer
     /**
-     * @testWith ["getSenderIdentification"]
-     *           ["getReceiverIdentification"]
-     *           ["getFileCreationDate"]
-     *           ["getFileCreationTime"]
-     *           ["getFileIdentificationNumber"]
-     *           ["getPhysicalRecordLength"]
-     *           ["getBlockSize"]
-     *           ["getVersionNumber"]
+     * @dataProvider headerGettersProducer
      */
     public function testHeaderFieldAccessWhenHeaderNeverProcessed(
         string $headerGetterMethod
@@ -284,11 +299,8 @@ final class FileRecordTest extends TestCase
         $fileRecord->$headerGetterMethod();
     }
 
-    // TODO(zmd): switch to shared producer
     /**
-     * @testWith ["getFileControlTotal"]
-     *           ["getNumberOfGroups"]
-     *           ["getNumberOfRecords"]
+     * @dataProvider trailerGettersProducer
      */
     public function testTrailerFieldAccessWhenTrailerNeverProcessed(
         string $trailerGetterMethod
@@ -319,16 +331,8 @@ final class FileRecordTest extends TestCase
         $fileRecord->parseLine('98,10000,0,1/');
     }
 
-    // TODO(zmd): switch to shared producer
     /**
-     * @testWith ["getSenderIdentification"]
-     *           ["getReceiverIdentification"]
-     *           ["getFileCreationDate"]
-     *           ["getFileCreationTime"]
-     *           ["getFileIdentificationNumber"]
-     *           ["getPhysicalRecordLength"]
-     *           ["getBlockSize"]
-     *           ["getVersionNumber"]
+     * @dataProvider headerGettersProducer
      */
     public function testTryingToProcessIncompleteHeader(
         string $headerGetterMethod
@@ -341,11 +345,8 @@ final class FileRecordTest extends TestCase
         $fileRecord->$headerGetterMethod();
     }
 
-    // TODO(zmd): switch to shared producer
     /**
-     * @testWith ["getFileControlTotal"]
-     *           ["getNumberOfGroups"]
-     *           ["getNumberOfRecords"]
+     * @dataProvider trailerGettersProducer
      */
     public function testTryingToProcessIncompleteTrailer(
         string $trailerGetterMethod
