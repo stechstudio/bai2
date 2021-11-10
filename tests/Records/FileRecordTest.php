@@ -218,7 +218,15 @@ final class FileRecordTest extends TestCase
         });
     }
 
-    // TODO(zmd): public function testGetFileIdentificationNumberMissing(): void {}
+    public function testGetFileIdentificationNumberMissing(): void
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,SENDR1,RECVR1,210616,1700,,80,10,2/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse File Header Field. Invalid field type: ');
+        $fileRecord->getFileIdentificationNumber();
+    }
 
     /**
      * @dataProvider inputLinesProducer
