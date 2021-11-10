@@ -263,7 +263,24 @@ final class FileRecordTest extends TestCase
         $this->withRecord($inputLines, function ($fileRecord) {});
     }
 
-    // TODO(zmd): test field access when header line never encountered
+    /**
+     * @testWith ["getSenderIdentification"]
+     *           ["getReceiverIdentification"]
+     *           ["getFileCreationDate"]
+     *           ["getFileCreationTime"]
+     *           ["getFileIdentificationNumber"]
+     *           ["getPhysicalRecordLength"]
+     *           ["getBlockSize"]
+     *           ["getVersionNumber"]
+     */
+    public function testHeaderFieldAccessWhenHeaderNeverProcessed(string $headerGetterMethod): void
+    {
+        $fileRecord = new FileRecord();
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a File Header field prior to reading an incoming File Header line.');
+        $fileRecord->$headerGetterMethod();
+    }
 
     // TODO(zmd): test field access when trailer line never encountered
 

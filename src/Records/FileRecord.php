@@ -7,6 +7,8 @@ use STS\Bai2\Bai2;
 use STS\Bai2\Parsers\FileHeaderParser;
 use STS\Bai2\Parsers\FileTrailerParser;
 
+use STS\Bai2\Exceptions\MalformedInputException;
+
 class FileRecord
 {
 
@@ -34,42 +36,42 @@ class FileRecord
 
     public function getSenderIdentification(): string
     {
-        return $this->headerParser['senderIdentification'];
+        return $this->headerField('senderIdentification');
     }
 
     public function getReceiverIdentification(): string
     {
-        return $this->headerParser['receiverIdentification'];
+        return $this->headerField('receiverIdentification');
     }
 
     public function getFileCreationDate(): string
     {
-        return $this->headerParser['fileCreationDate'];
+        return $this->headerField('fileCreationDate');
     }
 
     public function getFileCreationTime(): string
     {
-        return $this->headerParser['fileCreationTime'];
+        return $this->headerField('fileCreationTime');
     }
 
     public function getFileIdentificationNumber(): string
     {
-        return $this->headerParser['fileIdentificationNumber'];
+        return $this->headerField('fileIdentificationNumber');
     }
 
     public function getPhysicalRecordLength(): ?int
     {
-        return $this->headerParser['physicalRecordLength'];
+        return $this->headerField('physicalRecordLength');
     }
 
     public function getBlockSize(): ?int
     {
-        return $this->headerParser['blockSize'];
+        return $this->headerField('blockSize');
     }
 
     public function getVersionNumber(): string
     {
-        return $this->headerParser['versionNumber'];
+        return $this->headerField('versionNumber');
     }
 
     public function getFileControlTotal(): int
@@ -93,6 +95,15 @@ class FileRecord
     }
 
     // -- helper methods -------------------------------------------------------
+
+    protected function headerField(string $fieldKey): null|string|int
+    {
+        try {
+            return $this->headerParser[$fieldKey];
+        } catch (\Error) {
+            throw new MalformedInputException('Cannot access a File Header field prior to reading an incoming File Header line.');
+        }
+    }
 
     protected function processHeader(string $recordCode, string $line): void
     {
