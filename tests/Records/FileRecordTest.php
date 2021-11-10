@@ -138,7 +138,15 @@ final class FileRecordTest extends TestCase
         });
     }
 
-    // TODO(zmd): public function testGetSenderIdentifiationMissing(): void {}
+    public function testGetSenderIdentifiationMissing(): void
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,,RECVR1,210616,1700,01,80,10,2/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse File Header Field. Invalid field type: ');
+        $fileRecord->getSenderIdentification();
+    }
 
     /**
      * @dataProvider inputLinesProducer
@@ -388,7 +396,5 @@ final class FileRecordTest extends TestCase
         $this->expectExceptionMessage('Cannot access a File Trailer field from an incomplete or malformed File Trailer line.');
         $fileRecord->$trailerGetterMethod();
     }
-
-    // TODO(zmd): public function testTryingToProcessMalformedChild(): void {}
 
 }
