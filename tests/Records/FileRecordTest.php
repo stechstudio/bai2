@@ -298,7 +298,14 @@ final class FileRecordTest extends TestCase
         $fileRecord->$trailerGetterMethod();
     }
 
-    // TODO(zmd): test when continuation encountered before other kind of line
+    public function testTryingToParseContinuationOutOfTurn(): void
+    {
+        $fileRecord = new FileRecord();
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot process a continuation without first processing something that can be continued.');
+        $fileRecord->parseLine('88,210616,1700,01,80,10,2/');
+    }
 
     // TODO(zmd): test when child-destined line encountered before full file header
 

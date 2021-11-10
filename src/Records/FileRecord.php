@@ -132,7 +132,13 @@ class FileRecord
 
     protected function processContinuation(string $line): void
     {
-        match ($this->currentRecordCode) {
+        try {
+            $currentRecordCode = $this->currentRecordCode;
+        } catch (\Error) {
+            throw new MalformedInputException('Cannot process a continuation without first processing something that can be continued.');
+        }
+
+        match ($currentRecordCode) {
             '01' => $this->headerParser->pushLine($line),
             '99' => $this->trailerParser->pushLine($line),
             default => $this->currentChild->parseLine($line)
