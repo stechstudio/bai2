@@ -12,8 +12,6 @@ use STS\Bai2\Exceptions\MalformedInputException;
 class FileRecord
 {
 
-    protected string $currentRecordCode;
-
     protected FileHeaderParser $headerParser;
 
     protected FileTrailerParser $trailerParser;
@@ -25,9 +23,9 @@ class FileRecord
     public function parseLine(string $line): void
     {
         match ($recordCode = Bai2::recordTypeCode($line)) {
-            '01' => $this->processHeader($recordCode, $line),
+            '01' => $this->processHeader($line),
             '88' => $this->processContinuation($line),
-            '99' => $this->processTrailer($recordCode, $line),
+            '99' => $this->processTrailer($line),
             default => $this->processChildRecord($recordCode, $line)
         };
     }
@@ -114,16 +112,14 @@ class FileRecord
         }
     }
 
-    protected function processHeader(string $recordCode, string $line): void
+    protected function processHeader(string $line): void
     {
-        $this->currentRecordCode = $recordCode;
         $this->headerParser = new FileHeaderParser();
         $this->headerParser->pushLine($line);
     }
 
-    protected function processTrailer(string $recordCode, string $line): void
+    protected function processTrailer(string $line): void
     {
-        $this->currentRecordCode = $recordCode;
         $this->trailerParser = new FileTrailerParser(
             physicalRecordLength: $this->getPhysicalRecordLength()
         );
@@ -132,23 +128,19 @@ class FileRecord
 
     protected function processContinuation(string $line): void
     {
-        try {
-            $currentRecordCode = $this->currentRecordCode;
-        } catch (\Error) {
+        if (isset($this->trailerParser)) {
+            $this->trailerParser->pushLine($line);
+        } else if (isset($this->currentChild)) {
+            $this->currentChild->parseLine($line);
+        } else if (isset($this->headerParser)) {
+            $this->headerParser->pushLine($line);
+        } else {
             throw new MalformedInputException('Cannot process a continuation without first processing something that can be continued.');
         }
-
-        match ($currentRecordCode) {
-            '01' => $this->headerParser->pushLine($line),
-            '99' => $this->trailerParser->pushLine($line),
-            default => $this->currentChild->parseLine($line)
-        };
     }
 
     protected function processChildRecord(string $recordCode, string $line): void
     {
-        $this->currentRecordCode = $recordCode;
-
         switch ($recordCode) {
 
             case '02':
