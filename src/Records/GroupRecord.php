@@ -7,8 +7,20 @@ use STS\Bai2\Bai2;
 use STS\Bai2\Parsers\GroupHeaderParser;
 use STS\Bai2\Parsers\GroupTrailerParser;
 
+use STS\Bai2\Exceptions\MalformedInputException;
+use STS\Bai2\Exceptions\InvalidTypeException;
+use STS\Bai2\Exceptions\ParseException;
+
 class GroupRecord
 {
+
+    protected GroupHeaderParser $headerParser;
+
+    protected GroupTrailerParser $trailerParser;
+
+    protected array $accounts = [];
+
+    protected AccountRecord $currentChild;
 
     public function __construct(protected ?int $physicalRecordLength)
     {
@@ -91,7 +103,7 @@ class GroupRecord
             $this->currentChild = new AccountRecord(
                 physicalRecordLength: $this->physicalRecordLength
             );
-            $this->groups[] = $this->currentChild;
+            $this->accounts[] = $this->currentChild;
         }
 
         try {
