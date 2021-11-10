@@ -256,7 +256,13 @@ final class FileRecordTest extends TestCase
         });
     }
 
-    // TODO(zmd): public function testGetBlockSizeDefaulted(): void {}
+    public function testGetBlockSizeDefaulted(): void
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,SENDR1,RECVR1,210616,1700,01,80,,2/');
+
+        $this->assertNull($fileRecord->getBlockSize());
+    }
 
     /**
      * @dataProvider inputLinesProducer
