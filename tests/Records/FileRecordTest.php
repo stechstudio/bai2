@@ -198,7 +198,15 @@ final class FileRecordTest extends TestCase
         });
     }
 
-    // TODO(zmd): public function testGetFileCreationTimeMissing(): void {}
+    public function testGetFileCreationTimeMissing(): void
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,SENDR1,RECVR1,210616,,01,80,10,2/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse File Header Field. Invalid field type: ');
+        $fileRecord->getFileCreationTime();
+    }
 
     /**
      * @dataProvider inputLinesProducer
