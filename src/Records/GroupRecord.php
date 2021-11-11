@@ -73,17 +73,17 @@ class GroupRecord
         return $this->headerField('asOfDateModifier');
     }
 
-    public function getGroupControlTotal(): ?string
+    public function getGroupControlTotal(): int
     {
         return $this->trailerField('groupControlTotal');
     }
 
-    public function getNumberOfAccounts(): ?string
+    public function getNumberOfAccounts(): int
     {
         return $this->trailerField('numberOfAccounts');
     }
 
-    public function getNumberOfRecords(): ?string
+    public function getNumberOfRecords(): int
     {
         return $this->trailerField('numberOfRecords');
     }
