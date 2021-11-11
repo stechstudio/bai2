@@ -401,7 +401,19 @@ final class GroupRecordTest extends TestCase
         $groupRecord->parseLine('49,0,2/');
     }
 
-    // TODO(zmd): public function testTryingToProcessIncompleteHeader(): void {}
+    /**
+     * @dataProvider headerGettersProducer
+     */
+    public function testTryingToProcessIncompleteHeader(
+        string $headerGetterMethod
+    ): void {
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,def,1,212209/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Group Header field from an incomplete or malformed Group Header line.');
+        $groupRecord->$headerGetterMethod();
+    }
 
     // TODO(zmd): public function testTryingToProcessIncompleteTrailer(): void {}
 
