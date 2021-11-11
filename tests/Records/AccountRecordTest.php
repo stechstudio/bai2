@@ -108,17 +108,39 @@ final class AccountRecordTest extends TestCase
         $this->assertNull($accountRecord->getCurrencyCode());
     }
 
-    // TODO(zmd): public function testGetTypeCode(): void {}
-    // TODO(zmd): public function testGetTypeCodeDefaulted(): void {}
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetSummaryAndStatusInformation(array $inputLines): void
+    {
+        $this->withRecord($inputLines, null, function ($accountRecord) {
+            $this->assertEquals(
+                [
+                    [
+                        'typeCode' => '010',
+                        'amount' => 500000,
+                    ],
+                    [
+                        'typeCode' => '190',
+                        'amount' => 70000000,
+                        'itemCount' => 4,
+                        'fundsType' => [
+                            'distributionOfAvailability' => '0'
+                        ],
+                    ],
+                ],
+                $accountRecord->getSummaryAndStatusInformation()
+            );
+        });
+    }
 
-    // TODO(zmd): public function testGetAmount(): void {}
-    // TODO(zmd): public function testGetAmountDefaulted(): void {}
+    public function testGetSummaryAndStatusInformationDefaulted(): void
+    {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+        $accountRecord->parseLine('03,0001,USD,,,,/');
 
-    // TODO(zmd): public function testGetItemCount(): void {}
-    // TODO(zmd): public function testGetItemCountDefaulted(): void {}
-
-    // TODO(zmd): public function testGetFundsType(): void {}
-    // TODO(zmd): public function testGetFundsTypeDefaulted(): void {}
+        $this->assertEquals([], $accountRecord->getSummaryAndStatusInformation());
+    }
 
     // TODO(zmd): public function testGetAccountControlTotal(): void {}
     // TODO(zmd): public function testGetAccountControlTotalMissing(): void {}

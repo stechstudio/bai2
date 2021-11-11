@@ -50,9 +50,14 @@ class AccountRecord
         return $this->headerField('currencyCode');
     }
 
+    public function getSummaryAndStatusInformation(): array
+    {
+        return $this->headerField('summaryAndStatusInformation');
+    }
+
     // -- helper methods -------------------------------------------------------
 
-    protected function headerField(string $fieldKey): null|string|int
+    protected function headerField(string $fieldKey): null|string|int|array
     {
         try {
             return $this->headerParser[$fieldKey];
