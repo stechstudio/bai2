@@ -52,9 +52,64 @@ final class GroupRecordTest extends TestCase
 
     public function inputLinesTooLongProducer(): array
     {
-        // TODO(zmd): finish implementing me
         return [
             [[
+                '02,abc,def,1,212209,0944,USD,2/--------------------------------------------------',
+                '03,0001,,,,,/',
+                '49,0,2/',
+                '03,0002,,,,,/',
+                '49,0,2/',
+                '98,10000,2,6/',
+            ]],
+            [[
+                '02,abc,def,1,212209,0944,USD,2/',
+                '03,0001,,,,,/',
+                '49,0,2/',
+                '03,0002,,,,,/',
+                '49,0,2/',
+                '98,10000,2,6/--------------------------------------------------------------------',
+            ]],
+            [[
+                '02,abc,def/',
+                '88,1,212209,0944,USD,2/----------------------------------------------------------',
+                '03,0001,,/',
+                '88,,,/',
+                '49,0,2/',
+                '03,0002,,,,/',
+                '88,/',
+                '49,0/',
+                '88,2/',
+                '98,10000,2/',
+                '88,6/',
+            ]],
+            [[
+                '02,abc,def/',
+                '88,1,212209,0944,USD,2/',
+                '03,0001,,/',
+                '88,,,/',
+                '49,0,2/',
+                '03,0002,,,,/',
+                '88,/',
+                '49,0/',
+                '88,2/',
+                '98,10000,2/',
+                '88,6/----------------------------------------------------------------------------',
+            ]],
+            [[
+                '02,abc,def,1,212209,0944,USD,2/',
+                '03,0001,,,,,/--------------------------------------------------------------------',
+                '49,0,2/',
+                '03,0002,,,,,/',
+                '49,0,2/',
+                '98,10000,2,6/',
+            ]],
+            [[
+                '02,abc,def,1,212209,0944,USD,2/',
+                '03,0001,,,,,/',
+                '49,0,2/--------------------------------------------------------------------------',
+                '03,0002,,,,,/',
+                '49,0,2/',
+                '98,10000,2,6/',
             ]],
         ];
     }
@@ -283,7 +338,15 @@ final class GroupRecordTest extends TestCase
 
     // -- test overall error handling ------------------------------------------
 
-    // TODO(zmd): public function testPhysicalRecordLengthEnforced(): void {}
+    /**
+     * @dataProvider inputLinesTooLongProducer
+     */
+    public function testPhysicalRecordLengthEnforced(array $inputLines): void
+    {
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
+        $this->withRecord($inputLines, 80, function ($fileRecord) {});
+    }
 
     // TODO(zmd): public function testHeaderFieldAccessWhenHeaderNeverProcessed(): void {}
 
