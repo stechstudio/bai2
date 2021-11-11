@@ -104,7 +104,7 @@ final class GroupRecordTest extends TestCase
 
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Encountered issue trying to parse Group Header Field. Invalid field type: ');
-        $fileRecord->getSenderIdentification();
+        $fileRecord->getOriginatorIdentification();
     }
 
     // TODO(zmd): public function testGetGroupStatus(): void {}
