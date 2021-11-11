@@ -29,10 +29,16 @@ final class AccountRecordTest extends TestCase
 
     public function inputLinesProducer(): array
     {
-        // TODO(zmd): finish implementing me
         return [
             [[
+                '03,0001,USD,'
+                    . '010,500000,,,'
+                    . '190,70000000,4,0/',
+                '16,409,10000,0,123456789,987654321,SOME TEXT',
+                '16,409,10000,2,123456789,987654321,SOME TEXT',
+                '49,0,2/',
             ]],
+            // TODO(zmd): finish implementing me
         ];
     }
 
@@ -45,9 +51,12 @@ final class AccountRecordTest extends TestCase
         ];
     }
 
-    protected function withRecord(array $input, callable $callable): void
-    {
-        $record = new AccountRecord();
+    protected function withRecord(
+        array $input,
+        ?int $physicalRecordLength,
+        callable $callable
+    ): void {
+        $record = new AccountRecord(physicalRecordLength: $physicalRecordLength);
 
         foreach ($input as $line) {
             $record->parseLine($line);
@@ -58,8 +67,28 @@ final class AccountRecordTest extends TestCase
 
     // -- test field getters ---------------------------------------------------
 
-    // TODO(zmd): public function testGetCustomerAccountNumber(): void {}
-    // TODO(zmd): public function testGetCustomerAccountNumberMissing(): void {}
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetCustomerAccountNumber(array $inputLines): void
+    {
+        $this->withRecord($inputLines, null, function ($accountRecord) {
+            $this->assertEquals(
+                '0001',
+                $accountRecord->getCustomerAccountNumber()
+            );
+        });
+    }
+
+    public function testGetCustomerAccountNumberMissing(): void
+    {
+        $groupRecord = new AccountRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('03,,USD,010,500000,,,190,70000000,4,0/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse Account Identifier and Summary Status Field. Invalid field type: ');
+        $groupRecord->getCustomerAccountNumber();
+    }
 
     // TODO(zmd): public function testGetCurrencyCode(): void {}
     // TODO(zmd): public function testGetCurrencyCodeDefaulted(): void {}

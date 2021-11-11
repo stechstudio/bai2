@@ -40,7 +40,10 @@ class AccountRecord
 
     // -- getters --------------------------------------------------------------
 
-    // TODO(zmd): implement getters
+    public function getCustomerAccountNumber(): string
+    {
+        return $this->headerField('customerAccountNumber');
+    }
 
     // -- helper methods -------------------------------------------------------
 
