@@ -369,7 +369,18 @@ final class GroupRecordTest extends TestCase
         $fileRecord->$headerGetterMethod();
     }
 
-    // TODO(zmd): public function testTrailerFieldAccessWhenTrailerNeverProcessed(): void {}
+    /**
+     * @dataProvider trailerGettersProducer
+     */
+    public function testTrailerFieldAccessWhenTrailerNeverProcessed(
+        string $trailerGetterMethod
+    ): void {
+        $fileRecord = new GroupRecord(physicalRecordLength: null);
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Group Trailer field prior to reading an incoming Group Trailer line.');
+        $fileRecord->$trailerGetterMethod();
+    }
 
     // TODO(zmd): public function testTryingToParseContinuationOutOfTurn(): void {}
 
