@@ -415,7 +415,20 @@ final class GroupRecordTest extends TestCase
         $groupRecord->$headerGetterMethod();
     }
 
-    // TODO(zmd): public function testTryingToProcessIncompleteTrailer(): void {}
+    /**
+     * @dataProvider trailerGettersProducer
+     */
+    public function testTryingToProcessIncompleteTrailer(
+        string $trailerGetterMethod
+    ): void {
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
+        $groupRecord->parseLine('98,10000/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Group Trailer field from an incomplete or malformed Group Trailer line.');
+        $groupRecord->$trailerGetterMethod();
+    }
 
     // TODO(zmd): public function testTryingToProcessMalformedHeader(): void {}
 
