@@ -201,8 +201,26 @@ final class GroupRecordTest extends TestCase
         $this->assertNull($fileRecord->getAsOfDateModifier());
     }
 
-    // TODO(zmd): public function testGetGroupControlTotal(): void {}
-    // TODO(zmd): public function testGetGroupControlTotalMissing(): void {}
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetGroupControlTotal(array $inputLines): void
+    {
+        $this->withRecord($inputLines, null, function ($groupRecord) {
+            $this->assertEquals('10000', $groupRecord->getGroupControlTotal());
+        });
+    }
+
+    public function testGetGroupControlTotalMissing(): void
+    {
+        $fileRecord = new GroupRecord(physicalRecordLength: null);
+        $fileRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
+        $fileRecord->parseLine('98,,1,6/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse Group Trailer Field. Invalid field type: ');
+        $fileRecord->getGroupControlTotal();
+    }
 
     // TODO(zmd): public function testGetNumberOfAccounts(): void {}
     // TODO(zmd): public function testGetNumberOfAccountsMissing(): void {}

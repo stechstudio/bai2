@@ -73,6 +73,11 @@ class GroupRecord
         return $this->headerField('asOfDateModifier');
     }
 
+    public function getGroupControlTotal(): ?string
+    {
+        return $this->trailerField('groupControlTotal');
+    }
+
     // -- helper methods -------------------------------------------------------
 
     protected function headerField(string $fieldKey): null|string|int
