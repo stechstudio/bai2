@@ -154,10 +154,10 @@ final class GroupRecordTest extends TestCase
 
     public function testGetUltimateReceiverIdentificationDefaulted(): void
     {
-        $fileRecord = new GroupRecord(physicalRecordLength: null);
-        $fileRecord->parseLine('02,,def,1,212209,0944,USD,2/');
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,,def,1,212209,0944,USD,2/');
 
-        $this->assertNull($fileRecord->getUltimateReceiverIdentification());
+        $this->assertNull($groupRecord->getUltimateReceiverIdentification());
     }
 
     /**
@@ -175,12 +175,12 @@ final class GroupRecordTest extends TestCase
 
     public function testGetOriginatorIdentificationMissing(): void
     {
-        $fileRecord = new GroupRecord(physicalRecordLength: null);
-        $fileRecord->parseLine('02,abc,,1,212209,0944,USD,2/');
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,,1,212209,0944,USD,2/');
 
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Encountered issue trying to parse Group Header Field. Invalid field type: ');
-        $fileRecord->getOriginatorIdentification();
+        $groupRecord->getOriginatorIdentification();
     }
 
     /**
@@ -195,12 +195,12 @@ final class GroupRecordTest extends TestCase
 
     public function testGetGroupStatusMissing(): void
     {
-        $fileRecord = new GroupRecord(physicalRecordLength: null);
-        $fileRecord->parseLine('02,abc,def,,212209,0944,USD,2/');
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,def,,212209,0944,USD,2/');
 
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Encountered issue trying to parse Group Header Field. Invalid field type: ');
-        $fileRecord->getGroupStatus();
+        $groupRecord->getGroupStatus();
     }
 
     /**
@@ -215,12 +215,12 @@ final class GroupRecordTest extends TestCase
 
     public function testGetAsOfDateMissing(): void
     {
-        $fileRecord = new GroupRecord(physicalRecordLength: null);
-        $fileRecord->parseLine('02,abc,def,1,,0944,USD,2/');
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,def,1,,0944,USD,2/');
 
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Encountered issue trying to parse Group Header Field. Invalid field type: ');
-        $fileRecord->getAsOfDate();
+        $groupRecord->getAsOfDate();
     }
 
     /**
@@ -235,10 +235,10 @@ final class GroupRecordTest extends TestCase
 
     public function testGetAsOfTimeDefaulted(): void
     {
-        $fileRecord = new GroupRecord(physicalRecordLength: null);
-        $fileRecord->parseLine('02,abc,def,1,212209,,USD,2/');
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,def,1,212209,,USD,2/');
 
-        $this->assertNull($fileRecord->getAsOfTime());
+        $this->assertNull($groupRecord->getAsOfTime());
     }
 
     /**
@@ -253,10 +253,10 @@ final class GroupRecordTest extends TestCase
 
     public function testGetCurrencyCodeDefaulted(): void
     {
-        $fileRecord = new GroupRecord(physicalRecordLength: null);
-        $fileRecord->parseLine('02,abc,def,1,212209,0944,,2/');
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,def,1,212209,0944,,2/');
 
-        $this->assertNull($fileRecord->getCurrencyCode());
+        $this->assertNull($groupRecord->getCurrencyCode());
     }
 
     /**
@@ -271,10 +271,10 @@ final class GroupRecordTest extends TestCase
 
     public function testGetAsOfDateModifierDefaulted(): void
     {
-        $fileRecord = new GroupRecord(physicalRecordLength: null);
-        $fileRecord->parseLine('02,abc,def,1,212209,0944,USD,/');
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,def,1,212209,0944,USD,/');
 
-        $this->assertNull($fileRecord->getAsOfDateModifier());
+        $this->assertNull($groupRecord->getAsOfDateModifier());
     }
 
     /**
@@ -289,13 +289,13 @@ final class GroupRecordTest extends TestCase
 
     public function testGetGroupControlTotalMissing(): void
     {
-        $fileRecord = new GroupRecord(physicalRecordLength: null);
-        $fileRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
-        $fileRecord->parseLine('98,,2,6/');
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
+        $groupRecord->parseLine('98,,2,6/');
 
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Encountered issue trying to parse Group Trailer Field. Invalid field type: ');
-        $fileRecord->getGroupControlTotal();
+        $groupRecord->getGroupControlTotal();
     }
 
     /**
@@ -310,13 +310,13 @@ final class GroupRecordTest extends TestCase
 
     public function testGetNumberOfAccountsMissing(): void
     {
-        $fileRecord = new GroupRecord(physicalRecordLength: null);
-        $fileRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
-        $fileRecord->parseLine('98,10000,,6/');
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
+        $groupRecord->parseLine('98,10000,,6/');
 
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Encountered issue trying to parse Group Trailer Field. Invalid field type: ');
-        $fileRecord->getNumberOfAccounts();
+        $groupRecord->getNumberOfAccounts();
     }
 
     /**
@@ -331,13 +331,13 @@ final class GroupRecordTest extends TestCase
 
     public function testGetNumberOfRecordsMissing(): void
     {
-        $fileRecord = new GroupRecord(physicalRecordLength: null);
-        $fileRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
-        $fileRecord->parseLine('98,10000,2,/');
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
+        $groupRecord->parseLine('98,10000,2,/');
 
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Encountered issue trying to parse Group Trailer Field. Invalid field type: ');
-        $fileRecord->getNumberOfRecords();
+        $groupRecord->getNumberOfRecords();
     }
 
     // -- test overall functionality -------------------------------------------
@@ -353,7 +353,7 @@ final class GroupRecordTest extends TestCase
     {
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
-        $this->withRecord($inputLines, 80, function ($fileRecord) {});
+        $this->withRecord($inputLines, 80, function ($groupRecord) {});
     }
 
     /**
@@ -362,11 +362,11 @@ final class GroupRecordTest extends TestCase
     public function testHeaderFieldAccessWhenHeaderNeverProcessed(
         string $headerGetterMethod
     ): void {
-        $fileRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
 
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Cannot access a Group Header field prior to reading an incoming Group Header line.');
-        $fileRecord->$headerGetterMethod();
+        $groupRecord->$headerGetterMethod();
     }
 
     /**
@@ -375,30 +375,30 @@ final class GroupRecordTest extends TestCase
     public function testTrailerFieldAccessWhenTrailerNeverProcessed(
         string $trailerGetterMethod
     ): void {
-        $fileRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
 
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Cannot access a Group Trailer field prior to reading an incoming Group Trailer line.');
-        $fileRecord->$trailerGetterMethod();
+        $groupRecord->$trailerGetterMethod();
     }
 
     public function testTryingToParseContinuationOutOfTurn(): void
     {
-        $fileRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
 
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Cannot process a continuation without first processing something that can be continued.');
-        $fileRecord->parseLine('88,1,212209,0944,USD,2/');
+        $groupRecord->parseLine('88,1,212209,0944,USD,2/');
     }
 
     public function testTryingToProcessChildLineBeforeChildInitialized(): void
     {
-        $fileRecord = new GroupRecord(physicalRecordLength: null);
-        $fileRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
 
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Cannot process Account Trailer or Transaction-related line before processing the Account Header line.');
-        $fileRecord->parseLine('49,0,2/');
+        $groupRecord->parseLine('49,0,2/');
     }
 
     // TODO(zmd): public function testTryingToProcessIncompleteHeader(): void {}
