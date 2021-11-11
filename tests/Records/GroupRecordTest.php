@@ -25,9 +25,14 @@ final class GroupRecordTest extends TestCase
 
     public function inputLinesProducer(): array
     {
-        // TODO(zmd): finish implementing me
         return [
             [[
+                '02,abc,def,1,212209,0944,USD,2/',
+                '03,0001,,,,,/',
+                '49,0,2/',
+                '03,0002,,,,,/',
+                '49,0,2/',
+                '98,10000,1,6/',
             ]],
         ];
     }
@@ -41,9 +46,12 @@ final class GroupRecordTest extends TestCase
         ];
     }
 
-    protected function withRecord(array $input, callable $callable): void
-    {
-        $record = new GroupRecord();
+    protected function withRecord(
+        array $input,
+        ?int $physicalRecordLength,
+        callable $callable
+    ): void {
+        $record = new GroupRecord(physicalRecordLength: $physicalRecordLength);
 
         foreach ($input as $line) {
             $record->parseLine($line);
@@ -54,8 +62,27 @@ final class GroupRecordTest extends TestCase
 
     // -- test field getters ---------------------------------------------------
 
-    // TODO(zmd): public function testGetUltimateReceiverIdentification(): void {}
-    // TODO(zmd): public function testGetUltimateReceiverIdentificationDefaulted(): void {}
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetUltimateReceiverIdentification(
+        array $inputLines
+    ): void {
+        $this->withRecord($inputLines, null, function ($groupRecord) {
+            $this->assertEquals(
+                'abc',
+                $groupRecord->getUltimateReceiverIdentification()
+            );
+        });
+    }
+
+    public function testGetUltimateReceiverIdentificationDefaulted(): void
+    {
+        $fileRecord = new GroupRecord(physicalRecordLength: null);
+        $fileRecord->parseLine('02,,def,1,212209,0944,USD,2/');
+
+        $this->assertNull($fileRecord->getUltimateReceiverIdentification());
+    }
 
     // TODO(zmd): public function testGetOriginatorIdentification(): void {}
     // TODO(zmd): public function testGetOriginatorIdentificationMissing(): void {}

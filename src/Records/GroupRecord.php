@@ -38,7 +38,10 @@ class GroupRecord
 
     // -- getters --------------------------------------------------------------
 
-    // TODO(zmd): implement getters
+    public function getUltimateReceiverIdentification(): ?string
+    {
+        return $this->headerField('ultimateReceiverIdentification');
+    }
 
     // -- helper methods -------------------------------------------------------
 
