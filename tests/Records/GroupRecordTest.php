@@ -382,7 +382,14 @@ final class GroupRecordTest extends TestCase
         $fileRecord->$trailerGetterMethod();
     }
 
-    // TODO(zmd): public function testTryingToParseContinuationOutOfTurn(): void {}
+    public function testTryingToParseContinuationOutOfTurn(): void
+    {
+        $fileRecord = new GroupRecord(physicalRecordLength: null);
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot process a continuation without first processing something that can be continued.');
+        $fileRecord->parseLine('88,1,212209,0944,USD,2/');
+    }
 
     // TODO(zmd): public function testTryingToProcessChildLineBeforeChildInitialized(): void {}
 
