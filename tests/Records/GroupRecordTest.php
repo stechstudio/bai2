@@ -391,7 +391,15 @@ final class GroupRecordTest extends TestCase
         $fileRecord->parseLine('88,1,212209,0944,USD,2/');
     }
 
-    // TODO(zmd): public function testTryingToProcessChildLineBeforeChildInitialized(): void {}
+    public function testTryingToProcessChildLineBeforeChildInitialized(): void
+    {
+        $fileRecord = new GroupRecord(physicalRecordLength: null);
+        $fileRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot process Account Trailer or Transaction-related line before processing the Account Header line.');
+        $fileRecord->parseLine('49,0,2/');
+    }
 
     // TODO(zmd): public function testTryingToProcessIncompleteHeader(): void {}
 
