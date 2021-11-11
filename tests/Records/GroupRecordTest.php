@@ -11,15 +11,23 @@ final class GroupRecordTest extends TestCase
 
     public function headerGettersProducer(): array
     {
-        // TODO(zmd): finish implementing me
         return [[
+            'getUltimateReceiverIdentification',
+            'getOriginatorIdentification',
+            'getGroupStatus',
+            'getAsOfDate',
+            'getAsOfTime',
+            'getCurrencyCode',
+            'getAsOfDateModifier',
         ]];
     }
 
     public function trailerGettersProducer(): array
     {
-        // TODO(zmd): finish implementing me
         return [[
+            'getGroupControlTotal',
+            'getNumberOfAccounts',
+            'getNumberOfRecords',
         ]];
     }
 
@@ -348,7 +356,18 @@ final class GroupRecordTest extends TestCase
         $this->withRecord($inputLines, 80, function ($fileRecord) {});
     }
 
-    // TODO(zmd): public function testHeaderFieldAccessWhenHeaderNeverProcessed(): void {}
+    /**
+     * @dataProvider headerGettersProducer
+     */
+    public function testHeaderFieldAccessWhenHeaderNeverProcessed(
+        string $headerGetterMethod
+    ): void {
+        $fileRecord = new GroupRecord(physicalRecordLength: null);
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Group Header field prior to reading an incoming Group Header line.');
+        $fileRecord->$headerGetterMethod();
+    }
 
     // TODO(zmd): public function testTrailerFieldAccessWhenTrailerNeverProcessed(): void {}
 
