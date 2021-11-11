@@ -55,6 +55,11 @@ class AccountRecord
         return $this->headerField('summaryAndStatusInformation');
     }
 
+    public function getAccountControlTotal(): int
+    {
+        return $this->trailerField('accountControlTotal');
+    }
+
     // -- helper methods -------------------------------------------------------
 
     protected function headerField(string $fieldKey): null|string|int|array

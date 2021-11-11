@@ -36,7 +36,7 @@ final class AccountRecordTest extends TestCase
                     . '190,70000000,4,0/',
                 '16,409,10000,0,123456789,987654321,SOME TEXT',
                 '16,409,10000,2,123456789,987654321,SOME TEXT',
-                '49,0,2/',
+                '49,70520000,2/',
             ]],
             // TODO(zmd): finish implementing me
         ];
@@ -142,8 +142,29 @@ final class AccountRecordTest extends TestCase
         $this->assertEquals([], $accountRecord->getSummaryAndStatusInformation());
     }
 
-    // TODO(zmd): public function testGetAccountControlTotal(): void {}
-    // TODO(zmd): public function testGetAccountControlTotalMissing(): void {}
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetAccountControlTotal(array $inputLines): void
+    {
+        $this->withRecord($inputLines, null, function ($accountRecord) {
+            $this->assertEquals(
+                70520000,
+                $accountRecord->getAccountControlTotal()
+            );
+        });
+    }
+
+    public function testGetAccountControlTotalMissing(): void
+    {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+        $accountRecord->parseLine('03,0001,USD,010,500000,,,190,70000000,4,0/');
+        $accountRecord->parseLine('49,,2/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse Account Trailer Field. Invalid field type: ');
+        $accountRecord->getAccountControlTotal();
+    }
 
     // TODO(zmd): public function testGetNumberOfRecords(): void {}
     // TODO(zmd): public function testGetNumberOfRecordsMissing(): void {}
