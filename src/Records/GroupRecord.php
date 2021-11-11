@@ -43,6 +43,11 @@ class GroupRecord
         return $this->headerField('ultimateReceiverIdentification');
     }
 
+    public function getOriginatorIdentification(): string
+    {
+        return $this->headerField('originatorIdentification');
+    }
+
     // -- helper methods -------------------------------------------------------
 
     protected function headerField(string $fieldKey): null|string|int

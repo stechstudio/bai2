@@ -84,8 +84,28 @@ final class GroupRecordTest extends TestCase
         $this->assertNull($fileRecord->getUltimateReceiverIdentification());
     }
 
-    // TODO(zmd): public function testGetOriginatorIdentification(): void {}
-    // TODO(zmd): public function testGetOriginatorIdentificationMissing(): void {}
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetOriginatorIdentification(array $inputLines): void
+    {
+        $this->withRecord($inputLines, null, function ($groupRecord) {
+            $this->assertEquals(
+                'def',
+                $groupRecord->getOriginatorIdentification()
+            );
+        });
+    }
+
+    public function testGetOriginatorIdentificationMissing(): void
+    {
+        $fileRecord = new GroupRecord(physicalRecordLength: null);
+        $fileRecord->parseLine('02,abc,,1,212209,0944,USD,2/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse Group Header Field. Invalid field type: ');
+        $fileRecord->getSenderIdentification();
+    }
 
     // TODO(zmd): public function testGetGroupStatus(): void {}
     // TODO(zmd): public function testGetGroupStatusMissing(): void {}
