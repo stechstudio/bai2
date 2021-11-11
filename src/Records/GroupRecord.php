@@ -63,6 +63,11 @@ class GroupRecord
         return $this->headerField('asOfTime');
     }
 
+    public function getCurrencyCode(): ?string
+    {
+        return $this->headerField('currencyCode');
+    }
+
     // -- helper methods -------------------------------------------------------
 
     protected function headerField(string $fieldKey): null|string|int

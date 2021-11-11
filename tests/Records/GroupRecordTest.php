@@ -165,8 +165,23 @@ final class GroupRecordTest extends TestCase
         $this->assertNull($fileRecord->getAsOfTime());
     }
 
-    // TODO(zmd): public function testGetCurrencyCode(): void {}
-    // TODO(zmd): public function testGetCurrencyCodeDefaulted(): void {}
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetCurrencyCode(array $inputLines): void
+    {
+        $this->withRecord($inputLines, null, function ($groupRecord) {
+            $this->assertEquals('USD', $groupRecord->getCurrencyCode());
+        });
+    }
+
+    public function testGetCurrencyCodeDefaulted(): void
+    {
+        $fileRecord = new GroupRecord(physicalRecordLength: null);
+        $fileRecord->parseLine('02,abc,def,1,212209,0944,,2/');
+
+        $this->assertNull($fileRecord->getCurrencyCode());
+    }
 
     // TODO(zmd): public function testGetAsOfDateModifier(): void {}
     // TODO(zmd): public function testGetAsOfDateModifierDefaulted(): void {}
