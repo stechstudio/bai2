@@ -68,6 +68,11 @@ class GroupRecord
         return $this->headerField('currencyCode');
     }
 
+    public function getAsOfDateModifier(): ?string
+    {
+        return $this->headerField('asOfDateModifier');
+    }
+
     // -- helper methods -------------------------------------------------------
 
     protected function headerField(string $fieldKey): null|string|int
