@@ -48,6 +48,11 @@ class GroupRecord
         return $this->headerField('originatorIdentification');
     }
 
+    public function getGroupStatus(): string
+    {
+        return $this->headerField('groupStatus');
+    }
+
     // -- helper methods -------------------------------------------------------
 
     protected function headerField(string $fieldKey): null|string|int
