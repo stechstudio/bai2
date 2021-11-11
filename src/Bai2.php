@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace STS\Bai2;
 
 use STS\Bai2\Records\FileRecord;
