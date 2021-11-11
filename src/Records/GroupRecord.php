@@ -78,6 +78,11 @@ class GroupRecord
         return $this->trailerField('groupControlTotal');
     }
 
+    public function getNumberOfAccounts(): ?string
+    {
+        return $this->trailerField('numberOfAccounts');
+    }
+
     // -- helper methods -------------------------------------------------------
 
     protected function headerField(string $fieldKey): null|string|int

@@ -32,7 +32,7 @@ final class GroupRecordTest extends TestCase
                 '49,0,2/',
                 '03,0002,,,,,/',
                 '49,0,2/',
-                '98,10000,1,6/',
+                '98,10000,2,6/',
             ]],
         ];
     }
@@ -215,15 +215,33 @@ final class GroupRecordTest extends TestCase
     {
         $fileRecord = new GroupRecord(physicalRecordLength: null);
         $fileRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
-        $fileRecord->parseLine('98,,1,6/');
+        $fileRecord->parseLine('98,,2,6/');
 
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Encountered issue trying to parse Group Trailer Field. Invalid field type: ');
         $fileRecord->getGroupControlTotal();
     }
 
-    // TODO(zmd): public function testGetNumberOfAccounts(): void {}
-    // TODO(zmd): public function testGetNumberOfAccountsMissing(): void {}
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetNumberOfAccounts(array $inputLines): void
+    {
+        $this->withRecord($inputLines, null, function ($groupRecord) {
+            $this->assertEquals('2', $groupRecord->getNumberOfAccounts());
+        });
+    }
+
+    public function testGetNumberOfAccountsMissing(): void
+    {
+        $fileRecord = new GroupRecord(physicalRecordLength: null);
+        $fileRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
+        $fileRecord->parseLine('98,10000,,6/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse Group Trailer Field. Invalid field type: ');
+        $fileRecord->getNumberOfAccounts();
+    }
 
     // TODO(zmd): public function testGetNumberOfRecords(): void {}
     // TODO(zmd): public function testGetNumberOfRecordsMissing(): void {}
