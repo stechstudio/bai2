@@ -147,8 +147,23 @@ final class GroupRecordTest extends TestCase
         $fileRecord->getAsOfDate();
     }
 
-    // TODO(zmd): public function testGetAsOfTime(): void {}
-    // TODO(zmd): public function testGetAsOfTimeDefaulted(): void {}
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetAsOfTime(array $inputLines): void
+    {
+        $this->withRecord($inputLines, null, function ($groupRecord) {
+            $this->assertEquals('0944', $groupRecord->getAsOfTime());
+        });
+    }
+
+    public function testGetAsOfTimeDefaulted(): void
+    {
+        $fileRecord = new GroupRecord(physicalRecordLength: null);
+        $fileRecord->parseLine('02,abc,def,1,212209,,USD,2/');
+
+        $this->assertNull($fileRecord->getAsOfTime());
+    }
 
     // TODO(zmd): public function testGetCurrencyCode(): void {}
     // TODO(zmd): public function testGetCurrencyCodeDefaulted(): void {}

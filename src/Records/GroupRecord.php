@@ -58,6 +58,11 @@ class GroupRecord
         return $this->headerField('asOfDate');
     }
 
+    public function getAsOfTime(): ?string
+    {
+        return $this->headerField('asOfTime');
+    }
+
     // -- helper methods -------------------------------------------------------
 
     protected function headerField(string $fieldKey): null|string|int
