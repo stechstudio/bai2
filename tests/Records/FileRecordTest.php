@@ -11,25 +11,25 @@ final class FileRecordTest extends TestCase
 
     public function headerGettersProducer(): array
     {
-        return [[
-            'getSenderIdentification',
-            'getReceiverIdentification',
-            'getFileCreationDate',
-            'getFileCreationTime',
-            'getFileIdentificationNumber',
-            'getPhysicalRecordLength',
-            'getBlockSize',
-            'getVersionNumber',
-        ]];
+        return [
+            ['getSenderIdentification'],
+            ['getReceiverIdentification'],
+            ['getFileCreationDate'],
+            ['getFileCreationTime'],
+            ['getFileIdentificationNumber'],
+            ['getPhysicalRecordLength'],
+            ['getBlockSize'],
+            ['getVersionNumber'],
+        ];
     }
 
     public function trailerGettersProducer(): array
     {
-        return [[
-            'getFileControlTotal',
-            'getNumberOfGroups',
-            'getNumberOfRecords',
-        ]];
+        return [
+            ['getFileControlTotal'],
+            ['getNumberOfGroups'],
+            ['getNumberOfRecords'],
+        ];
     }
 
     public function inputLinesProducer(): array

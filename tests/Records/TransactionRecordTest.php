@@ -12,8 +12,9 @@ final class TransactionRecordTest extends TestCase
     public function gettersProducer(): array
     {
         // TODO(zmd): finish implementing me
-        return [[
-        ]];
+        return [
+            [],
+        ];
     }
 
     public function inputLinesProducer(): array

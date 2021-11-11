@@ -12,15 +12,17 @@ final class AccountRecordTest extends TestCase
     public function headerGettersProducer(): array
     {
         // TODO(zmd): finish implementing me
-        return [[
-        ]];
+        return [
+            [],
+        ];
     }
 
     public function trailerGettersProducer(): array
     {
         // TODO(zmd): finish implementing me
-        return [[
-        ]];
+        return [
+            [],
+        ];
     }
 
     public function inputLinesProducer(): array

@@ -11,24 +11,24 @@ final class GroupRecordTest extends TestCase
 
     public function headerGettersProducer(): array
     {
-        return [[
-            'getUltimateReceiverIdentification',
-            'getOriginatorIdentification',
-            'getGroupStatus',
-            'getAsOfDate',
-            'getAsOfTime',
-            'getCurrencyCode',
-            'getAsOfDateModifier',
-        ]];
+        return [
+            ['getUltimateReceiverIdentification'],
+            ['getOriginatorIdentification'],
+            ['getGroupStatus'],
+            ['getAsOfDate'],
+            ['getAsOfTime'],
+            ['getCurrencyCode'],
+            ['getAsOfDateModifier'],
+        ];
     }
 
     public function trailerGettersProducer(): array
     {
-        return [[
-            'getGroupControlTotal',
-            'getNumberOfAccounts',
-            'getNumberOfRecords',
-        ]];
+        return [
+            ['getGroupControlTotal'],
+            ['getNumberOfAccounts'],
+            ['getNumberOfRecords'],
+        ];
     }
 
     public function inputLinesProducer(): array
