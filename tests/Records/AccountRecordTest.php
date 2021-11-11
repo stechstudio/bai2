@@ -82,16 +82,31 @@ final class AccountRecordTest extends TestCase
 
     public function testGetCustomerAccountNumberMissing(): void
     {
-        $groupRecord = new AccountRecord(physicalRecordLength: null);
-        $groupRecord->parseLine('03,,USD,010,500000,,,190,70000000,4,0/');
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+        $accountRecord->parseLine('03,,USD,010,500000,,,190,70000000,4,0/');
 
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Encountered issue trying to parse Account Identifier and Summary Status Field. Invalid field type: ');
-        $groupRecord->getCustomerAccountNumber();
+        $accountRecord->getCustomerAccountNumber();
     }
 
-    // TODO(zmd): public function testGetCurrencyCode(): void {}
-    // TODO(zmd): public function testGetCurrencyCodeDefaulted(): void {}
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetCurrencyCode(array $inputLines): void
+    {
+        $this->withRecord($inputLines, null, function ($accountRecord) {
+            $this->assertEquals('USD', $accountRecord->getCurrencyCode());
+        });
+    }
+
+    public function testGetCurrencyCodeDefaulted(): void
+    {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+        $accountRecord->parseLine('03,0001,,010,500000,,,190,70000000,4,0/');
+
+        $this->assertNull($accountRecord->getCurrencyCode());
+    }
 
     // TODO(zmd): public function testGetTypeCode(): void {}
     // TODO(zmd): public function testGetTypeCodeDefaulted(): void {}
