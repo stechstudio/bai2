@@ -6,6 +6,8 @@ namespace STS\Bai2\Records;
 
 use STS\Bai2\Bai2;
 
+use STS\Bai2\Parsers\TransactionParser;
+
 use STS\Bai2\Exceptions\MalformedInputException;
 use STS\Bai2\Exceptions\InvalidTypeException;
 use STS\Bai2\Exceptions\ParseException;

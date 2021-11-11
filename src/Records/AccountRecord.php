@@ -34,8 +34,7 @@ class AccountRecord
             '03' => $this->processHeader($recordCode, $line),
             '88' => $this->processContinuation($line),
             '49' => $this->processTrailer($recordCode, $line),
-            '16' => $this->processChildRecord($recordCode, $line),
-            default => $this->processUnknown()
+            default => $this->processChildRecord($recordCode, $line)
         };
     }
 
@@ -50,11 +49,11 @@ class AccountRecord
         try {
             return $this->headerParser[$fieldKey];
         } catch (\Error) {
-            throw new MalformedInputException('Cannot access a Account Header field prior to reading an incoming Account Header line.');
+            throw new MalformedInputException('Cannot access a Account Identifier and Summary Status field prior to reading an incoming Account Identifier and Summary Status line.');
         } catch (InvalidTypeException $e) {
-            throw new MalformedInputException("Encountered issue trying to parse Account Header Field. {$e->getMessage()}");
+            throw new MalformedInputException("Encountered issue trying to parse Account Identifier and Summary Status Field. {$e->getMessage()}");
         } catch (ParseException) {
-            throw new MalformedInputException('Cannot access a Account Header field from an incomplete or malformed Account Header line.');
+            throw new MalformedInputException('Cannot access a Account Identifier and Summary Status field from an incomplete or malformed Account Identifier and Summary Status line.');
         }
     }
 
@@ -102,15 +101,19 @@ class AccountRecord
 
     protected function processChildRecord(string $recordCode, string $line): void
     {
-        $this->currentChild = new AccountRecord(
-            physicalRecordLength: $this->physicalRecordLength
-        );
-        $this->transactions[] = $this->currentChild;
-    }
+        if ($recordCode == '16') {
+            $this->currentChild = new TransactionRecord(
+                physicalRecordLength: $this->physicalRecordLength
+            );
+            $this->transactions[] = $this->currentChild;
+        }
 
-    protected function processUnknown(): void
-    {
-        // TODO(zmd): implement me; make it go BANG!!
+        try {
+            $this->currentChild->parseLine($line);
+        } catch (\Error $e) {
+            var_dump($e->getMessage());
+            throw new MalformedInputException('Cannot process Transaction-related line before processing the main Transaction line.');
+        }
     }
 
 }
