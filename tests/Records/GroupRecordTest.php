@@ -243,8 +243,26 @@ final class GroupRecordTest extends TestCase
         $fileRecord->getNumberOfAccounts();
     }
 
-    // TODO(zmd): public function testGetNumberOfRecords(): void {}
-    // TODO(zmd): public function testGetNumberOfRecordsMissing(): void {}
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetNumberOfRecords(array $inputLines): void
+    {
+        $this->withRecord($inputLines, null, function ($groupRecord) {
+            $this->assertEquals('6', $groupRecord->getNumberOfRecords());
+        });
+    }
+
+    public function testGetNumberOfRecordsMissing(): void
+    {
+        $fileRecord = new GroupRecord(physicalRecordLength: null);
+        $fileRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
+        $fileRecord->parseLine('98,10000,2,/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse Group Trailer Field. Invalid field type: ');
+        $fileRecord->getNumberOfRecords();
+    }
 
     // -- test overall functionality -------------------------------------------
 

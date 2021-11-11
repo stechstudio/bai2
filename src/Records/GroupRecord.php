@@ -83,6 +83,11 @@ class GroupRecord
         return $this->trailerField('numberOfAccounts');
     }
 
+    public function getNumberOfRecords(): ?string
+    {
+        return $this->trailerField('numberOfRecords');
+    }
+
     // -- helper methods -------------------------------------------------------
 
     protected function headerField(string $fieldKey): null|string|int
