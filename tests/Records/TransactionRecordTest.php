@@ -251,7 +251,14 @@ final class TransactionRecordTest extends TestCase
         $txnRecord->parseLine('88,D,3/');
     }
 
-    // TODO(zmd): public function testTryingToProcessUnknownRecordType(): void {}
+    public function testTryingToProcessUnknownRecordType(): void
+    {
+        $txnRecord = new TransactionRecord(physicalRecordLength: null);
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage("Encountered an unknown record type code. Whatever we're seeing, it's not part of the BAI2 specification!");
+        $txnRecord->parseLine('17,haha,as if there is a 17 record type!');
+    }
 
     /**
      * @dataProvider gettersProducer

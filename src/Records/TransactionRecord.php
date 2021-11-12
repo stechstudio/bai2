@@ -96,7 +96,7 @@ class TransactionRecord
 
     protected function processUnknown(): void
     {
-        // TODO(zmd): implement me; make it go BANG!!
+        throw new MalformedInputException("Encountered an unknown record type code. Whatever we're seeing, it's not part of the BAI2 specification!");
     }
 
 }
