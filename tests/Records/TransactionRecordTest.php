@@ -21,10 +21,11 @@ final class TransactionRecordTest extends TestCase
 
     public function inputLinesProducer(): array
     {
-        // TODO(zmd): finish implementing me
         return [
             [[
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0042,WELCOME TO THE NEVERHOOD'
             ]],
+            // TODO(zmd): finish implementing me
         ];
     }
 
@@ -37,9 +38,12 @@ final class TransactionRecordTest extends TestCase
         ];
     }
 
-    protected function withRecord(array $input, callable $callable): void
-    {
-        $record = new TransactionRecord();
+    protected function withRecord(
+        array $input,
+        ?int $physicalRecordLength,
+        callable $callable
+    ): void {
+        $record = new TransactionRecord(physicalRecordLength: $physicalRecordLength);
 
         foreach ($input as $line) {
             $record->parseLine($line);
@@ -50,8 +54,25 @@ final class TransactionRecordTest extends TestCase
 
     // -- test field getters ---------------------------------------------------
 
-    // TODO(zmd): public function testGetTypeCode(): void {}
-    // TODO(zmd): public function testGetTypeCodeMissing(): void {}
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetTypeCode(array $inputLines): void
+    {
+        $this->withRecord($inputLines, null, function ($txnRecord) {
+            $this->assertEquals('409', $txnRecord->getTypeCode());
+        });
+    }
+
+    public function testGetTypeCodeMissing(): void
+    {
+        $txnRecord = new TransactionRecord(physicalRecordLength: null);
+        $txnRecord->parseLine('16,,10000,D,3,1,1000,5,10000,30,25000,1337,0042,WELCOME TO THE NEVERHOOD');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse Transaction Field. Invalid field type: ');
+        $txnRecord->getTypeCode();
+    }
 
     // TODO(zmd): public function testGetAmount(): void {}
     // TODO(zmd): public function testGetAmountDefaulted(): void {}

@@ -15,7 +15,7 @@ use STS\Bai2\Exceptions\ParseException;
 class TransactionRecord
 {
 
-    protected TransactionParser $recordParser;
+    protected TransactionParser $parser;
 
     public function __construct(protected ?int $physicalRecordLength)
     {
@@ -32,14 +32,17 @@ class TransactionRecord
 
     // -- getters --------------------------------------------------------------
 
-    // TODO(zmd): implement getters
+    public function getTypeCode(): string
+    {
+        return $this->field('typeCode');
+    }
 
     // -- helper methods -------------------------------------------------------
 
-    protected function recordField(string $fieldKey): null|string|int
+    protected function field(string $fieldKey): null|string|int
     {
         try {
-            return $this->recordParser[$fieldKey];
+            return $this->parser[$fieldKey];
         } catch (\Error) {
             throw new MalformedInputException('Cannot access a field prior to reading an incoming Transaction line.');
         } catch (InvalidTypeException $e) {
@@ -51,16 +54,16 @@ class TransactionRecord
 
     protected function processRecord(string $recordCode, string $line): void
     {
-        $this->recordParser = new TransactionParser(
+        $this->parser = new TransactionParser(
             physicalRecordLength: $this->physicalRecordLength,
         );
-        $this->recordParser->pushLine($line);
+        $this->parser->pushLine($line);
     }
 
     protected function processContinuation(string $line): void
     {
-        if (isset($this->recordParser)) {
-            $this->recordParser->pushLine($line);
+        if (isset($this->parser)) {
+            $this->parser->pushLine($line);
         } else {
             throw new MalformedInputException('Cannot process a continuation without first processing something that can be continued.');
         }
