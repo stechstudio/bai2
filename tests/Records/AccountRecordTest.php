@@ -246,7 +246,7 @@ final class AccountRecordTest extends TestCase
     {
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
-        $this->withRecord($inputLines, 80, function ($groupRecord) {});
+        $this->withRecord($inputLines, 80, function ($accountRecord) {});
     }
 
     /**

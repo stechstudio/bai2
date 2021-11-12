@@ -39,9 +39,27 @@ final class TransactionRecordTest extends TestCase
 
     public function inputLinesTooLongProducer(): array
     {
-        // TODO(zmd): finish implementing me
         return [
             [[
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0042,WELCOME TO THE NEVERHOOD, WHERE KLAY ROAMS FREE'
+            ]],
+            [[
+                '16,409,10000/--------------------------------------------------------------------',
+                '88,D,3/',
+                '88,1,1000/',
+                '88,5,10000/',
+                '88,30,25000/',
+                '88,1337,0042/',
+                '88,WELCOME TO THE NEVERHOOD'
+            ]],
+            [[
+                '16,409,10000/',
+                '88,D,3/',
+                '88,1,1000/',
+                '88,5,10000/',
+                '88,30,25000/---------------------------------------------------------------------',
+                '88,1337,0042/',
+                '88,WELCOME TO THE NEVERHOOD'
             ]],
         ];
     }
@@ -197,7 +215,15 @@ final class TransactionRecordTest extends TestCase
 
     // -- test overall error handling ------------------------------------------
 
-    // TODO(zmd): public function testPhysicalRecordLengthEnforced(): void {}
+    /**
+     * @dataProvider inputLinesTooLongProducer
+     */
+    public function testPhysicalRecordLengthEnforced(array $inputLines): void
+    {
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
+        $this->withRecord($inputLines, 80, function ($txnRecord) {});
+    }
 
     // TODO(zmd): public function testFieldAccessWhenRecordNeverProcessed(): void {}
 
