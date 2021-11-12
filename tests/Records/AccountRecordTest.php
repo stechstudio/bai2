@@ -275,7 +275,14 @@ final class AccountRecordTest extends TestCase
         $accountRecord->$trailerGetterMethod();
     }
 
-    // TODO(zmd): public function testTryingToParseContinuationOutOfTurn(): void {}
+    public function testTryingToParseContinuationOutOfTurn(): void
+    {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot process a continuation without first processing something that can be continued.');
+        $accountRecord->parseLine('88,010,500000,,/');
+    }
 
     // TODO(zmd): public function testTryingToProcessUnknownRecordType(): void {}
 
