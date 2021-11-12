@@ -52,6 +52,11 @@ class TransactionRecord
         return $this->field('bankReferenceNumber');
     }
 
+    public function getCustomerReferenceNumber(): ?string
+    {
+        return $this->field('customerReferenceNumber');
+    }
+
     // -- helper methods -------------------------------------------------------
 
     protected function field(string $fieldKey): null|string|int|array
