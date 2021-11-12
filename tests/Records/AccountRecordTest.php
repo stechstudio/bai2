@@ -335,6 +335,18 @@ final class AccountRecordTest extends TestCase
         $accountRecord->$headerGetterMethod();
     }
 
-    // TODO(zmd): public function testTryingToProcessMalformedTrailer(): void {}
+    /**
+     * @dataProvider trailerGettersProducer
+     */
+    public function testTryingToProcessMalformedTrailer(
+        string $trailerGetterMethod
+    ): void {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+        $accountRecord->parseLine('49,70520000,4');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Account Trailer field from an incomplete or malformed Account Trailer line.');
+        $accountRecord->$trailerGetterMethod();
+    }
 
 }
