@@ -396,7 +396,6 @@ final class GroupRecordTest extends TestCase
     public function testTryingToProcessChildLineBeforeChildInitialized(): void
     {
         $groupRecord = new GroupRecord(physicalRecordLength: null);
-        $groupRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
 
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Cannot process Account Trailer or Transaction-related line before processing the Account Header line.');
@@ -424,7 +423,6 @@ final class GroupRecordTest extends TestCase
         string $trailerGetterMethod
     ): void {
         $groupRecord = new GroupRecord(physicalRecordLength: null);
-        $groupRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
         $groupRecord->parseLine('98,10000/');
 
         $this->expectException(MalformedInputException::class);
@@ -453,7 +451,6 @@ final class GroupRecordTest extends TestCase
         string $trailerGetterMethod
     ): void {
         $groupRecord = new GroupRecord(physicalRecordLength: null);
-        $groupRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
         $groupRecord->parseLine('98,10000,2,6');
 
         $this->expectException(MalformedInputException::class);
