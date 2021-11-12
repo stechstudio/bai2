@@ -31,9 +31,7 @@ final class AccountRecordTest extends TestCase
     {
         return [
             [[
-                '03,0001,USD,'
-                    . '010,500000,,,'
-                    . '190,70000000,4,0/',
+                '03,0001,USD,010,500000,,,190,70000000,4,0/',
                 '16,409,10000,0,123456789,987654321,SOME TEXT',
                 '16,409,10000,2,123456789,987654321,SOME TEXT',
                 '49,70520000,4/',
@@ -54,9 +52,46 @@ final class AccountRecordTest extends TestCase
 
     public function inputLinesTooLongProducer(): array
     {
-        // TODO(zmd): finish implementing me
         return [
             [[
+                '03,0001,USD,010,500000,,,190,70000000,4,0/---------------------------------------',
+                '16,409,10000,0,123456789,987654321,SOME TEXT',
+                '16,409,10000,2,123456789,987654321,SOME TEXT',
+                '49,70520000,4/',
+            ]],
+            [[
+                '03,0001,USD,010,500000,,,190,70000000,4,0/',
+                '16,409,10000,0,123456789,987654321,SOME TEXT',
+                '16,409,10000,2,123456789,987654321,SOME TEXT',
+                '49,70520000,4/-------------------------------------------------------------------',
+            ]],
+            [[
+                '03,0001,USD/',
+                '88,010,500000,,/-----------------------------------------------------------------',
+                '88,190,70000000,4,0/',
+                '16,409,10000,0/',
+                '88,123456789,987654321,SOME TEXT',
+                '16,409,10000,2,123456789/',
+                '88,987654321,SOME TEXT',
+                '49,70520000/',
+                '88,4/',
+            ]],
+            [[
+                '03,0001,USD/',
+                '88,010,500000,,/',
+                '88,190,70000000,4,0/',
+                '16,409,10000,0/',
+                '88,123456789,987654321,SOME TEXT',
+                '16,409,10000,2,123456789/',
+                '88,987654321,SOME TEXT',
+                '49,70520000/',
+                '88,4/----------------------------------------------------------------------------',
+            ]],
+            [[
+                '03,0001,USD,010,500000,,,190,70000000,4,0/',
+                '16,409,10000,0,123456789,987654321,SOMETIMES I CALL THEM POTATO BUGS, SOMETIMES I CALL THEM PILLBUGS, AND OFTENTIMES I CALL THEM SOWBUGS, BUT NEVER EVER DO I CALL THEM ROLY-POLYS',
+                '16,409,10000,2,123456789,987654321,SOME TEXT',
+                '49,70520000,4/',
             ]],
         ];
     }
@@ -203,7 +238,15 @@ final class AccountRecordTest extends TestCase
 
     // -- test overall error handling ------------------------------------------
 
-    // TODO(zmd): public function testPhysicalRecordLengthEnforced(): void {}
+    /**
+     * @dataProvider inputLinesTooLongProducer
+     */
+    public function testPhysicalRecordLengthEnforced(array $inputLines): void
+    {
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Input line length exceeds requested physical record length.');
+        $this->withRecord($inputLines, 80, function ($groupRecord) {});
+    }
 
     // TODO(zmd): public function testHeaderFieldAccessWhenHeaderNeverProcessed(): void {}
 
