@@ -233,6 +233,16 @@ final class AccountRecordTest extends TestCase
         $accountRecord->getNumberOfRecords();
     }
 
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetTransactions(array $inputLines): void
+    {
+        $this->withRecord($inputLines, null, function ($accountRecord) {
+            $this->assertEquals(2, count($accountRecord->getTransactions()));
+        });
+    }
+
     // -- test overall functionality -------------------------------------------
 
     // TODO(zmd): test ::toArray()

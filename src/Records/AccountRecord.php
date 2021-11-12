@@ -65,6 +65,11 @@ class AccountRecord
         return $this->trailerField('numberOfRecords');
     }
 
+    public function getTransactions(): array
+    {
+        return $this->transactions;
+    }
+
     // -- helper methods -------------------------------------------------------
 
     protected function headerField(string $fieldKey): null|string|int|array
