@@ -60,6 +60,11 @@ class AccountRecord
         return $this->trailerField('accountControlTotal');
     }
 
+    public function getNumberOfRecords(): int
+    {
+        return $this->trailerField('numberOfRecords');
+    }
+
     // -- helper methods -------------------------------------------------------
 
     protected function headerField(string $fieldKey): null|string|int|array
