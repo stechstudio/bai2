@@ -321,7 +321,19 @@ final class AccountRecordTest extends TestCase
         $accountRecord->$trailerGetterMethod();
     }
 
-    // TODO(zmd): public function testTryingToProcessMalformedHeader(): void {}
+    /**
+     * @dataProvider headerGettersProducer
+     */
+    public function testTryingToProcessMalformedHeader(
+        string $headerGetterMethod
+    ): void {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+        $accountRecord->parseLine('03,0001,USD,010,500000,,,190,70000000,4,0');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Account Identifier and Summary Status field from an incomplete or malformed Account Identifier and Summary Status line.');
+        $accountRecord->$headerGetterMethod();
+    }
 
     // TODO(zmd): public function testTryingToProcessMalformedTrailer(): void {}
 
