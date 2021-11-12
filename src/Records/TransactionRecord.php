@@ -47,6 +47,11 @@ class TransactionRecord
         return $this->field('fundsType');
     }
 
+    public function getBankReferenceNumber(): ?string
+    {
+        return $this->field('bankReferenceNumber');
+    }
+
     // -- helper methods -------------------------------------------------------
 
     protected function field(string $fieldKey): null|string|int|array

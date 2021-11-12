@@ -123,8 +123,23 @@ final class TransactionRecordTest extends TestCase
         );
     }
 
-    // TODO(zmd): public function testGetBankReferenceNumber(): void {}
-    // TODO(zmd): public function testGetBankReferenceNumberDefaulted(): void {}
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetBankReferenceNumber(array $inputLines): void
+    {
+        $this->withRecord($inputLines, null, function ($txnRecord) {
+            $this->assertEquals('1337', $txnRecord->getBankReferenceNumber());
+        });
+    }
+
+    public function testGetBankReferenceNumberDefaulted(): void
+    {
+        $txnRecord = new TransactionRecord(physicalRecordLength: null);
+        $txnRecord->parseLine('16,409,10000,D,3,1,1000,5,10000,30,25000,,0042,WELCOME TO THE NEVERHOOD');
+
+        $this->assertNull($txnRecord->getBankReferenceNumber());
+    }
 
     // TODO(zmd): public function testGetCustomerReferenceNumber(): void {}
     // TODO(zmd): public function testGetCustomerReferenceNumberDefaulted(): void {}
