@@ -134,7 +134,6 @@ class AccountRecord
         try {
             $this->currentChild->parseLine($line);
         } catch (\Error $e) {
-            var_dump($e->getMessage());
             throw new MalformedInputException('Cannot process Transaction-related line before processing the main Transaction line.');
         }
     }

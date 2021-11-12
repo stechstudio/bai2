@@ -284,7 +284,14 @@ final class AccountRecordTest extends TestCase
         $accountRecord->parseLine('88,010,500000,,/');
     }
 
-    // TODO(zmd): public function testTryingToProcessUnknownRecordType(): void {}
+    public function testTryingToProcessChildLineBeforeChildInitialized(): void
+    {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot process Transaction-related line before processing the main Transaction line.');
+        $accountRecord->parseLine('17,haha,as if there is a 17 record type,but how would AccountRecord know? :P');
+    }
 
     // TODO(zmd): public function testTryingToProcessIncompleteHeader(): void {}
 
