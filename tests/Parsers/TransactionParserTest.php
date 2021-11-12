@@ -886,7 +886,7 @@ final class TransactionParserTest extends RecordParserTestCase
     public function testTextOptional(): void
     {
         $this->parser->pushLine('16,409,,0,123456789,,/');
-        $this->assertNull($this->parser['customerReferenceNumber']);
+        $this->assertNull($this->parser['text']);
     }
 
     public function testTextInvalid(): void

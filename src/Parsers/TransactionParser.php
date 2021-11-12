@@ -59,11 +59,8 @@ final class TransactionParser extends AbstractRecordParser
                  ->match('/^[[:alnum:]]+$/', 'must be alpha-numeric when provided')
                  ->string(default: null);
 
-        try {
-            $this->parsed['text'] = $this->getParser()->shiftText();
-        } catch (ParseException) {
-            throw new InvalidTypeException('Invalid field type: "Text" mustn\'t begin with slash, and MUST end with slash if defaulted.');
-        }
+        $this->parsed['text'] =
+            $this->shiftAndParseTextField();
 
         return $this;
     }
@@ -90,6 +87,16 @@ final class TransactionParser extends AbstractRecordParser
                  ->int(default: null);
 
         $this->parsed['fundsType'] = $this->shiftAndParseFundsType();
+    }
+
+    protected function shiftAndParseTextField(): ?string
+    {
+        try {
+            $text = $this->getParser()->shiftText();
+            return $text === '' ? null : $text;
+        } catch (ParseException) {
+            throw new InvalidTypeException('Invalid field type: "Text" mustn\'t begin with slash, and MUST end with slash if defaulted.');
+        }
     }
 
 }
