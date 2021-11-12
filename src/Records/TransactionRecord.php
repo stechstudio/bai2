@@ -37,6 +37,11 @@ class TransactionRecord
         return $this->field('typeCode');
     }
 
+    public function getAmount(): ?int
+    {
+        return $this->field('amount');
+    }
+
     // -- helper methods -------------------------------------------------------
 
     protected function field(string $fieldKey): null|string|int

@@ -74,8 +74,23 @@ final class TransactionRecordTest extends TestCase
         $txnRecord->getTypeCode();
     }
 
-    // TODO(zmd): public function testGetAmount(): void {}
-    // TODO(zmd): public function testGetAmountDefaulted(): void {}
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetAmount(array $inputLines): void
+    {
+        $this->withRecord($inputLines, null, function ($txnRecord) {
+            $this->assertEquals('10000', $txnRecord->getAmount());
+        });
+    }
+
+    public function testGetAmountDefaulted(): void
+    {
+        $txnRecord = new TransactionRecord(physicalRecordLength: null);
+        $txnRecord->parseLine('16,409,,D,3,1,1000,5,10000,30,25000,1337,0042,WELCOME TO THE NEVERHOOD');
+
+        $this->assertNull($txnRecord->getAmount());
+    }
 
     // TODO(zmd): public function testGetFundsType(): void {}
     // TODO(zmd): public function testGetFundsTypeDefaulted(): void {}
