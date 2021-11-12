@@ -267,6 +267,18 @@ final class TransactionRecordTest extends TestCase
         $txnRecord->$getterMethod();
     }
 
-    // TODO(zmd): public function testTryingToProcessMalformedRecord(): void {}
+    /**
+     * @dataProvider gettersProducer
+     */
+    public function testTryingToProcessMalformedRecord(
+        string $getterMethod
+    ): void {
+        $txnRecord = new TransactionRecord(physicalRecordLength: null);
+        $txnRecord->parseLine('16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0042');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Transaction field from an incomplete or malformed Transaction line.');
+        $txnRecord->$getterMethod();
+    }
 
 }
