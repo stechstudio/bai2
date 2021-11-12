@@ -293,7 +293,19 @@ final class AccountRecordTest extends TestCase
         $accountRecord->parseLine('17,haha,as if there is a 17 record type,but how would AccountRecord know? :P');
     }
 
-    // TODO(zmd): public function testTryingToProcessIncompleteHeader(): void {}
+    /**
+     * @dataProvider headerGettersProducer
+     */
+    public function testTryingToProcessIncompleteHeader(
+        string $headerGetterMethod
+    ): void {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+        $accountRecord->parseLine('03,0001,USD/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Account Identifier and Summary Status field from an incomplete or malformed Account Identifier and Summary Status line.');
+        $accountRecord->$headerGetterMethod();
+    }
 
     // TODO(zmd): public function testTryingToProcessIncompleteTrailer(): void {}
 
