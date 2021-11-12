@@ -342,6 +342,16 @@ final class GroupRecordTest extends TestCase
         $groupRecord->getNumberOfRecords();
     }
 
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetAccounts(array $inputLines): void
+    {
+        $this->withRecord($inputLines, null, function ($groupRecord) {
+            $this->assertEquals(2, count($groupRecord->getAccounts()));
+        });
+    }
+
     // -- test overall functionality -------------------------------------------
 
     // TODO(zmd): test ::toArray()
