@@ -92,8 +92,36 @@ final class TransactionRecordTest extends TestCase
         $this->assertNull($txnRecord->getAmount());
     }
 
-    // TODO(zmd): public function testGetFundsType(): void {}
-    // TODO(zmd): public function testGetFundsTypeDefaulted(): void {}
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetFundsType(array $inputLines): void
+    {
+        $this->withRecord($inputLines, null, function ($txnRecord) {
+            $this->assertEquals(
+                [
+                    'distributionOfAvailability' => 'D',
+                    'availability' => [
+                         1 =>  1000,
+                         5 => 10000,
+                        30 => 25000,
+                    ]
+                ],
+                $txnRecord->getFundsType()
+            );
+        });
+    }
+
+    public function testGetFundsTypeDefaulted(): void
+    {
+        $txnRecord = new TransactionRecord(physicalRecordLength: null);
+        $txnRecord->parseLine('16,409,10000,,1337,0042,WELCOME TO THE NEVERHOOD');
+
+        $this->assertEquals(
+            ['distributionOfAvailability' => null],
+            $txnRecord->getFundsType()
+        );
+    }
 
     // TODO(zmd): public function testGetBankReferenceNumber(): void {}
     // TODO(zmd): public function testGetBankReferenceNumberDefaulted(): void {}

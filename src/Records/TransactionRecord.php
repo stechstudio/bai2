@@ -42,9 +42,14 @@ class TransactionRecord
         return $this->field('amount');
     }
 
+    public function getFundsType(): array
+    {
+        return $this->field('fundsType');
+    }
+
     // -- helper methods -------------------------------------------------------
 
-    protected function field(string $fieldKey): null|string|int
+    protected function field(string $fieldKey): null|string|int|array
     {
         try {
             return $this->parser[$fieldKey];
