@@ -25,7 +25,15 @@ final class TransactionRecordTest extends TestCase
             [[
                 '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0042,WELCOME TO THE NEVERHOOD'
             ]],
-            // TODO(zmd): finish implementing me
+            [[
+                '16,409,10000/',
+                '88,D,3/',
+                '88,1,1000/',
+                '88,5,10000/',
+                '88,30,25000/',
+                '88,1337,0042/',
+                '88,WELCOME TO THE NEVERHOOD'
+            ]],
         ];
     }
 
