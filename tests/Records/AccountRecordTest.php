@@ -13,9 +13,10 @@ final class AccountRecordTest extends TestCase
 
     public function headerGettersProducer(): array
     {
-        // TODO(zmd): finish implementing me
         return [
-            [],
+            ['getCustomerAccountNumber'],
+            ['getCurrencyCode'],
+            ['getSummaryAndStatusInformation'],
         ];
     }
 
@@ -248,7 +249,18 @@ final class AccountRecordTest extends TestCase
         $this->withRecord($inputLines, 80, function ($groupRecord) {});
     }
 
-    // TODO(zmd): public function testHeaderFieldAccessWhenHeaderNeverProcessed(): void {}
+    /**
+     * @dataProvider headerGettersProducer
+     */
+    public function testHeaderFieldAccessWhenHeaderNeverProcessed(
+        string $headerGetterMethod
+    ): void {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Account Identifier and Summary Status field prior to reading an incoming Account Identifier and Summary Status line.');
+        $accountRecord->$headerGetterMethod();
+    }
 
     // TODO(zmd): public function testTrailerFieldAccessWhenTrailerNeverProcessed(): void {}
 
