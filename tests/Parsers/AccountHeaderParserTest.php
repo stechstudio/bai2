@@ -6,6 +6,7 @@ namespace STS\Bai2\Parsers;
 
 use STS\Bai2\Tests\Parsers\RecordParserTestCase;
 
+use STS\Bai2\Exceptions\ParseException;
 use STS\Bai2\Exceptions\InvalidTypeException;
 
 /**
@@ -690,6 +691,14 @@ final class AccountHeaderParserTest extends RecordParserTestCase
     public function testSummaryAndStatusInformationTypeCodeOptional(): void {
         $this->parser->pushLine('03,0975312468,,,,,/');
         $this->assertEquals([], $this->parser['summaryAndStatusInformation']);
+    }
+
+    public function testSummaryAndStatusInformationTypeCodeMustBeDefaultedIfOmitted(): void {
+        $this->parser->pushLine('03,0975312468,USD/');
+
+        $this->expectException(ParseException::class);
+        $this->expectExceptionMessage('Cannot access fields at the end of the buffer.');
+        $this->parser['summaryAndStatusInformation'];
     }
 
     /**
