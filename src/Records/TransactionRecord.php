@@ -69,11 +69,11 @@ class TransactionRecord
         try {
             return $this->parser[$fieldKey];
         } catch (\Error) {
-            throw new MalformedInputException('Cannot access a field prior to reading an incoming Transaction line.');
+            throw new MalformedInputException('Cannot access a Transaction field prior to reading an incoming Transaction line.');
         } catch (InvalidTypeException $e) {
             throw new MalformedInputException("Encountered issue trying to parse Transaction Field. {$e->getMessage()}");
         } catch (ParseException) {
-            throw new MalformedInputException('Cannot access a field from an incomplete or malformed Transaction line.');
+            throw new MalformedInputException('Cannot access a Transaction field from an incomplete or malformed Transaction line.');
         }
     }
 

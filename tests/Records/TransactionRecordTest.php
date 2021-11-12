@@ -13,9 +13,13 @@ final class TransactionRecordTest extends TestCase
 
     public function gettersProducer(): array
     {
-        // TODO(zmd): finish implementing me
         return [
-            [],
+            ['getTypeCode'],
+            ['getAmount'],
+            ['getFundsType'],
+            ['getBankReferenceNumber'],
+            ['getCustomerReferenceNumber'],
+            ['getText'],
         ];
     }
 
@@ -225,7 +229,18 @@ final class TransactionRecordTest extends TestCase
         $this->withRecord($inputLines, 80, function ($txnRecord) {});
     }
 
-    // TODO(zmd): public function testFieldAccessWhenRecordNeverProcessed(): void {}
+    /**
+     * @dataProvider gettersProducer
+     */
+    public function testFieldAccessWhenRecordNeverProcessed(
+        string $getterMethod
+    ): void {
+        $txnRecord = new TransactionRecord(physicalRecordLength: null);
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Transaction field prior to reading an incoming Transaction line.');
+        $txnRecord->$getterMethod();
+    }
 
     // TODO(zmd): public function testTryingToParseContinuationOutOfTurn(): void {}
 
