@@ -22,9 +22,9 @@ final class AccountRecordTest extends TestCase
 
     public function trailerGettersProducer(): array
     {
-        // TODO(zmd): finish implementing me
         return [
-            [],
+            ['getAccountControlTotal'],
+            ['getNumberOfRecords'],
         ];
     }
 
@@ -262,7 +262,18 @@ final class AccountRecordTest extends TestCase
         $accountRecord->$headerGetterMethod();
     }
 
-    // TODO(zmd): public function testTrailerFieldAccessWhenTrailerNeverProcessed(): void {}
+    /**
+     * @dataProvider trailerGettersProducer
+     */
+    public function testTrailerFieldAccessWhenTrailerNeverProcessed(
+        string $trailerGetterMethod
+    ): void {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Account Trailer field prior to reading an incoming Account Trailer line.');
+        $accountRecord->$trailerGetterMethod();
+    }
 
     // TODO(zmd): public function testTryingToParseContinuationOutOfTurn(): void {}
 
