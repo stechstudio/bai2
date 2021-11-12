@@ -242,7 +242,14 @@ final class TransactionRecordTest extends TestCase
         $txnRecord->$getterMethod();
     }
 
-    // TODO(zmd): public function testTryingToParseContinuationOutOfTurn(): void {}
+    public function testTryingToParseContinuationOutOfTurn(): void
+    {
+        $txnRecord = new TransactionRecord(physicalRecordLength: null);
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot process a continuation without first processing something that can be continued.');
+        $txnRecord->parseLine('88,D,3/');
+    }
 
     // TODO(zmd): public function testTryingToProcessUnknownRecordType(): void {}
 
