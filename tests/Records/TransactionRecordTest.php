@@ -162,8 +162,26 @@ final class TransactionRecordTest extends TestCase
         $this->assertNull($txnRecord->getCustomerReferenceNumber());
     }
 
-    // TODO(zmd): public function testGetText(): void {}
-    // TODO(zmd): public function testGetTextDefaulted(): void {}
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testGetText(array $inputLines): void
+    {
+        $this->withRecord($inputLines, null, function ($txnRecord) {
+            $this->assertEquals(
+                'WELCOME TO THE NEVERHOOD',
+                $txnRecord->getText()
+            );
+        });
+    }
+
+    public function testGetTextDefaulted(): void
+    {
+        $txnRecord = new TransactionRecord(physicalRecordLength: null);
+        $txnRecord->parseLine('16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0042,/');
+
+        $this->assertNull($txnRecord->getText());
+    }
 
     // -- test overall functionality -------------------------------------------
 

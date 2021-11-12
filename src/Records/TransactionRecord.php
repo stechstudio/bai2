@@ -57,6 +57,11 @@ class TransactionRecord
         return $this->field('customerReferenceNumber');
     }
 
+    public function getText(): ?string
+    {
+        return $this->field('text');
+    }
+
     // -- helper methods -------------------------------------------------------
 
     protected function field(string $fieldKey): null|string|int|array
