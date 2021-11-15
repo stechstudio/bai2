@@ -365,9 +365,13 @@ final class FileRecordTest extends TestCase
 
     // TODO(zmd): public function testToArrayWhenFieldDefaulted(): void {}
 
-    // TODO(zmd): public function testToArrayWhenFieldInvalid(): void {}
+    // TODO(zmd): public function testToArrayWhenHeaderFieldInvalid(): void {}
 
-    // TODO(zmd): public function testToArrayWhenRequiredFieldMissing(): void {}
+    // TODO(zmd): public function testToArrayWhenTrailerFieldInvalid(): void {}
+
+    // TODO(zmd): public function testToArrayWhenRequiredHeaderFieldMissing(): void {}
+
+    // TODO(zmd): public function testToArrayWhenRequiredTrailerFieldMissing(): void {}
 
     // TODO(zmd): public function testToArrayWhenHeaderNeverProcessed(): void {}
 

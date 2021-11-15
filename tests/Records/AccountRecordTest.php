@@ -328,21 +328,110 @@ final class AccountRecordTest extends TestCase
         );
     }
 
-    // TODO(zmd): public function testToArrayWhenFieldInvalid(): void {}
+    public function testToArrayWhenHeaderFieldInvalid(): void
+    {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+        $accountRecord->parseLine('03,0001,USDDD,010,500000,,,190,70000000,4,0/');
+        $accountRecord->parseLine('49,70520000,4/');
 
-    // TODO(zmd): public function testToArrayWhenRequiredFieldMissing(): void {}
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse Account Identifier and Summary Status Field. Invalid field type: ');
+        $accountRecord->toArray();
+    }
 
-    // TODO(zmd): public function testToArrayWhenHeaderNeverProcessed(): void {}
+    public function testToArrayWhenTrailerFieldInvalid(): void
+    {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+        $accountRecord->parseLine('03,0001,USD,010,500000,,,190,70000000,4,0/');
+        $accountRecord->parseLine('49,$70520000.00,4/');
 
-    // TODO(zmd): public function testToArrayWhenTrailerNeverProcessed(): void {}
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse Account Trailer Field. Invalid field type: ');
+        $accountRecord->toArray();
+    }
 
-    // TODO(zmd): public function testToArrayWhenHeaderIncomplete(): void {}
+    public function testToArrayWhenRequiredHeaderFieldMissing(): void
+    {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+        $accountRecord->parseLine('03,,USD,010,500000,,,190,70000000,4,0/');
+        $accountRecord->parseLine('49,70520000,4/');
 
-    // TODO(zmd): public function testToArrayWhenTrailerIncomplete(): void {}
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse Account Identifier and Summary Status Field. Invalid field type: ');
+        $accountRecord->toArray();
+    }
 
-    // TODO(zmd): public function testToArrayWhenHeaderMalformed(): void {}
+    public function testToArrayWhenRequiredTrailerFieldMissing(): void
+    {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+        $accountRecord->parseLine('03,0001,USD,010,500000,,,190,70000000,4,0/');
+        $accountRecord->parseLine('49,,4/');
 
-    // TODO(zmd): public function testToArrayWhenTrailerMalformed(): void {}
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse Account Trailer Field. Invalid field type: ');
+        $accountRecord->toArray();
+    }
+
+    public function testToArrayWhenHeaderNeverProcessed(): void
+    {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Account Identifier and Summary Status field prior to reading an incoming Account Identifier and Summary Status line.');
+        $accountRecord->toArray();
+    }
+
+    public function testToArrayWhenTrailerNeverProcessed(): void
+    {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+        $accountRecord->parseLine('03,0001,USD,010,500000,,,190,70000000,4,0/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Account Trailer field prior to reading an incoming Account Trailer line.');
+        $accountRecord->toArray();
+    }
+
+    public function testToArrayWhenHeaderIncomplete(): void
+    {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+        $accountRecord->parseLine('03,0001,USD/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Account Identifier and Summary Status field from an incomplete or malformed Account Identifier and Summary Status line.');
+        $accountRecord->toArray();
+    }
+
+    public function testToArrayWhenTrailerIncomplete(): void
+    {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+        $accountRecord->parseLine('03,0001,USD,010,500000,,,190,70000000,4,0/');
+        $accountRecord->parseLine('49,70520000/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Account Trailer field from an incomplete or malformed Account Trailer line.');
+        $accountRecord->toArray();
+    }
+
+    public function testToArrayWhenHeaderMalformed(): void
+    {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+        $accountRecord->parseLine('03,0001,USD,010,500000,,,190,70000000,4,0');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Account Identifier and Summary Status field from an incomplete or malformed Account Identifier and Summary Status line.');
+        $accountRecord->toArray();
+    }
+
+    public function testToArrayWhenTrailerMalformed(): void
+    {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+        $accountRecord->parseLine('03,0001,USD,010,500000,,,190,70000000,4,0/');
+        $accountRecord->parseLine('49,70520000,4');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Account Trailer field from an incomplete or malformed Account Trailer line.');
+        $accountRecord->toArray();
+    }
 
     // -- test overall error handling ------------------------------------------
 

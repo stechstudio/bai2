@@ -358,9 +358,13 @@ final class GroupRecordTest extends TestCase
 
     // TODO(zmd): public function testToArrayWhenFieldDefaulted(): void {}
 
-    // TODO(zmd): public function testToArrayWhenFieldInvalid(): void {}
+    // TODO(zmd): public function testToArrayWhenHeaderFieldDefaulted(): void {}
 
-    // TODO(zmd): public function testToArrayWhenRequiredFieldMissing(): void {}
+    // TODO(zmd): public function testToArrayWhenTrailerFieldDefaulted(): void {}
+
+    // TODO(zmd): public function testToArrayWhenRequiredHeaderFieldMissing(): void {}
+
+    // TODO(zmd): public function testToArrayWhenRequiredTrailerFieldMissing(): void {}
 
     // TODO(zmd): public function testToArrayWhenHeaderNeverProcessed(): void {}
 

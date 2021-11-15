@@ -40,8 +40,25 @@ class AccountRecord
 
     public function toArray(): array
     {
-        $headerArray = $this->headerParser->toArray();
-        $trailerArray = $this->trailerParser->toArray();
+        try {
+            $headerArray = $this->headerParser->toArray();
+        } catch (\Error) {
+            throw new MalformedInputException('Cannot access a Account Identifier and Summary Status field prior to reading an incoming Account Identifier and Summary Status line.');
+        } catch (InvalidTypeException $e) {
+            throw new MalformedInputException("Encountered issue trying to parse Account Identifier and Summary Status Field. {$e->getMessage()}");
+        } catch (ParseException) {
+            throw new MalformedInputException('Cannot access a Account Identifier and Summary Status field from an incomplete or malformed Account Identifier and Summary Status line.');
+        }
+
+        try {
+            $trailerArray = $this->trailerParser->toArray();
+        } catch (\Error) {
+            throw new MalformedInputException('Cannot access a Account Trailer field prior to reading an incoming Account Trailer line.');
+        } catch (InvalidTypeException $e) {
+            throw new MalformedInputException("Encountered issue trying to parse Account Trailer Field. {$e->getMessage()}");
+        } catch (ParseException) {
+            throw new MalformedInputException('Cannot access a Account Trailer field from an incomplete or malformed Account Trailer line.');
+        }
 
         $txnsArray = [
             'transactions' => array_map(
