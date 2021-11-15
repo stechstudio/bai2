@@ -9,11 +9,10 @@ use STS\Bai2\Bai2;
 use STS\Bai2\Parsers\TransactionParser;
 
 use STS\Bai2\Exceptions\MalformedInputException;
-use STS\Bai2\Exceptions\InvalidTypeException;
-use STS\Bai2\Exceptions\ParseException;
 
 class TransactionRecord extends AbstractRecord
 {
+    use TryableParserRecordTrait { tryParser as generalizedTryParser; }
 
     protected TransactionParser $parser;
 
@@ -79,15 +78,7 @@ class TransactionRecord extends AbstractRecord
 
     protected function tryParser(callable $cb): mixed
     {
-        try {
-            return $cb($this->parser);
-        } catch (\Error) {
-            throw new MalformedInputException('Cannot access a Transaction field prior to reading an incoming Transaction line.');
-        } catch (InvalidTypeException $e) {
-            throw new MalformedInputException("Encountered issue trying to parse Transaction Field. {$e->getMessage()}");
-        } catch (ParseException) {
-            throw new MalformedInputException('Cannot access a Transaction field from an incomplete or malformed Transaction line.');
-        }
+        return $this->generalizedTryParser('parser', 'Transaction', $cb);
     }
 
     protected function processRecord(string $recordCode, string $line): void

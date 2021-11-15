@@ -10,11 +10,10 @@ use STS\Bai2\Parsers\AccountHeaderParser;
 use STS\Bai2\Parsers\AccountTrailerParser;
 
 use STS\Bai2\Exceptions\MalformedInputException;
-use STS\Bai2\Exceptions\InvalidTypeException;
-use STS\Bai2\Exceptions\ParseException;
 
 class AccountRecord extends AbstractRecord
 {
+    use TryableParserRecordTrait;
 
     protected AccountHeaderParser $headerParser;
 
@@ -116,22 +115,6 @@ class AccountRecord extends AbstractRecord
             'Account Trailer',
             $cb
         );
-    }
-
-    protected function tryParser(
-        string $propertyName,
-        string $readableName,
-        callable $cb
-    ): mixed {
-        try {
-            return $cb($this->$propertyName);
-        } catch (\Error) {
-            throw new MalformedInputException("Cannot access a {$readableName} field prior to reading an incoming {$readableName} line.");
-        } catch (InvalidTypeException $e) {
-            throw new MalformedInputException("Encountered issue trying to parse {$readableName} Field. {$e->getMessage()}");
-        } catch (ParseException) {
-            throw new MalformedInputException("Cannot access a {$readableName} field from an incomplete or malformed {$readableName} line.");
-        }
     }
 
     protected function processHeader(string $recordCode, string $line): void
