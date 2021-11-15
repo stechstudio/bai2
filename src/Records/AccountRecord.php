@@ -38,6 +38,24 @@ class AccountRecord
         };
     }
 
+    public function toArray(): array
+    {
+        $headerArray = $this->headerParser->toArray();
+        $trailerArray = $this->trailerParser->toArray();
+
+        $txnsArray = [
+            'transactions' => array_map(
+                fn($txn) => $txn->toArray(),
+                $this->transactions
+            )
+        ];
+
+        $combinedArray = $headerArray + $trailerArray + $txnsArray;
+        unset($combinedArray['recordCode']);
+
+        return $combinedArray;
+    }
+
     // -- getters --------------------------------------------------------------
 
     public function getCustomerAccountNumber(): string

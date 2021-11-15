@@ -33,18 +33,18 @@ final class AccountRecordTest extends TestCase
         return [
             [[
                 '03,0001,USD,010,500000,,,190,70000000,4,0/',
-                '16,409,10000,0,123456789,987654321,SOME TEXT',
-                '16,409,10000,2,123456789,987654321,SOME TEXT',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0043,EARTHWORM JIM LAUNCHES COW',
                 '49,70520000,4/',
             ]],
             [[
                 '03,0001,USD/',
                 '88,010,500000,,/',
                 '88,190,70000000,4,0/',
-                '16,409,10000,0/',
-                '88,123456789,987654321,SOME TEXT',
-                '16,409,10000,2,123456789/',
-                '88,987654321,SOME TEXT',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000/',
+                '88,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000/',
+                '88,1337,0043,EARTHWORM JIM LAUNCHES COW',
                 '49,70520000/',
                 '88,4/',
             ]],
@@ -56,24 +56,24 @@ final class AccountRecordTest extends TestCase
         return [
             [[
                 '03,0001,USD,010,500000,,,190,70000000,4,0/---------------------------------------',
-                '16,409,10000,0,123456789,987654321,SOME TEXT',
-                '16,409,10000,2,123456789,987654321,SOME TEXT',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0043,EARTHWORM JIM LAUNCHES COW',
                 '49,70520000,4/',
             ]],
             [[
                 '03,0001,USD,010,500000,,,190,70000000,4,0/',
-                '16,409,10000,0,123456789,987654321,SOME TEXT',
-                '16,409,10000,2,123456789,987654321,SOME TEXT',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0043,EARTHWORM JIM LAUNCHES COW',
                 '49,70520000,4/-------------------------------------------------------------------',
             ]],
             [[
                 '03,0001,USD/',
                 '88,010,500000,,/-----------------------------------------------------------------',
                 '88,190,70000000,4,0/',
-                '16,409,10000,0/',
-                '88,123456789,987654321,SOME TEXT',
-                '16,409,10000,2,123456789/',
-                '88,987654321,SOME TEXT',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000/',
+                '88,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000/',
+                '88,1337,0043,EARTHWORM JIM LAUNCHES COW',
                 '49,70520000/',
                 '88,4/',
             ]],
@@ -81,17 +81,17 @@ final class AccountRecordTest extends TestCase
                 '03,0001,USD/',
                 '88,010,500000,,/',
                 '88,190,70000000,4,0/',
-                '16,409,10000,0/',
-                '88,123456789,987654321,SOME TEXT',
-                '16,409,10000,2,123456789/',
-                '88,987654321,SOME TEXT',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000/',
+                '88,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000/',
+                '88,1337,0043,EARTHWORM JIM LAUNCHES COW',
                 '49,70520000/',
                 '88,4/----------------------------------------------------------------------------',
             ]],
             [[
                 '03,0001,USD,010,500000,,,190,70000000,4,0/',
-                '16,409,10000,0,123456789,987654321,SOMETIMES I CALL THEM POTATO BUGS, SOMETIMES I CALL THEM PILLBUGS, AND OFTENTIMES I CALL THEM SOWBUGS, BUT NEVER EVER DO I CALL THEM ROLY-POLYS',
-                '16,409,10000,2,123456789,987654321,SOME TEXT',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0042,SOMETIMES I CALL THEM POTATO BUGS, SOMETIMES I CALL THEM PILLBUGS, AND OFTENTIMES I CALL THEM SOWBUGS, BUT NEVER EVER DO I CALL THEM ROLY-POLYS',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0043,EARTHWORM JIM LAUNCHES COW',
                 '49,70520000,4/',
             ]],
         ];
@@ -245,7 +245,69 @@ final class AccountRecordTest extends TestCase
 
     // -- test overall functionality -------------------------------------------
 
-    // TODO(zmd): public function testToArray(): void {}
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testToArray(array $inputLines): void
+    {
+        $this->withRecord($inputLines, null, function ($accountRecord) {
+            $this->assertEquals(
+                [
+                    'customerAccountNumber' => '0001',
+                    'currencyCode' => 'USD',
+                    'summaryAndStatusInformation' => [
+                        [
+                            'typeCode' => '010',
+                            'amount' => 500000,
+                        ],
+                        [
+                            'typeCode' => '190',
+                            'amount' => 70000000,
+                            'itemCount' => 4,
+                            'fundsType' => [
+                                'distributionOfAvailability' => '0'
+                            ],
+                        ],
+                    ],
+                    'accountControlTotal' => 70520000,
+                    'numberOfRecords' => 4,
+                    'transactions' => [
+                        [
+                            'typeCode' => '409',
+                            'amount' => 10000,
+                            'fundsType' => [
+                                'distributionOfAvailability' => 'D',
+                                'availability' => [
+                                     1 =>  1000,
+                                     5 => 10000,
+                                    30 => 25000,
+                                ]
+                            ],
+                            'bankReferenceNumber' => '1337',
+                            'customerReferenceNumber' => '0042',
+                            'text' => 'WELCOME TO THE NEVERHOOD',
+                        ],
+                        [
+                            'typeCode' => '409',
+                            'amount' => 10000,
+                            'fundsType' => [
+                                'distributionOfAvailability' => 'D',
+                                'availability' => [
+                                     1 =>  1000,
+                                     5 => 10000,
+                                    30 => 25000,
+                                ]
+                            ],
+                            'bankReferenceNumber' => '1337',
+                            'customerReferenceNumber' => '0043',
+                            'text' => 'EARTHWORM JIM LAUNCHES COW',
+                        ],
+                    ],
+                ],
+                $accountRecord->toArray()
+            );
+        });
+    }
 
     // TODO(zmd): public function testToArrayWhenFieldDefaulted(): void {}
 
