@@ -262,15 +262,54 @@ final class TransactionRecordTest extends TestCase
         );
     }
 
-    // TODO(zmd): public function testToArrayWhenFieldInvalid(): void {}
+    public function testToArrayWhenFieldInvalid(): void
+    {
+        $txnRecord = new TransactionRecord(physicalRecordLength: null);
+        $txnRecord->parseLine('16,409,$10000.00,D,3,1,1000,5,10000,30,25000,1337,0042,WELCOME TO THE NEVERHOOD');
 
-    // TODO(zmd): public function testToArrayWhenRequiredFieldMissing(): void {}
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse Transaction Field. Invalid field type: ');
+        $txnRecord->toArray();
+    }
 
-    // TODO(zmd): public function testToArrayWhenRecordNeverProcessed(): void {}
+    public function testToArrayWhenRequiredFieldMissing(): void
+    {
+        $txnRecord = new TransactionRecord(physicalRecordLength: null);
+        $txnRecord->parseLine('16,,10000,D,3,1,1000,5,10000,30,25000,1337,0042,WELCOME TO THE NEVERHOOD');
 
-    // TODO(zmd): public function testToArrayWhenRecordIncomplete(): void {}
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse Transaction Field. Invalid field type: ');
+        $txnRecord->toArray();
+    }
 
-    // TODO(zmd): public function testToArrayWhenRecordMalformed(): void {}
+    public function testToArrayWhenRecordNeverProcessed(): void
+    {
+        $txnRecord = new TransactionRecord(physicalRecordLength: null);
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Transaction field prior to reading an incoming Transaction line.');
+        $txnRecord->toArray();
+    }
+
+    public function testToArrayWhenRecordIncomplete(): void
+    {
+        $txnRecord = new TransactionRecord(physicalRecordLength: null);
+        $txnRecord->parseLine('16,409,10000/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Transaction field from an incomplete or malformed Transaction line.');
+        $txnRecord->toArray();
+    }
+
+    public function testToArrayWhenRecordMalformed(): void
+    {
+        $txnRecord = new TransactionRecord(physicalRecordLength: null);
+        $txnRecord->parseLine('16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0042');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Transaction field from an incomplete or malformed Transaction line.');
+        $txnRecord->toArray();
+    }
 
     // -- test overall error handling ------------------------------------------
 

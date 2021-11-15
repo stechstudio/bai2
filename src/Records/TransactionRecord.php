@@ -32,8 +32,9 @@ class TransactionRecord
 
     public function toArray(): array
     {
-        $a = $this->parser->toArray();
+        $a = $this->parserToArray();
         unset($a['recordCode']);
+
         return $a;
     }
 
@@ -75,6 +76,19 @@ class TransactionRecord
     {
         try {
             return $this->parser[$fieldKey];
+        } catch (\Error) {
+            throw new MalformedInputException('Cannot access a Transaction field prior to reading an incoming Transaction line.');
+        } catch (InvalidTypeException $e) {
+            throw new MalformedInputException("Encountered issue trying to parse Transaction Field. {$e->getMessage()}");
+        } catch (ParseException) {
+            throw new MalformedInputException('Cannot access a Transaction field from an incomplete or malformed Transaction line.');
+        }
+    }
+
+    protected function parserToArray(): array
+    {
+        try {
+            return $this->parser->toArray();
         } catch (\Error) {
             throw new MalformedInputException('Cannot access a Transaction field prior to reading an incoming Transaction line.');
         } catch (InvalidTypeException $e) {
