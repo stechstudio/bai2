@@ -395,6 +395,7 @@ final class AccountRecordTest extends TestCase
     {
         $accountRecord = new AccountRecord(physicalRecordLength: null);
         $accountRecord->parseLine('03,0001,USD/');
+        $accountRecord->parseLine('49,70520000,4/');
 
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Cannot access a Account Identifier and Summary Status field from an incomplete or malformed Account Identifier and Summary Status line.');
@@ -416,6 +417,7 @@ final class AccountRecordTest extends TestCase
     {
         $accountRecord = new AccountRecord(physicalRecordLength: null);
         $accountRecord->parseLine('03,0001,USD,010,500000,,,190,70000000,4,0');
+        $accountRecord->parseLine('49,70520000,4/');
 
         $this->expectException(MalformedInputException::class);
         $this->expectExceptionMessage('Cannot access a Account Identifier and Summary Status field from an incomplete or malformed Account Identifier and Summary Status line.');

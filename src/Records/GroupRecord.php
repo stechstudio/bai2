@@ -40,8 +40,25 @@ class GroupRecord
 
     public function toArray(): array
     {
-        $headerArray = $this->headerParser->toArray();
-        $trailerArray = $this->trailerParser->toArray();
+        try {
+            $headerArray = $this->headerParser->toArray();
+        } catch (\Error) {
+            throw new MalformedInputException('Cannot access a Group Header field prior to reading an incoming Group Header line.');
+        } catch (InvalidTypeException $e) {
+            throw new MalformedInputException("Encountered issue trying to parse Group Header Field. {$e->getMessage()}");
+        } catch (ParseException) {
+            throw new MalformedInputException('Cannot access a Group Header field from an incomplete or malformed Group Header line.');
+        }
+
+        try {
+            $trailerArray = $this->trailerParser->toArray();
+        } catch (\Error) {
+            throw new MalformedInputException('Cannot access a Group Trailer field prior to reading an incoming Group Trailer line.');
+        } catch (InvalidTypeException $e) {
+            throw new MalformedInputException("Encountered issue trying to parse Group Trailer Field. {$e->getMessage()}");
+        } catch (ParseException) {
+            throw new MalformedInputException('Cannot access a Group Trailer field from an incomplete or malformed Group Trailer line.');
+        }
 
         $accountsArray = [
             'accounts' => array_map(

@@ -551,25 +551,113 @@ final class GroupRecordTest extends TestCase
         );
     }
 
-    // TODO(zmd): public function testToArrayWhenHeaderFieldDefaulted(): void {}
+    public function testToArrayWhenHeaderFieldInvalid(): void
+    {
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,def,1,22-Sept 2021,0944,USD,2/');
+        $groupRecord->parseLine('98,10000,2,6/');
 
-    // TODO(zmd): public function testToArrayWhenTrailerFieldDefaulted(): void {}
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse Group Header Field. Invalid field type: ');
+        $groupRecord->toArray();
+    }
 
-    // TODO(zmd): public function testToArrayWhenRequiredHeaderFieldMissing(): void {}
+    public function testToArrayWhenTrailerFieldInvalid(): void
+    {
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
+        $groupRecord->parseLine('98,$10000.00,2,6/');
 
-    // TODO(zmd): public function testToArrayWhenRequiredTrailerFieldMissing(): void {}
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse Group Trailer Field. Invalid field type: ');
+        $groupRecord->toArray();
+    }
 
-    // TODO(zmd): public function testToArrayWhenHeaderNeverProcessed(): void {}
+    public function testToArrayWhenRequiredHeaderFieldMissing(): void
+    {
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,def,1,,0944,USD,2/');
+        $groupRecord->parseLine('98,10000,2,6/');
 
-    // TODO(zmd): public function testToArrayWhenTrailerNeverProcessed(): void {}
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse Group Header Field. Invalid field type: ');
+        $groupRecord->toArray();
+    }
 
-    // TODO(zmd): public function testToArrayWhenHeaderIncomplete(): void {}
+    public function testToArrayWhenRequiredTrailerFieldMissing(): void
+    {
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
+        $groupRecord->parseLine('98,,2,6/');
 
-    // TODO(zmd): public function testToArrayWhenTrailerIncomplete(): void {}
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse Group Trailer Field. Invalid field type: ');
+        $groupRecord->toArray();
+    }
 
-    // TODO(zmd): public function testToArrayWhenHeaderMalformed(): void {}
+    public function testToArrayWhenHeaderNeverProcessed(): void
+    {
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('98,10000,2,6/');
 
-    // TODO(zmd): public function testToArrayWhenTrailerMalformed(): void {}
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Group Header field prior to reading an incoming Group Header line.');
+        $groupRecord->toArray();
+    }
+
+    public function testToArrayWhenTrailerNeverProcessed(): void
+    {
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Group Trailer field prior to reading an incoming Group Trailer line.');
+        $groupRecord->toArray();
+    }
+
+    public function testToArrayWhenHeaderIncomplete(): void
+    {
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,def,1,212209/');
+        $groupRecord->parseLine('98,10000,2,6/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Group Header field from an incomplete or malformed Group Header line.');
+        $groupRecord->toArray();
+    }
+
+    public function testToArrayWhenTrailerIncomplete(): void
+    {
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
+        $groupRecord->parseLine('98,10000/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Group Trailer field from an incomplete or malformed Group Trailer line.');
+        $groupRecord->toArray();
+    }
+
+    public function testToArrayWhenHeaderMalformed(): void
+    {
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,def,1,212209,0944,USD,2');
+        $groupRecord->parseLine('98,10000,2,6/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Group Header field from an incomplete or malformed Group Header line.');
+        $groupRecord->toArray();
+    }
+
+    public function testToArrayWhenTrailerMalformed(): void
+    {
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,abc,def,1,212209,0944,USD,2/');
+        $groupRecord->parseLine('98,10000,2,6');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a Group Trailer field from an incomplete or malformed Group Trailer line.');
+        $groupRecord->toArray();
+    }
 
     // -- test overall error handling ------------------------------------------
 
