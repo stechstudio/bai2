@@ -527,7 +527,29 @@ final class GroupRecordTest extends TestCase
         });
     }
 
-    // TODO(zmd): public function testToArrayWhenFieldDefaulted(): void {}
+    public function testToArrayWhenFieldDefaulted(): void
+    {
+        $groupRecord = new GroupRecord(physicalRecordLength: null);
+        $groupRecord->parseLine('02,,def,1,212209,,,/');
+        $groupRecord->parseLine('98,10000,2,6/');
+
+        $this->assertEquals(
+            [
+                'ultimateReceiverIdentification' => null,
+                'originatorIdentification' => 'def',
+                'groupStatus' => '1',
+                'asOfDate' => '212209',
+                'asOfTime' => null,
+                'currencyCode' => null,
+                'asOfDateModifier' => null,
+                'groupControlTotal' => 10000,
+                'numberOfAccounts' => 2,
+                'numberOfRecords' => 6,
+                'accounts' => []
+            ],
+            $groupRecord->toArray()
+        );
+    }
 
     // TODO(zmd): public function testToArrayWhenHeaderFieldDefaulted(): void {}
 
