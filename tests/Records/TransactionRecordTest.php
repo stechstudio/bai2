@@ -242,7 +242,25 @@ final class TransactionRecordTest extends TestCase
         });
     }
 
-    // TODO(zmd): public function testToArrayWhenFieldDefaulted(): void {}
+    public function testToArrayWhenFieldDefaulted(): void
+    {
+        $txnRecord = new TransactionRecord(physicalRecordLength: null);
+        $txnRecord->parseLine('16,409,,,,,/');
+
+        $this->assertEquals(
+            [
+                'typeCode' => '409',
+                'amount' => null,
+                'fundsType' => [
+                    'distributionOfAvailability' => null,
+                ],
+                'bankReferenceNumber' => null,
+                'customerReferenceNumber' => null,
+                'text' => null,
+            ],
+            $txnRecord->toArray()
+        );
+    }
 
     // TODO(zmd): public function testToArrayWhenFieldInvalid(): void {}
 
