@@ -30,6 +30,13 @@ class TransactionRecord
         };
     }
 
+    public function toArray(): array
+    {
+        $a = $this->parser->toArray();
+        unset($a['recordCode']);
+        return $a;
+    }
+
     // -- getters --------------------------------------------------------------
 
     public function getTypeCode(): string

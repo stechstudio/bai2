@@ -215,7 +215,44 @@ final class TransactionRecordTest extends TestCase
 
     // -- test overall functionality -------------------------------------------
 
-    // TODO(zmd): test ::toArray()
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testToArray(array $inputLines): void
+    {
+        $this->withRecord($inputLines, null, function ($txnRecord) {
+            $this->assertEquals(
+                [
+                    'typeCode' => '409',
+                    'amount' => 10000,
+                    'fundsType' => [
+                        'distributionOfAvailability' => 'D',
+                        'availability' => [
+                             1 =>  1000,
+                             5 => 10000,
+                            30 => 25000,
+                        ]
+                    ],
+                    'bankReferenceNumber' => '1337',
+                    'customerReferenceNumber' => '0042',
+                    'text' => 'WELCOME TO THE NEVERHOOD',
+                ],
+                $txnRecord->toArray()
+            );
+        });
+    }
+
+    // TODO(zmd): public function testToArrayWhenFieldDefaulted(): void {}
+
+    // TODO(zmd): public function testToArrayWhenFieldInvalid(): void {}
+
+    // TODO(zmd): public function testToArrayWhenRequiredFieldMissing(): void {}
+
+    // TODO(zmd): public function testToArrayWhenRecordNeverProcessed(): void {}
+
+    // TODO(zmd): public function testToArrayWhenRecordIncomplete(): void {}
+
+    // TODO(zmd): public function testToArrayWhenRecordMalformed(): void {}
 
     // -- test overall error handling ------------------------------------------
 
