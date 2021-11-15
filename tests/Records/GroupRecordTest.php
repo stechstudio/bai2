@@ -354,7 +354,25 @@ final class GroupRecordTest extends TestCase
 
     // -- test overall functionality -------------------------------------------
 
-    // TODO(zmd): test ::toArray()
+    // TODO(zmd): public function testToArray(): void {}
+
+    // TODO(zmd): public function testToArrayWhenFieldDefaulted(): void {}
+
+    // TODO(zmd): public function testToArrayWhenFieldInvalid(): void {}
+
+    // TODO(zmd): public function testToArrayWhenRequiredFieldMissing(): void {}
+
+    // TODO(zmd): public function testToArrayWhenHeaderNeverProcessed(): void {}
+
+    // TODO(zmd): public function testToArrayWhenTrailerNeverProcessed(): void {}
+
+    // TODO(zmd): public function testToArrayWhenHeaderIncomplete(): void {}
+
+    // TODO(zmd): public function testToArrayWhenTrailerIncomplete(): void {}
+
+    // TODO(zmd): public function testToArrayWhenHeaderMalformed(): void {}
+
+    // TODO(zmd): public function testToArrayWhenTrailerMalformed(): void {}
 
     // -- test overall error handling ------------------------------------------
 
