@@ -792,25 +792,108 @@ final class FileRecordTest extends TestCase
         );
     }
 
-    // TODO(zmd): public function testToArrayWhenHeaderFieldInvalid(): void {}
+    public function testToArrayWhenHeaderFieldInvalid(): void
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,SENDR1,RECVR1,16-Jun 2021,1700,01,80,10,2/');
 
-    // TODO(zmd): public function testToArrayWhenTrailerFieldInvalid(): void {}
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse File Header Field. Invalid field type: ');
+        $fileRecord->toArray();
+    }
 
-    // TODO(zmd): public function testToArrayWhenRequiredHeaderFieldMissing(): void {}
+    public function testToArrayWhenTrailerFieldInvalid(): void
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,SENDR1,RECVR1,210616,1700,01,80,10,2/');
+        $fileRecord->parseLine('99,$1337.00,2,42/');
 
-    // TODO(zmd): public function testToArrayWhenRequiredTrailerFieldMissing(): void {}
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse File Trailer Field. Invalid field type: ');
+        $fileRecord->toArray();
+    }
 
-    // TODO(zmd): public function testToArrayWhenHeaderNeverProcessed(): void {}
+    public function testToArrayWhenRequiredHeaderFieldMissing(): void
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,SENDR1,RECVR1,,1700,01,80,10,2/');
 
-    // TODO(zmd): public function testToArrayWhenTrailerNeverProcessed(): void {}
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse File Header Field. Invalid field type: ');
+        $fileRecord->toArray();
+    }
 
-    // TODO(zmd): public function testToArrayWhenHeaderIncomplete(): void {}
+    public function testToArrayWhenRequiredTrailerFieldMissing(): void
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,SENDR1,RECVR1,210616,1700,01,80,10,2/');
+        $fileRecord->parseLine('99,,2,42/');
 
-    // TODO(zmd): public function testToArrayWhenTrailerIncomplete(): void {}
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Encountered issue trying to parse File Trailer Field. Invalid field type: ');
+        $fileRecord->toArray();
+    }
 
-    // TODO(zmd): public function testToArrayWhenHeaderMalformed(): void {}
+    public function testToArrayWhenHeaderNeverProcessed(): void
+    {
+        $fileRecord = new FileRecord();
 
-    // TODO(zmd): public function testToArrayWhenTrailerMalformed(): void {}
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a File Header field prior to reading an incoming File Header line.');
+        $fileRecord->toArray();
+    }
+
+    public function testToArrayWhenTrailerNeverProcessed(): void
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,SENDR1,RECVR1,210616,1700,01,80,10,2/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a File Trailer field prior to reading an incoming File Trailer line.');
+        $fileRecord->toArray();
+    }
+
+    public function testToArrayWhenHeaderIncomplete(): void
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,SENDR1,RECVR1/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a File Header field from an incomplete or malformed File Header line.');
+        $fileRecord->toArray();
+    }
+
+    public function testToArrayWhenTrailerIncomplete(): void
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,SENDR1,RECVR1,210616,1700,01,,10,2/');
+        $fileRecord->parseLine('99,1337/');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a File Trailer field from an incomplete or malformed File Trailer line.');
+        $fileRecord->toArray();
+    }
+
+    public function testToArrayWhenHeaderMalformed(): void
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,SENDR1,RECVR1,210616,1700,01,80,10,2');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a File Header field from an incomplete or malformed File Header line.');
+        $fileRecord->toArray();
+    }
+
+    public function testToArrayWhenTrailerMalformed(): void
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,SENDR1,RECVR1,210616,1700,01,,10,2/');
+        $fileRecord->parseLine('99,1337,2,42');
+
+        $this->expectException(MalformedInputException::class);
+        $this->expectExceptionMessage('Cannot access a File Trailer field from an incomplete or malformed File Trailer line.');
+        $fileRecord->toArray();
+    }
 
     // -- test overall error handling ------------------------------------------
 

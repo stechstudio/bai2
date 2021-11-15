@@ -36,8 +36,25 @@ class FileRecord
 
     public function toArray(): array
     {
-        $headerArray = $this->headerParser->toArray();
-        $trailerArray = $this->trailerParser->toArray();
+        try {
+            $headerArray = $this->headerParser->toArray();
+        } catch (\Error) {
+            throw new MalformedInputException('Cannot access a File Header field prior to reading an incoming File Header line.');
+        } catch (InvalidTypeException $e) {
+            throw new MalformedInputException("Encountered issue trying to parse File Header Field. {$e->getMessage()}");
+        } catch (ParseException) {
+            throw new MalformedInputException('Cannot access a File Header field from an incomplete or malformed File Header line.');
+        }
+
+        try {
+            $trailerArray = $this->trailerParser->toArray();
+        } catch (\Error) {
+            throw new MalformedInputException('Cannot access a File Trailer field prior to reading an incoming File Trailer line.');
+        } catch (InvalidTypeException $e) {
+            throw new MalformedInputException("Encountered issue trying to parse File Trailer Field. {$e->getMessage()}");
+        } catch (ParseException) {
+            throw new MalformedInputException('Cannot access a File Trailer field from an incomplete or malformed File Trailer line.');
+        }
 
         $groupsArray = [
             'groups' => array_map(
