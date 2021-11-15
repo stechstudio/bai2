@@ -767,7 +767,30 @@ final class FileRecordTest extends TestCase
         });
     }
 
-    // TODO(zmd): public function testToArrayWhenFieldDefaulted(): void {}
+    public function testToArrayWhenFieldDefaulted(): void
+    {
+        $fileRecord = new FileRecord();
+        $fileRecord->parseLine('01,SENDR1,RECVR1,210616,1700,01,,,2/');
+        $fileRecord->parseLine('99,1337,2,42/');
+
+        $this->assertEquals(
+            [
+                'senderIdentification' => 'SENDR1',
+                'receiverIdentification' => 'RECVR1',
+                'fileCreationDate' => '210616',
+                'fileCreationTime' => '1700',
+                'fileIdentificationNumber' => '01',
+                'physicalRecordLength' => null,
+                'blockSize' => null,
+                'versionNumber' => '2',
+                'fileControlTotal' => 1337,
+                'numberOfGroups' => 2,
+                'numberOfRecords' => 42,
+                'groups' => []
+            ],
+            $fileRecord->toArray()
+        );
+    }
 
     // TODO(zmd): public function testToArrayWhenHeaderFieldInvalid(): void {}
 
