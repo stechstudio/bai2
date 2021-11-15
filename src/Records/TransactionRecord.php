@@ -74,21 +74,18 @@ class TransactionRecord
 
     protected function field(string $fieldKey): null|string|int|array
     {
-        try {
-            return $this->parser[$fieldKey];
-        } catch (\Error) {
-            throw new MalformedInputException('Cannot access a Transaction field prior to reading an incoming Transaction line.');
-        } catch (InvalidTypeException $e) {
-            throw new MalformedInputException("Encountered issue trying to parse Transaction Field. {$e->getMessage()}");
-        } catch (ParseException) {
-            throw new MalformedInputException('Cannot access a Transaction field from an incomplete or malformed Transaction line.');
-        }
+        return $this->tryParser(fn($parser) => $parser[$fieldKey]);
     }
 
     protected function parserToArray(): array
     {
+        return $this->tryParser(fn($parser) => $parser->toArray());
+    }
+
+    protected function tryParser(callable $cb): mixed
+    {
         try {
-            return $this->parser->toArray();
+            return $cb($this->parser);
         } catch (\Error) {
             throw new MalformedInputException('Cannot access a Transaction field prior to reading an incoming Transaction line.');
         } catch (InvalidTypeException $e) {
