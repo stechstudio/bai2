@@ -38,21 +38,33 @@ final class GroupRecordTest extends TestCase
         return [
             [[
                 '02,abc,def,1,212209,0944,USD,2/',
-                '03,0001,,,,,/',
-                '49,0,2/',
-                '03,0002,,,,,/',
-                '49,0,2/',
+                '03,0001,USD,010,500000,,,190,70000000,4,0/',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0043,EARTHWORM JIM LAUNCHES COW',
+                '49,70520000,4/',
+                '03,0002,USD,010,500000,,,190,70000000,4,0/',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0043,EARTHWORM JIM LAUNCHES COW',
+                '49,70520000,4/',
                 '98,10000,2,6/',
             ]],
             [[
                 '02,abc,def/',
                 '88,1,212209,0944,USD,2/',
-                '03,0001,,/',
-                '88,,,/',
-                '49,0,2/',
-                '03,0002,,,,/',
-                '88,/',
-                '49,0/',
+                '03,0001,USD,010,500000/',
+                '88,,,190,70000000,4,0/',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000/',
+                '88,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000/',
+                '88,1337,0043,EARTHWORM JIM LAUNCHES COW',
+                '49,70520000,4/',
+                '03,0002,USD,010,500000/',
+                '88,,,190,70000000,4,0/',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000/',
+                '88,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000/',
+                '88,1337,0043,EARTHWORM JIM LAUNCHES COW',
+                '49,70520000,4/',
                 '88,2/',
                 '98,10000,2/',
                 '88,6/',
@@ -65,60 +77,91 @@ final class GroupRecordTest extends TestCase
         return [
             [[
                 '02,abc,def,1,212209,0944,USD,2/--------------------------------------------------',
-                '03,0001,,,,,/',
-                '49,0,2/',
-                '03,0002,,,,,/',
-                '49,0,2/',
+                '03,0001,USD,010,500000,,,190,70000000,4,0/',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0043,EARTHWORM JIM LAUNCHES COW',
+                '49,70520000,4/',
+                '03,0002,USD,010,500000,,,190,70000000,4,0/',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0043,EARTHWORM JIM LAUNCHES COW',
+                '49,70520000,4/',
                 '98,10000,2,6/',
             ]],
             [[
                 '02,abc,def,1,212209,0944,USD,2/',
-                '03,0001,,,,,/',
-                '49,0,2/',
-                '03,0002,,,,,/',
-                '49,0,2/',
+                '03,0001,USD,010,500000,,,190,70000000,4,0/',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0043,EARTHWORM JIM LAUNCHES COW',
+                '49,70520000,4/',
+                '03,0002,USD,010,500000,,,190,70000000,4,0/',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0043,EARTHWORM JIM LAUNCHES COW',
+                '49,70520000,4/',
                 '98,10000,2,6/--------------------------------------------------------------------',
             ]],
             [[
                 '02,abc,def/',
                 '88,1,212209,0944,USD,2/----------------------------------------------------------',
-                '03,0001,,/',
-                '88,,,/',
-                '49,0,2/',
-                '03,0002,,,,/',
-                '88,/',
-                '49,0/',
-                '88,2/',
+                '03,0001,USD,010,500000/',
+                '88,,,190,70000000,4,0/',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000/',
+                '88,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000/',
+                '88,1337,0043,EARTHWORM JIM LAUNCHES COW',
+                '49,70520000,4/',
+                '03,0002,USD,010,500000/',
+                '88,,,190,70000000,4,0/',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000/',
+                '88,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000/',
+                '88,1337,0043,EARTHWORM JIM LAUNCHES COW',
+                '49,70520000,4/',
                 '98,10000,2/',
                 '88,6/',
             ]],
             [[
                 '02,abc,def/',
                 '88,1,212209,0944,USD,2/',
-                '03,0001,,/',
-                '88,,,/',
-                '49,0,2/',
-                '03,0002,,,,/',
-                '88,/',
-                '49,0/',
-                '88,2/',
+                '03,0001,USD,010,500000/',
+                '88,,,190,70000000,4,0/',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000/',
+                '88,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000/',
+                '88,1337,0043,EARTHWORM JIM LAUNCHES COW',
+                '49,70520000,4/',
+                '03,0002,USD,010,500000/',
+                '88,,,190,70000000,4,0/',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000/',
+                '88,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000/',
+                '88,1337,0043,EARTHWORM JIM LAUNCHES COW',
+                '49,70520000,4/',
                 '98,10000,2/',
                 '88,6/----------------------------------------------------------------------------',
             ]],
             [[
                 '02,abc,def,1,212209,0944,USD,2/',
-                '03,0001,,,,,/--------------------------------------------------------------------',
-                '49,0,2/',
-                '03,0002,,,,,/',
-                '49,0,2/',
+
+                '03,0001,USD,010,500000,,,190,70000000,4,0/',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0042,WELCOME TO THE NEVERHOOD, WHERE NO EARTHWORM JIM ROAMS',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0043,EARTHWORM JIM LAUNCHES COW',
+                '49,70520000,4/',
+                '03,0002,USD,010,500000,,,190,70000000,4,0/',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0043,EARTHWORM JIM LAUNCHES COW',
+                '49,70520000,4/',
                 '98,10000,2,6/',
             ]],
             [[
                 '02,abc,def,1,212209,0944,USD,2/',
-                '03,0001,,,,,/',
-                '49,0,2/--------------------------------------------------------------------------',
-                '03,0002,,,,,/',
-                '49,0,2/',
+                '03,0001,USD,010,500000,,,190,70000000,4,0/',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0043,EARTHWORM JIM LAUNCHES COW',
+                '49,70520000,4/',
+                '03,0002,USD,010,500000,,,190,70000000,4,0/',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0042,WELCOME TO THE NEVERHOOD',
+                '16,409,10000,D,3,1,1000,5,10000,30,25000,1337,0043,EARTHWORM JIM LAUNCHES COW',
+                '49,70520000,4/-------------------------------------------------------------------',
                 '98,10000,2,6/',
             ]],
         ];
@@ -354,7 +397,135 @@ final class GroupRecordTest extends TestCase
 
     // -- test overall functionality -------------------------------------------
 
-    // TODO(zmd): public function testToArray(): void {}
+    /**
+     * @dataProvider inputLinesProducer
+     */
+    public function testToArray(array $inputLines): void
+    {
+        $this->withRecord($inputLines, null, function ($groupRecord) {
+            $this->assertEquals(
+                [
+                    'ultimateReceiverIdentification' => 'abc',
+                    'originatorIdentification' => 'def',
+                    'groupStatus' => '1',
+                    'asOfDate' => '212209',
+                    'asOfTime' => '0944',
+                    'currencyCode' => 'USD',
+                    'asOfDateModifier' => '2',
+                    'groupControlTotal' => 10000,
+                    'numberOfAccounts' => 2,
+                    'numberOfRecords' => 6,
+                    'accounts' => [
+                        [
+                            'customerAccountNumber' => '0001',
+                            'currencyCode' => 'USD',
+                            'summaryAndStatusInformation' => [
+                                [
+                                    'typeCode' => '010',
+                                    'amount' => 500000,
+                                ],
+                                [
+                                    'typeCode' => '190',
+                                    'amount' => 70000000,
+                                    'itemCount' => 4,
+                                    'fundsType' => [
+                                        'distributionOfAvailability' => '0'
+                                    ],
+                                ],
+                            ],
+                            'accountControlTotal' => 70520000,
+                            'numberOfRecords' => 4,
+                            'transactions' => [
+                                [
+                                    'typeCode' => '409',
+                                    'amount' => 10000,
+                                    'fundsType' => [
+                                        'distributionOfAvailability' => 'D',
+                                        'availability' => [
+                                             1 =>  1000,
+                                             5 => 10000,
+                                            30 => 25000,
+                                        ]
+                                    ],
+                                    'bankReferenceNumber' => '1337',
+                                    'customerReferenceNumber' => '0042',
+                                    'text' => 'WELCOME TO THE NEVERHOOD',
+                                ],
+                                [
+                                    'typeCode' => '409',
+                                    'amount' => 10000,
+                                    'fundsType' => [
+                                        'distributionOfAvailability' => 'D',
+                                        'availability' => [
+                                             1 =>  1000,
+                                             5 => 10000,
+                                            30 => 25000,
+                                        ]
+                                    ],
+                                    'bankReferenceNumber' => '1337',
+                                    'customerReferenceNumber' => '0043',
+                                    'text' => 'EARTHWORM JIM LAUNCHES COW',
+                                ],
+                            ],
+                        ],
+                        [
+                            'customerAccountNumber' => '0002',
+                            'currencyCode' => 'USD',
+                            'summaryAndStatusInformation' => [
+                                [
+                                    'typeCode' => '010',
+                                    'amount' => 500000,
+                                ],
+                                [
+                                    'typeCode' => '190',
+                                    'amount' => 70000000,
+                                    'itemCount' => 4,
+                                    'fundsType' => [
+                                        'distributionOfAvailability' => '0'
+                                    ],
+                                ],
+                            ],
+                            'accountControlTotal' => 70520000,
+                            'numberOfRecords' => 4,
+                            'transactions' => [
+                                [
+                                    'typeCode' => '409',
+                                    'amount' => 10000,
+                                    'fundsType' => [
+                                        'distributionOfAvailability' => 'D',
+                                        'availability' => [
+                                             1 =>  1000,
+                                             5 => 10000,
+                                            30 => 25000,
+                                        ]
+                                    ],
+                                    'bankReferenceNumber' => '1337',
+                                    'customerReferenceNumber' => '0042',
+                                    'text' => 'WELCOME TO THE NEVERHOOD',
+                                ],
+                                [
+                                    'typeCode' => '409',
+                                    'amount' => 10000,
+                                    'fundsType' => [
+                                        'distributionOfAvailability' => 'D',
+                                        'availability' => [
+                                             1 =>  1000,
+                                             5 => 10000,
+                                            30 => 25000,
+                                        ]
+                                    ],
+                                    'bankReferenceNumber' => '1337',
+                                    'customerReferenceNumber' => '0043',
+                                    'text' => 'EARTHWORM JIM LAUNCHES COW',
+                                ],
+                            ],
+                        ],
+                    ]
+                ],
+                $groupRecord->toArray()
+            );
+        });
+    }
 
     // TODO(zmd): public function testToArrayWhenFieldDefaulted(): void {}
 

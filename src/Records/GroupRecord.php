@@ -38,6 +38,24 @@ class GroupRecord
         };
     }
 
+    public function toArray(): array
+    {
+        $headerArray = $this->headerParser->toArray();
+        $trailerArray = $this->trailerParser->toArray();
+
+        $accountsArray = [
+            'accounts' => array_map(
+                fn($account) => $account->toArray(),
+                $this->accounts
+            )
+        ];
+
+        $combinedArray = $headerArray + $trailerArray + $accountsArray;
+        unset($combinedArray['recordCode']);
+
+        return $combinedArray;
+    }
+
     // -- getters --------------------------------------------------------------
 
     public function getUltimateReceiverIdentification(): ?string
