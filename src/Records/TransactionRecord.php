@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace STS\Bai2\Records;
 
-use STS\Bai2\Bai2;
-
 use STS\Bai2\Parsers\TransactionParser;
 
 use STS\Bai2\Exceptions\MalformedInputException;
 
 class TransactionRecord extends AbstractRecord
 {
+    use RecordCodePeekTrait;
     use TryableParserRecordTrait { tryParser as generalizedTryParser; }
 
     protected TransactionParser $parser;
@@ -22,7 +21,7 @@ class TransactionRecord extends AbstractRecord
 
     public function parseLine(string $line): void
     {
-        match ($recordCode = Bai2::recordTypeCode($line)) {
+        match ($recordCode = static::recordTypeCode($line)) {
             '16' => $this->processRecord($recordCode, $line),
             '88' => $this->processContinuation($line),
             default => $this->processUnknown()

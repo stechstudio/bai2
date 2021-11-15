@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace STS\Bai2\Records;
 
-use STS\Bai2\Bai2;
-
 use STS\Bai2\Parsers\FileHeaderParser;
 use STS\Bai2\Parsers\FileTrailerParser;
 
@@ -13,6 +11,7 @@ use STS\Bai2\Exceptions\MalformedInputException;
 
 class FileRecord extends AbstractRecord
 {
+    use RecordCodePeekTrait;
     use TryableParserRecordTrait;
 
     protected FileHeaderParser $headerParser;
@@ -25,7 +24,7 @@ class FileRecord extends AbstractRecord
 
     public function parseLine(string $line): void
     {
-        match ($recordCode = Bai2::recordTypeCode($line)) {
+        match ($recordCode = static::recordTypeCode($line)) {
             '01' => $this->processHeader($line),
             '88' => $this->processContinuation($line),
             '99' => $this->processTrailer($line),
