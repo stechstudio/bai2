@@ -40,25 +40,8 @@ class GroupRecord
 
     public function toArray(): array
     {
-        try {
-            $headerArray = $this->headerParser->toArray();
-        } catch (\Error) {
-            throw new MalformedInputException('Cannot access a Group Header field prior to reading an incoming Group Header line.');
-        } catch (InvalidTypeException $e) {
-            throw new MalformedInputException("Encountered issue trying to parse Group Header Field. {$e->getMessage()}");
-        } catch (ParseException) {
-            throw new MalformedInputException('Cannot access a Group Header field from an incomplete or malformed Group Header line.');
-        }
-
-        try {
-            $trailerArray = $this->trailerParser->toArray();
-        } catch (\Error) {
-            throw new MalformedInputException('Cannot access a Group Trailer field prior to reading an incoming Group Trailer line.');
-        } catch (InvalidTypeException $e) {
-            throw new MalformedInputException("Encountered issue trying to parse Group Trailer Field. {$e->getMessage()}");
-        } catch (ParseException) {
-            throw new MalformedInputException('Cannot access a Group Trailer field from an incomplete or malformed Group Trailer line.');
-        }
+        $headerArray = $this->tryHeaderParser(fn($p) => $p->toArray());
+        $trailerArray = $this->tryTrailerParser(fn($p) => $p->toArray());
 
         $accountsArray = [
             'accounts' => array_map(
@@ -132,29 +115,47 @@ class GroupRecord
 
     // -- helper methods -------------------------------------------------------
 
-    protected function headerField(string $fieldKey): null|string|int
+    protected function headerField(string $fieldKey): null|string|int|array
     {
-        try {
-            return $this->headerParser[$fieldKey];
-        } catch (\Error) {
-            throw new MalformedInputException('Cannot access a Group Header field prior to reading an incoming Group Header line.');
-        } catch (InvalidTypeException $e) {
-            throw new MalformedInputException("Encountered issue trying to parse Group Header Field. {$e->getMessage()}");
-        } catch (ParseException) {
-            throw new MalformedInputException('Cannot access a Group Header field from an incomplete or malformed Group Header line.');
-        }
+        return $this->tryHeaderParser(fn($p) => $p[$fieldKey]);
     }
 
     protected function trailerField(string $fieldKey): null|string|int
     {
+        return $this->tryTrailerParser(fn($p) => $p[$fieldKey]);
+    }
+
+    protected function tryHeaderParser(callable $cb): mixed
+    {
+        return $this->tryParser(
+            'headerParser',
+            'Group Header',
+            $cb
+        );
+    }
+
+    protected function tryTrailerParser(callable $cb): mixed
+    {
+        return $this->tryParser(
+            'trailerParser',
+            'Group Trailer',
+            $cb
+        );
+    }
+
+    protected function tryParser(
+        string $propertyName,
+        string $readableName,
+        callable $cb
+    ): mixed {
         try {
-            return $this->trailerParser[$fieldKey];
+            return $cb($this->$propertyName);
         } catch (\Error) {
-            throw new MalformedInputException('Cannot access a Group Trailer field prior to reading an incoming Group Trailer line.');
+            throw new MalformedInputException("Cannot access a {$readableName} field prior to reading an incoming {$readableName} line.");
         } catch (InvalidTypeException $e) {
-            throw new MalformedInputException("Encountered issue trying to parse Group Trailer Field. {$e->getMessage()}");
+            throw new MalformedInputException("Encountered issue trying to parse {$readableName} Field. {$e->getMessage()}");
         } catch (ParseException) {
-            throw new MalformedInputException('Cannot access a Group Trailer field from an incomplete or malformed Group Trailer line.');
+            throw new MalformedInputException("Cannot access a {$readableName} field from an incomplete or malformed {$readableName} line.");
         }
     }
 
