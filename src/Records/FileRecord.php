@@ -36,25 +36,8 @@ class FileRecord
 
     public function toArray(): array
     {
-        try {
-            $headerArray = $this->headerParser->toArray();
-        } catch (\Error) {
-            throw new MalformedInputException('Cannot access a File Header field prior to reading an incoming File Header line.');
-        } catch (InvalidTypeException $e) {
-            throw new MalformedInputException("Encountered issue trying to parse File Header Field. {$e->getMessage()}");
-        } catch (ParseException) {
-            throw new MalformedInputException('Cannot access a File Header field from an incomplete or malformed File Header line.');
-        }
-
-        try {
-            $trailerArray = $this->trailerParser->toArray();
-        } catch (\Error) {
-            throw new MalformedInputException('Cannot access a File Trailer field prior to reading an incoming File Trailer line.');
-        } catch (InvalidTypeException $e) {
-            throw new MalformedInputException("Encountered issue trying to parse File Trailer Field. {$e->getMessage()}");
-        } catch (ParseException) {
-            throw new MalformedInputException('Cannot access a File Trailer field from an incomplete or malformed File Trailer line.');
-        }
+        $headerArray = $this->tryHeaderParser(fn($p) => $p->toArray());
+        $trailerArray = $this->tryTrailerParser(fn($p) => $p->toArray());
 
         $groupsArray = [
             'groups' => array_map(
@@ -133,29 +116,47 @@ class FileRecord
 
     // -- helper methods -------------------------------------------------------
 
-    protected function headerField(string $fieldKey): null|string|int
+    protected function headerField(string $fieldKey): null|string|int|array
     {
-        try {
-            return $this->headerParser[$fieldKey];
-        } catch (\Error) {
-            throw new MalformedInputException('Cannot access a File Header field prior to reading an incoming File Header line.');
-        } catch (InvalidTypeException $e) {
-            throw new MalformedInputException("Encountered issue trying to parse File Header Field. {$e->getMessage()}");
-        } catch (ParseException) {
-            throw new MalformedInputException('Cannot access a File Header field from an incomplete or malformed File Header line.');
-        }
+        return $this->tryHeaderParser(fn($p) => $p[$fieldKey]);
     }
 
     protected function trailerField(string $fieldKey): null|string|int
     {
+        return $this->tryTrailerParser(fn($p) => $p[$fieldKey]);
+    }
+
+    protected function tryHeaderParser(callable $cb): mixed
+    {
+        return $this->tryParser(
+            'headerParser',
+            'File Header',
+            $cb
+        );
+    }
+
+    protected function tryTrailerParser(callable $cb): mixed
+    {
+        return $this->tryParser(
+            'trailerParser',
+            'File Trailer',
+            $cb
+        );
+    }
+
+    protected function tryParser(
+        string $propertyName,
+        string $readableName,
+        callable $cb
+    ): mixed {
         try {
-            return $this->trailerParser[$fieldKey];
+            return $cb($this->$propertyName);
         } catch (\Error) {
-            throw new MalformedInputException('Cannot access a File Trailer field prior to reading an incoming File Trailer line.');
+            throw new MalformedInputException("Cannot access a {$readableName} field prior to reading an incoming {$readableName} line.");
         } catch (InvalidTypeException $e) {
-            throw new MalformedInputException("Encountered issue trying to parse File Trailer Field. {$e->getMessage()}");
+            throw new MalformedInputException("Encountered issue trying to parse {$readableName} Field. {$e->getMessage()}");
         } catch (ParseException) {
-            throw new MalformedInputException('Cannot access a File Trailer field from an incomplete or malformed File Trailer line.');
+            throw new MalformedInputException("Cannot access a {$readableName} field from an incomplete or malformed {$readableName} line.");
         }
     }
 
