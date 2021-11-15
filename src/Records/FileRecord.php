@@ -34,6 +34,24 @@ class FileRecord
         };
     }
 
+    public function toArray(): array
+    {
+        $headerArray = $this->headerParser->toArray();
+        $trailerArray = $this->trailerParser->toArray();
+
+        $groupsArray = [
+            'groups' => array_map(
+                fn($group) => $group->toArray(),
+                $this->groups
+            )
+        ];
+
+        $combinedArray = $headerArray + $trailerArray + $groupsArray;
+        unset($combinedArray['recordCode']);
+
+        return $combinedArray;
+    }
+
     // -- getters --------------------------------------------------------------
 
     public function getSenderIdentification(): string
