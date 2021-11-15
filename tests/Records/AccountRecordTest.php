@@ -309,7 +309,24 @@ final class AccountRecordTest extends TestCase
         });
     }
 
-    // TODO(zmd): public function testToArrayWhenFieldDefaulted(): void {}
+    public function testToArrayWhenFieldDefaulted(): void
+    {
+        $accountRecord = new AccountRecord(physicalRecordLength: null);
+        $accountRecord->parseLine('03,0001,,,,,/');
+        $accountRecord->parseLine('49,70520000,4/');
+
+        $this->assertEquals(
+            [
+                'customerAccountNumber' => '0001',
+                'currencyCode' => null,
+                'summaryAndStatusInformation' => [],
+                'accountControlTotal' => 70520000,
+                'numberOfRecords' => 4,
+                'transactions' => [],
+            ],
+            $accountRecord->toArray()
+        );
+    }
 
     // TODO(zmd): public function testToArrayWhenFieldInvalid(): void {}
 
