@@ -32,7 +32,7 @@ class TransactionRecord
 
     public function toArray(): array
     {
-        $a = $this->parserToArray();
+        $a = $this->tryParser(fn($parser) => $parser->toArray());
         unset($a['recordCode']);
 
         return $a;
@@ -75,11 +75,6 @@ class TransactionRecord
     protected function field(string $fieldKey): null|string|int|array
     {
         return $this->tryParser(fn($parser) => $parser[$fieldKey]);
-    }
-
-    protected function parserToArray(): array
-    {
-        return $this->tryParser(fn($parser) => $parser->toArray());
     }
 
     protected function tryParser(callable $cb): mixed
