@@ -13,7 +13,7 @@ use STS\Bai2\Exceptions\MalformedInputException;
 use STS\Bai2\Exceptions\InvalidTypeException;
 use STS\Bai2\Exceptions\ParseException;
 
-class AccountRecord
+class AccountRecord extends AbstractRecord
 {
 
     protected AccountHeaderParser $headerParser;

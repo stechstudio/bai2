@@ -13,7 +13,7 @@ use STS\Bai2\Exceptions\MalformedInputException;
 use STS\Bai2\Exceptions\InvalidTypeException;
 use STS\Bai2\Exceptions\ParseException;
 
-class GroupRecord
+class GroupRecord extends AbstractRecord
 {
 
     protected GroupHeaderParser $headerParser;

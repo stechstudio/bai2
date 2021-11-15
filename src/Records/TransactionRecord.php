@@ -12,7 +12,7 @@ use STS\Bai2\Exceptions\MalformedInputException;
 use STS\Bai2\Exceptions\InvalidTypeException;
 use STS\Bai2\Exceptions\ParseException;
 
-class TransactionRecord
+class TransactionRecord extends AbstractRecord
 {
 
     protected TransactionParser $parser;
