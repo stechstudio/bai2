@@ -23,5 +23,6 @@
             "email": "zebulin@stechstudio.com"
         }
     ],
+    "bin": ["bin/bai2json"],
     "require": {}
 }
