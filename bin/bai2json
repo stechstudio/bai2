@@ -3,7 +3,19 @@
 
 declare(strict_types=1);
 
-require 'vendor/autoload.php';
+// autoload dance /////////////////////////////////////////////////////
+                                                                     //
+$autoload = dirname(__DIR__) . '/vendor/autoload.php';               //
+if (!is_file($autoload)) {                                           //
+    $autoload = dirname(__DIR__, 4) . '/vendor/autoload.php';        //
+    if (!is_file($autoload)) {                                       //
+        die("Unable to find Composer autoload file.");               //
+    }                                                                //
+}                                                                    //
+                                                                     //
+require $autoload;                                                   //
+                                                                     //
+///////////////////////////////////////////////////////////////////////
 
 use STS\Bai2\Bai2;
 use STS\Bai2\Records\FileRecord;
