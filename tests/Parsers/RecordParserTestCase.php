@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace STS\Bai2\Tests\Parsers;
 
 use PHPUnit\Framework\TestCase;

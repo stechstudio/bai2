@@ -1,132 +1,187 @@
 <?php
 
+declare(strict_types=1);
+
 namespace STS\Bai2\Records;
-
-use STS\Bai2\Bai2;
-
-use STS\Bai2\Exceptions\ExtantAssertionException;
 
 use STS\Bai2\Parsers\FileHeaderParser;
 use STS\Bai2\Parsers\FileTrailerParser;
 
-class FileRecord extends AbstractEnvelopeRecord
+use STS\Bai2\Exceptions\MalformedInputException;
+
+class FileRecord extends AbstractRecord
 {
+    use RecordCodePeekTrait;
+    use TryableParserRecordTrait;
 
-    protected ?FileHeaderParser $headerParser = null;
+    protected FileHeaderParser $headerParser;
 
-    protected ?FileTrailerParser $trailerParser = null;
+    protected FileTrailerParser $trailerParser;
+
+    protected array $groups = [];
+
+    protected GroupRecord $currentChild;
 
     public function parseLine(string $line): void
     {
-        switch (Bai2::recordTypeCode($line)) {
-            case '01':
-                ($this->headerParser ??= new FileHeaderParser())->pushLine($line);
-                break;
-            case '88':
-                $this->parseOrDelegateContinuation($line);
-                break;
-            case '99':
-                ($this->trailerParser ??= new FileTrailerParser())->pushLine($line);
-                break;
-            default:
-                $this->delegateToChild($line);
-                break;
-        }
+        match ($recordCode = static::recordTypeCode($line)) {
+            '01' => $this->processHeader($line),
+            '88' => $this->processContinuation($line),
+            '99' => $this->processTrailer($line),
+            default => $this->processChildRecord($recordCode, $line)
+        };
     }
+
+    public function toArray(): array
+    {
+        $headerArray = $this->tryHeaderParser(fn($p) => $p->toArray());
+        $trailerArray = $this->tryTrailerParser(fn($p) => $p->toArray());
+
+        $groupsArray = [
+            'groups' => array_map(
+                fn($group) => $group->toArray(),
+                $this->groups
+            )
+        ];
+
+        $combinedArray = $headerArray + $trailerArray + $groupsArray;
+        unset($combinedArray['recordCode']);
+
+        return $combinedArray;
+    }
+
+    // -- getters --------------------------------------------------------------
 
     public function getSenderIdentification(): string
     {
-        return $this->extantHeaderParser()['senderIdentification'];
+        return $this->headerField('senderIdentification');
     }
 
     public function getReceiverIdentification(): string
     {
-        return $this->extantHeaderParser()['receiverIdentification'];
+        return $this->headerField('receiverIdentification');
     }
 
     public function getFileCreationDate(): string
     {
-        return $this->extantHeaderParser()['fileCreationDate'];
+        return $this->headerField('fileCreationDate');
     }
 
     public function getFileCreationTime(): string
     {
-        return $this->extantHeaderParser()['fileCreationTime'];
+        return $this->headerField('fileCreationTime');
     }
 
     public function getFileIdentificationNumber(): string
     {
-        return $this->extantHeaderParser()['fileIdentificationNumber'];
+        return $this->headerField('fileIdentificationNumber');
     }
 
     public function getPhysicalRecordLength(): ?int
     {
-        return $this->extantHeaderParser()['physicalRecordLength'];
+        return $this->headerField('physicalRecordLength');
     }
 
     public function getBlockSize(): ?int
     {
-        return $this->extantHeaderParser()['blockSize'];
+        return $this->headerField('blockSize');
     }
 
     public function getVersionNumber(): string
     {
-        return $this->extantHeaderParser()['versionNumber'];
+        return $this->headerField('versionNumber');
     }
 
     public function getFileControlTotal(): int
     {
-        return $this->extantTrailerParser()['fileControlTotal'];
+        return $this->trailerField('fileControlTotal');
     }
 
     public function getNumberOfGroups(): int
     {
-        return $this->extantTrailerParser()['numberOfGroups'];
+        return $this->trailerField('numberOfGroups');
     }
 
     public function getNumberOfRecords(): int
     {
-        return $this->extantTrailerParser()['numberOfRecords'];
+        return $this->trailerField('numberOfRecords');
     }
 
-    public function groups(): array
+    public function getGroups(): array
     {
-        // TODO(zmd): implement me
-        return [];
+        return $this->groups;
     }
 
-    protected function extantHeaderParser(): FileHeaderParser
-    {
-        if ($this->headerParser) {
-            return $this->headerParser;
-        }
+    // -- helper methods -------------------------------------------------------
 
-        throw new ExtantAssertionException('Tried to read File Header fields before File Header lines processed.');
+    protected function headerField(string $fieldKey): null|string|int|array
+    {
+        return $this->tryHeaderParser(fn($p) => $p[$fieldKey]);
     }
 
-    protected function extantTrailerParser(): FileTrailerParser
+    protected function trailerField(string $fieldKey): null|string|int
     {
-        if ($this->trailerParser) {
-            return $this->trailerParser;
-        }
-
-        throw new ExtantAssertionException('Tried to read File Trailer fields before File Trailer lines processed.');
+        return $this->tryTrailerParser(fn($p) => $p[$fieldKey]);
     }
 
-    protected function newChild(): void
+    protected function tryHeaderParser(callable $cb): mixed
     {
-        $this->currentChild = new GroupRecord();
-        $this->records[] = $this->currentChild;
+        return $this->tryParser(
+            'headerParser',
+            'File Header',
+            $cb
+        );
     }
 
-    protected function parseContinuation(string $line): void
+    protected function tryTrailerParser(callable $cb): mixed
     {
-        // TODO(zmd): error handling if $headerTrailer and/or $trailerParser
-        //   never get initialized?
-        if ($this->trailerParser) {
+        return $this->tryParser(
+            'trailerParser',
+            'File Trailer',
+            $cb
+        );
+    }
+
+    protected function processHeader(string $line): void
+    {
+        $this->headerParser = new FileHeaderParser();
+        $this->headerParser->pushLine($line);
+    }
+
+    protected function processTrailer(string $line): void
+    {
+        $this->trailerParser = new FileTrailerParser(
+            physicalRecordLength: $this->getPhysicalRecordLength()
+        );
+        $this->trailerParser->pushLine($line);
+    }
+
+    protected function processContinuation(string $line): void
+    {
+        if (isset($this->trailerParser)) {
             $this->trailerParser->pushLine($line);
-        } else {
+        } else if (isset($this->currentChild)) {
+            $this->currentChild->parseLine($line);
+        } else if (isset($this->headerParser)) {
             $this->headerParser->pushLine($line);
+        } else {
+            throw new MalformedInputException('Cannot process a continuation without first processing something that can be continued.');
+        }
+    }
+
+    protected function processChildRecord(string $recordCode, string $line): void
+    {
+        if ($recordCode == '02') {
+            $this->currentChild = new GroupRecord(
+                physicalRecordLength: $this->getPhysicalRecordLength()
+            );
+            $this->groups[] = $this->currentChild;
+        }
+
+        try {
+            $this->currentChild->parseLine($line);
+        } catch (\Error) {
+            throw new MalformedInputException('Cannot process Group Trailer, Account-related, or Transaction-related line before processing the Group Header line.');
         }
     }
 

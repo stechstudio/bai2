@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace STS\Bai2\Parsers;
 
 use PHPUnit\Framework\TestCase;
@@ -59,7 +61,7 @@ final class FieldParserTest extends TestCase
 
     public function testIntWithDefault(): void
     {
-        $parser = new FieldParser(100, 'Foo Bar');
+        $parser = new FieldParser('100', 'Foo Bar');
         $this->assertEquals(100, $parser->int(default: 200));
         $this->assertEquals(100, $parser->int(default: null));
     }

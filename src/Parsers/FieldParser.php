@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace STS\Bai2\Parsers;
 
 use STS\Bai2\Exceptions\InvalidTypeException;
@@ -45,7 +47,7 @@ class FieldParser
         return $this->parseValue($options, fn () => (int) $this->value);
     }
 
-    protected function parseValue(array $options, callable $caster): ?string
+    protected function parseValue(array $options, callable $caster): string|int|null
     {
         if ($this->value === '') {
             return $this->getDefaultOrThrow($options);

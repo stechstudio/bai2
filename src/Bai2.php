@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace STS\Bai2;
 
 use STS\Bai2\Records\FileRecord;
@@ -46,11 +48,6 @@ class Bai2
         }
 
         return $fileRecord;
-    }
-
-    public static function recordTypeCode(string $line): string
-    {
-        return substr($line, 0, 2);
     }
 
 }

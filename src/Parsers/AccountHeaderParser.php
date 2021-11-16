@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace STS\Bai2\Parsers;
 
 use STS\Bai2\Parsers\AccountSummaryOrStatusTypeCode as TypeCode;
@@ -129,7 +131,7 @@ final class AccountHeaderParser extends AbstractRecordParser
     {
         $summaryAndStatusInformation = [];
 
-        while ($this->getParser()->hasMore()) {
+        do {
             $typeCode =
                 $this->shiftAndParseField('Type Code')
                      ->match('/^\d{3}$/', 'must be composed of exactly three numerals when provided')
@@ -149,7 +151,7 @@ final class AccountHeaderParser extends AbstractRecordParser
                     throw new InvalidTypeException('Invalid field type: "Type Code" was out outside the valid range for summary or status data.');
                     break;
             }
-        }
+        } while ($this->getParser()->hasMore());
 
         return $summaryAndStatusInformation;
     }

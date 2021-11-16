@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace STS\Bai2\Parsers;
 
 abstract class AbstractRecordParser implements \ArrayAccess

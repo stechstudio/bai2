@@ -1,57 +1,164 @@
 <?php
 
+declare(strict_types=1);
+
 namespace STS\Bai2\Records;
 
-use STS\Bai2\Bai2;
+use STS\Bai2\Parsers\AccountHeaderParser;
+use STS\Bai2\Parsers\AccountTrailerParser;
 
-class AccountRecord extends AbstractEnvelopeRecord
+use STS\Bai2\Exceptions\MalformedInputException;
+
+class AccountRecord extends AbstractRecord
 {
+    use RecordCodePeekTrait;
+    use TryableParserRecordTrait;
+
+    protected AccountHeaderParser $headerParser;
+
+    protected AccountTrailerParser $trailerParser;
+
+    protected array $transactions = [];
+
+    protected TransactionRecord $currentChild;
+
+    public function __construct(protected ?int $physicalRecordLength)
+    {
+    }
 
     public function parseLine(string $line): void
     {
-        switch (Bai2::recordTypeCode($line)) {
-            case '03':
-                $this->parseIdentifier($line);
-                break;
-            case '88':
-                $this->parseOrDelegateContinuation($line);
-                break;
-            case '49':
-                $this->parseTrailer($line);
-                break;
-            default:
-                // Transaction record types don't have headers and trailers;
-                // any new non-continuation transaction line we reach indicates
-                // a whole new transaction record that we need, so we reset our
-                // current child.
-                $this->currentChild = null;
-                $this->delegateToChild($line);
-                break;
+        match ($recordCode = static::recordTypeCode($line)) {
+            '03' => $this->processHeader($recordCode, $line),
+            '88' => $this->processContinuation($line),
+            '49' => $this->processTrailer($recordCode, $line),
+            default => $this->processChildRecord($recordCode, $line)
+        };
+    }
+
+    public function toArray(): array
+    {
+        $headerArray = $this->tryHeaderParser(fn($p) => $p->toArray());
+        $trailerArray = $this->tryTrailerParser(fn($p) => $p->toArray());
+
+        $txnsArray = [
+            'transactions' => array_map(
+                fn($txn) => $txn->toArray(),
+                $this->transactions
+            )
+        ];
+
+        $combinedArray = $headerArray + $trailerArray + $txnsArray;
+        unset($combinedArray['recordCode']);
+
+        return $combinedArray;
+    }
+
+    // -- getters --------------------------------------------------------------
+
+    public function getCustomerAccountNumber(): string
+    {
+        return $this->headerField('customerAccountNumber');
+    }
+
+    public function getCurrencyCode(): ?string
+    {
+        return $this->headerField('currencyCode');
+    }
+
+    public function getSummaryAndStatusInformation(): array
+    {
+        return $this->headerField('summaryAndStatusInformation');
+    }
+
+    public function getAccountControlTotal(): int
+    {
+        return $this->trailerField('accountControlTotal');
+    }
+
+    public function getNumberOfRecords(): int
+    {
+        return $this->trailerField('numberOfRecords');
+    }
+
+    public function getTransactions(): array
+    {
+        return $this->transactions;
+    }
+
+    // -- helper methods -------------------------------------------------------
+
+    protected function headerField(string $fieldKey): null|string|int|array
+    {
+        return $this->tryHeaderParser(fn($p) => $p[$fieldKey]);
+    }
+
+    protected function trailerField(string $fieldKey): null|string|int
+    {
+        return $this->tryTrailerParser(fn($p) => $p[$fieldKey]);
+    }
+
+    protected function tryHeaderParser(callable $cb): mixed
+    {
+        return $this->tryParser(
+            'headerParser',
+            'Account Identifier and Summary Status',
+            $cb
+        );
+    }
+
+    protected function tryTrailerParser(callable $cb): mixed
+    {
+        return $this->tryParser(
+            'trailerParser',
+            'Account Trailer',
+            $cb
+        );
+    }
+
+    protected function processHeader(string $recordCode, string $line): void
+    {
+        $this->headerParser = new AccountHeaderParser(
+            physicalRecordLength: $this->physicalRecordLength,
+        );
+        $this->headerParser->pushLine($line);
+    }
+
+    protected function processTrailer(string $recordCode, string $line): void
+    {
+        $this->trailerParser = new AccountTrailerParser(
+            physicalRecordLength: $this->physicalRecordLength,
+        );
+        $this->trailerParser->pushLine($line);
+    }
+
+    protected function processContinuation(string $line): void
+    {
+        if (isset($this->trailerParser)) {
+            $this->trailerParser->pushLine($line);
+        } else if (isset($this->currentChild)) {
+            $this->currentChild->parseLine($line);
+        } else if (isset($this->headerParser)) {
+            $this->headerParser->pushLine($line);
+        } else {
+            throw new MalformedInputException('Cannot process a continuation without first processing something that can be continued.');
         }
     }
 
-    protected function newChild(): void
+    protected function processChildRecord(string $recordCode, string $line): void
     {
-        $this->currentChild = new TransactionRecord();
-        $this->records[] = $this->currentChild;
-    }
+        if ($recordCode == '16') {
+            $this->currentChild = new TransactionRecord(
+                physicalRecordLength: $this->physicalRecordLength
+            );
+            $this->transactions[] = $this->currentChild;
+        }
 
-    protected function parseIdentifier(string $line): void
-    {
-        // TODO(zmd): parse? hahaha, yah right!
-        $this->records[] = $line;
-    }
-
-    protected function parseContinuation(string $line): void
-    {
-        // TODO(zmd): parse? hahaha, yah right!
-        $this->records[] = $line;
-    }
-
-    protected function parseTrailer(string $line): void
-    {
-        // TODO(zmd): parse? hahaha, yah right!
-        $this->records[] = $line;
+        try {
+            $this->currentChild->parseLine($line);
+        } catch (\Error $e) {
+            throw new MalformedInputException('Cannot process Transaction-related line before processing the main Transaction line.');
+        }
     }
 
 }

@@ -1,0 +1,21 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+require 'vendor/autoload.php';
+
+use STS\Bai2\Bai2;
+use STS\Bai2\Records\FileRecord;
+
+function read(string $filename): FileRecord
+{
+    if ($filename == '-') {
+        return Bai2::parse(STDIN);
+    } else {
+        return Bai2::parse($filename);
+    }
+}
+
+$fileRecord = read($argv[1] ?? '-');
+echo json_encode($fileRecord->toArray());
