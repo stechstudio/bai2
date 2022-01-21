@@ -836,6 +836,11 @@ final class TransactionParserTest extends RecordParserTestCase
      *           ["16,409,,,123456789,rstuvwxyz,TEXT OF SUCH IMPORT", "rstuvwxyz"]
      *           ["16,409,,,123456789,98765wxyz,TEXT OF SUCH IMPORT", "98765wxyz"]
      *           ["16,409,,,123456789,wxyz98765,TEXT OF SUCH IMPORT", "wxyz98765"]
+     *           ["16,409,,,123456789,WXyz98765,TEXT OF SUCH IMPORT", "WXyz98765"]
+     *           ["16,409,,,123456789,98765 wxyz,TEXT OF SUCH IMPORT", "98765 wxyz"]
+     *           ["16,409,,,123456789, 98765wxyz,TEXT OF SUCH IMPORT", " 98765wxyz"]
+     *           ["16,409,,,123456789,98765wxyz ,TEXT OF SUCH IMPORT", "98765wxyz "]
+     *           ["16,409,,,123456789, ,TEXT OF SUCH IMPORT", " "]
      *           ["16,409,,,123456789,000000009,TEXT OF SUCH IMPORT", "000000009"]
      *           ["16,409,,,123456789,thelengthofthecustomerreferencenumberisnotlimitedbutshouldprobablybenotmorethan76charactersbecausewhywouldyoueverneedmorethanthatquestionmark,TEXT OF SUCH IMPORT", "thelengthofthecustomerreferencenumberisnotlimitedbutshouldprobablybenotmorethan76charactersbecausewhywouldyoueverneedmorethanthatquestionmark"]
      */
@@ -854,13 +859,10 @@ final class TransactionParserTest extends RecordParserTestCase
     }
 
     /**
-     * @testWith ["16,409,,,123456789, 987654321,TEXT OF SUCH IMPORT"]
-     *           ["16,409,,,123456789,987654321 ,TEXT OF SUCH IMPORT"]
-     *           ["16,409,,,123456789,9876_54321,TEXT OF SUCH IMPORT"]
+     * @testWith ["16,409,,,123456789,9876_54321,TEXT OF SUCH IMPORT"]
      *           ["16,409,,,123456789,9876+54321,TEXT OF SUCH IMPORT"]
      *           ["16,409,,,123456789,9876-54321,TEXT OF SUCH IMPORT"]
      *           ["16,409,,,123456789,+_)(*&^%$,TEXT OF SUCH IMPORT"]
-     *           ["16,409,,,123456789, ,TEXT OF SUCH IMPORT"]
      */
     public function testCustomerReferenceNumberInvalid(string $line): void
     {
