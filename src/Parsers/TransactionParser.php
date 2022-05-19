@@ -56,7 +56,7 @@ final class TransactionParser extends AbstractRecordParser
 
         $this->parsed['customerReferenceNumber'] =
             $this->shiftAndParseField('Customer Reference Number')
-                 ->match('/^[a-zA-Z0-9 _-]+$/', 'must be alpha-numeric when provided')
+                 ->match('/^[a-zA-Z0-9 #&_-]+$/', 'must be alpha-numeric when provided')
                  ->string(default: null);
 
         $this->parsed['text'] =
