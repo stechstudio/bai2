@@ -851,6 +851,7 @@ final class TransactionParserTest extends RecordParserTestCase
      *           ["16,409,,,123456789,_,TEXT OF SUCH IMPORT", "_"]
      *           ["16,409,,,123456789,foo & bar,TEXT OF SUCH IMPORT", "foo & bar"]
      *           ["16,409,,,123456789,for acct #1337,TEXT OF SUCH IMPORT", "for acct #1337"]
+     *           ["16,409,,,123456789,for bob's account,TEXT OF SUCH IMPORT", "for bob's account"]
      *           ["16,409,,,123456789,000000009,TEXT OF SUCH IMPORT", "000000009"]
      *           ["16,409,,,123456789,thelengthofthecustomerreferencenumberisnotlimitedbutshouldprobablybenotmorethan76charactersbecausewhywouldyoueverneedmorethanthatquestionmark,TEXT OF SUCH IMPORT", "thelengthofthecustomerreferencenumberisnotlimitedbutshouldprobablybenotmorethan76charactersbecausewhywouldyoueverneedmorethanthatquestionmark"]
      */
