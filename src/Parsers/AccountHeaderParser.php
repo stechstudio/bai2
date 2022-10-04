@@ -218,7 +218,7 @@ final class AccountHeaderParser extends AbstractRecordParser
 
         $accountInformationOrStatus['itemCount'] =
             $this->shiftAndParseField('Item Count')
-                 ->match('/^\d+$/', 'must be unsigned integer when provided')
+                 ->match('/^\+?\d+$/', 'must be positive integer when provided')
                  ->int(default: null);
 
         $accountInformationOrStatus['fundsType']

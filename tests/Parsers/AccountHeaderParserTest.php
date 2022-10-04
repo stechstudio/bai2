@@ -871,7 +871,6 @@ final class AccountHeaderParserTest extends RecordParserTestCase
 
     /**
      * @testWith ["03,0975312468,,190,500000,-4,0/"]
-     *           ["03,0975312468,,190,500000,+4,0/"]
      *           ["03,0975312468,,190,500000,4.0,0/"]
      *           ["03,0975312468,,190,500000,a4,0/"]
      *           ["03,0975312468,,190,500000,4b,0/"]
@@ -882,7 +881,7 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser->pushLine($line);
 
         $this->expectException(InvalidTypeException::class);
-        $this->expectExceptionMessage('Invalid field type: "Item Count" must be unsigned integer when provided.');
+        $this->expectExceptionMessage('Invalid field type: "Item Count" must be positive integer when provided.');
         $this->parser['summaryAndStatusInformation'];
     }
 
