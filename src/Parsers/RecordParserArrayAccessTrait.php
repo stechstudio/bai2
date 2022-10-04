@@ -34,7 +34,7 @@ trait RecordParserArrayAccessTrait
         throw new InvalidUseException('::offsetSet() is unsupported.');
     }
 
-    public function offsetUnset(mixed $offset): mixed
+    public function offsetUnset(mixed $offset): void
     {
         throw new InvalidUseException('::offsetUnset() is unsupported.');
     }
