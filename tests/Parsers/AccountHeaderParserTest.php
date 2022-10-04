@@ -857,9 +857,15 @@ final class AccountHeaderParserTest extends RecordParserTestCase
         $this->parser['summaryAndStatusInformation'];
     }
 
-    public function testSummaryAndStatusInformationSummaryItemCountValid(): void
+    /**
+     * @testWith ["03,0975312468,,190,500000,4,0/"]
+     *           ["03,0975312468,,190,500000,04,0/"]
+     *           ["03,0975312468,,190,500000,+4,0/"]
+     *           ["03,0975312468,,190,500000,+04,0/"]
+     */
+    public function testSummaryAndStatusInformationSummaryItemCountValid(string $line): void
     {
-        $this->parser->pushLine('03,0975312468,,190,500000,4,0/');
+        $this->parser->pushLine($line);
         $this->assertEquals(4, $this->parser['summaryAndStatusInformation'][0]['itemCount']);
     }
 
